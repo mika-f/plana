@@ -9,6 +9,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UdonObfuscator", "UdonObfus
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UdonObfuscator.CLI", "UdonObfuscator.CLI\UdonObfuscator.CLI.csproj", "{17DA4483-904D-4E6D-9EA4-52253B35C070}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UdonObfuscator.Logging.Abstractions", "UdonObfuscator.Logging.Abstractions\UdonObfuscator.Logging.Abstractions.csproj", "{4FF5DE81-0E77-4F47-B9BF-DD713E521164}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Abstractions", "Abstractions", "{E1C21130-8089-48B2-B1D8-ABA452FC472B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,12 +31,17 @@ Global
 		{17DA4483-904D-4E6D-9EA4-52253B35C070}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{17DA4483-904D-4E6D-9EA4-52253B35C070}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{17DA4483-904D-4E6D-9EA4-52253B35C070}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FF5DE81-0E77-4F47-B9BF-DD713E521164}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FF5DE81-0E77-4F47-B9BF-DD713E521164}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FF5DE81-0E77-4F47-B9BF-DD713E521164}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FF5DE81-0E77-4F47-B9BF-DD713E521164}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{17DA4483-904D-4E6D-9EA4-52253B35C070} = {8653D3AE-964E-4A9C-B35B-14A2F0EF2207}
+		{4FF5DE81-0E77-4F47-B9BF-DD713E521164} = {E1C21130-8089-48B2-B1D8-ABA452FC472B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {129FBC52-9058-4F4A-88B3-A23978C16A72}

@@ -5,16 +5,16 @@
 
 using System.Diagnostics;
 
+using UdonObfuscator.Logging.Abstractions;
 using UdonObfuscator.Logging.Extensions;
 
 namespace UdonObfuscator.Logging;
 
-public class Logger(LogLevel level)
+public class Logger(LogLevel level) : ILogger
 {
-    [Conditional("DEBUG")]
     public void LogDebugInternal(string message)
     {
-        Debug.WriteLine(message);
+        LogDebugInternalC(message);
     }
 
     public void LogDebug(string message)
@@ -29,7 +29,7 @@ public class Logger(LogLevel level)
             Console.WriteLine(message);
     }
 
-    public void LogWarn(string message)
+    public void LogWarning(string message)
     {
         if (level.IsWarnEnabled())
             Console.WriteLine(message);
@@ -45,5 +45,11 @@ public class Logger(LogLevel level)
     {
         if (level.IsFatalEnabled())
             Console.WriteLine(message);
+    }
+
+    [Conditional("DEBUG")]
+    private void LogDebugInternalC(string message)
+    {
+        Debug.WriteLine(message);
     }
 }

@@ -10,4 +10,8 @@
     <PackageReference Include="Kokuban" Version="0.2.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\UdonObfuscator.Logging.Abstractions\UdonObfuscator.Logging.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>
