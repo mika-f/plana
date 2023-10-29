@@ -27,7 +27,7 @@ public class ObfuscateCommand : ISubCommand
 
     public Command Command { get; } = new("obfuscate", "obfuscate workspace");
 
-    private async Task OnHandleCommand(InvocationContext context, ILogger logger)
+    private async Task OnHandleCommand(InvocationContext context, ILogger logger, CancellationToken ct)
     {
         var workspace = context.ParseResult.GetValueForOption(_workspace) ?? throw new InvalidOperationException();
         var obfuscator = new Obfuscator(logger);
@@ -50,7 +50,7 @@ public class ObfuscateCommand : ISubCommand
         foreach (var (path, content) in ret)
         {
             var to = write ? path : Path.Combine(Path.GetDirectoryName(path)!, $"{Path.GetFileNameWithoutExtension(path)}.g.cs");
-            await File.WriteAllTextAsync(to, content);
+            await File.WriteAllTextAsync(to, content, ct);
         }
     }
 }

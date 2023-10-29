@@ -25,12 +25,13 @@ internal static class CommandExtensions
             command.AddOption(option);
     }
 
-    public static void SetHandlerEx<T>(this Command command, Func<InvocationContext, T, Task> handle, IValueDescriptor<T> symbol)
+    public static void SetHandlerEx<T>(this Command command, Func<InvocationContext, T, CancellationToken, Task> handle, IValueDescriptor<T> symbol)
     {
         command.Handler = new AnonymousCommandHandler(context =>
         {
             var value1 = GetValueForHandlerParameter(symbol, context);
-            return handle(context, value1!);
+            var ct = context.GetCancellationToken();
+            return handle(context, value1!, ct);
         });
     }
 
