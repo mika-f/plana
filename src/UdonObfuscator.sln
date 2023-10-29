@@ -4,6 +4,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.7.34202.233
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UdonObfuscator", "UdonObfuscator\UdonObfuscator.csproj", "{F82F7FF1-D319-402D-8FD2-59BE74189E04}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UdonObfuscator.Logging", "UdonObfuscator.Logging\UdonObfuscator.Logging.csproj", "{CD07BAD2-9BE6-4AE0-ADA0-4E8E20EE5055}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +16,10 @@ Global
 		{F82F7FF1-D319-402D-8FD2-59BE74189E04}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F82F7FF1-D319-402D-8FD2-59BE74189E04}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F82F7FF1-D319-402D-8FD2-59BE74189E04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AEC584C-C7D3-4F32-947D-54C337C7A676}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AEC584C-C7D3-4F32-947D-54C337C7A676}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AEC584C-C7D3-4F32-947D-54C337C7A676}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AEC584C-C7D3-4F32-947D-54C337C7A676}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
