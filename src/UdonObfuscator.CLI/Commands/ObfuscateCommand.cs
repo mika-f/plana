@@ -9,6 +9,7 @@ using System.CommandLine.Invocation;
 using UdonObfuscator.CLI.Bindings;
 using UdonObfuscator.CLI.Commands.Abstractions;
 using UdonObfuscator.CLI.Extensions;
+using UdonObfuscator.HostInfrastructure;
 using UdonObfuscator.Logging.Abstractions;
 
 namespace UdonObfuscator.CLI.Commands;
@@ -22,15 +23,18 @@ public class ObfuscateCommand : ISubCommand
     public ObfuscateCommand()
     {
         Command.AddOptions(_workspace, _dryRun, _write);
-        Command.SetHandlerEx(OnHandleCommand, new LoggerBinder());
+        Command.SetHandlerEx(OnHandleCommand, new LoggerBinder(), new PluginBinder());
     }
 
     public Command Command { get; } = new("obfuscate", "obfuscate workspace");
 
-    private async Task OnHandleCommand(InvocationContext context, ILogger logger, CancellationToken ct)
+    private async Task OnHandleCommand(InvocationContext context, ILogger logger, PluginResolver resolver, CancellationToken ct)
     {
         var workspace = context.ParseResult.GetValueForOption(_workspace) ?? throw new InvalidOperationException();
         var obfuscator = new Obfuscator(logger);
+
+        // load plugins for obfuscating
+        await resolver.ResolveAsync();
 
         var ret = await obfuscator.ObfuscateAsync(workspace);
         var isDryRun = context.ParseResult.GetValueForOption(_dryRun);
