@@ -5,25 +5,25 @@
 
 using System.CommandLine;
 
+using UdonObfuscator.CLI.Commands.Abstractions;
 using UdonObfuscator.Logging;
 
-namespace UdonObfuscator.CLI;
+namespace UdonObfuscator.CLI.Commands;
 
-internal class CommandLineOptions
+internal class GlobalCommandLineOptions : ICommandLineOptions
 {
     private readonly List<Option> _options;
 
-    public Option<FileInfo> Workspace { get; } = new Option<FileInfo>("--workspace", "path to workspace .csproj or .sln").ExistingOnly();
+    // public Option<FileInfo> Workspace { get; } = new Option<FileInfo>("--workspace", "path to workspace .csproj or .sln").ExistingOnly();
 
-    public Option<bool> Write { get; } = new ("--write", () => false, "write obfuscated source code in place");
 
-    public Option<bool> DryRun { get; } = new("--dry-run", () => false, "dry-run obfuscate");
+    public static Option<LogLevel> LogLevel { get; } = new("--log-level", () => Logging.LogLevel.Normal, "log detail level");
 
-    public Option<LogLevel> LogLevel { get; } = new("--log-level", () => Logging.LogLevel.Normal, "log detail level");
+    public static Option<DirectoryInfo> LoadFrom { get; } = new Option<DirectoryInfo>("--load-from", () => new DirectoryInfo("./"), "path to plugins directory loaded from").ExistingOnly();
 
-    public CommandLineOptions()
+    public GlobalCommandLineOptions()
     {
-        _options = [Workspace, Write, DryRun, LogLevel];
+        _options = [LogLevel, LoadFrom];
     }
 
     public void AddOption<T>(string name, string description)
@@ -36,9 +36,9 @@ internal class CommandLineOptions
         _options.Add(new Option<T>(name, getDefaultValue, description));
     }
 
-    public void Bind(Command command)
+    public void BindTo(Command command)
     {
         foreach (var option in _options)
-            command.AddOption(option);
+            command.AddGlobalOption(option);
     }
 }

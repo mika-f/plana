@@ -2,7 +2,7 @@
   "profiles": {
     "UdonObfuscator.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "--workspace ../../UdonObfuscator/UdonObfuscator.Testing.csproj --log-level verbose --dry-run",
+      "commandLineArgs": "obfuscate --workspace ../../UdonObfuscator/UdonObfuscator.Testing.csproj --log-level verbose --dry-run",
       "workingDirectory": "../"
     }
   }
