@@ -5,6 +5,8 @@
 
 using System.Diagnostics;
 
+using Kokuban;
+
 using UdonObfuscator.Logging.Abstractions;
 using UdonObfuscator.Logging.Extensions;
 
@@ -20,31 +22,31 @@ public class Logger(LogLevel level) : ILogger
     public void LogDebug(string message)
     {
         if (level.IsDebugEnabled())
-            Debug.WriteLine(message);
+            Console.WriteLine(Chalk.BrightWhite + $"[DEBUG] {message}");
     }
 
     public void LogInfo(string message)
     {
         if (level.IsInfoEnabled())
-            Console.WriteLine(message);
+            Console.WriteLine(Chalk.BrightCyan + $"[INFO]  {message}");
     }
 
     public void LogWarning(string message)
     {
         if (level.IsWarnEnabled())
-            Console.WriteLine(message);
+            Console.WriteLine(Chalk.BrightYellow + $"[WARN]  {message}");
     }
 
     public void LogError(string message)
     {
         if (level.IsErrorEnabled())
-            Console.WriteLine(message);
+            Console.WriteLine(Chalk.BrightRed + $"[ERROR] {message}");
     }
 
     public void LogFatal(string message)
     {
         if (level.IsFatalEnabled())
-            Console.WriteLine(message);
+            Console.WriteLine(Chalk.BgBrightRed.BrightWhite + $"[FATAL] {message}");
     }
 
     [Conditional("DEBUG")]
