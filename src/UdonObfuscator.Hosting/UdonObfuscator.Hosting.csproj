@@ -7,10 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\UdonObfuscator.Algorithms.Abstractions\UdonObfuscator.Algorithms.Abstractions.csproj" />
+    <ProjectReference Include="..\UdonObfuscator.Composition.Abstractions\UdonObfuscator.Composition.Abstractions.csproj" />
     <ProjectReference Include="..\UdonObfuscator.Hosting.Abstractions\UdonObfuscator.Hosting.Abstractions.csproj" />
     <ProjectReference Include="..\UdonObfuscator.Logging.Abstractions\UdonObfuscator.Logging.Abstractions.csproj" />
-    <ProjectReference Include="..\UdonObfuscator.Workspace.Abstractions\UdonObfuscator.Workspace.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

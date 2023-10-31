@@ -13,9 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\UdonObfuscator.HostInfrastructure\UdonObfuscator.HostInfrastructure.csproj" />
-    <ProjectReference Include="..\UdonObfuscator.Interfaces\UdonObfuscator.Algorithms.Abstractions.csproj" />
+    <ProjectReference Include="..\UdonObfuscator.Hosting\UdonObfuscator.Hosting.csproj" />
     <ProjectReference Include="..\UdonObfuscator.Logging\UdonObfuscator.Logging.csproj" />
+    <ProjectReference Include="..\UdonObfuscator.Workspace\UdonObfuscator.Workspace.csproj" />
     <ProjectReference Include="..\UdonObfuscator\UdonObfuscator.csproj" />
   </ItemGroup>
 

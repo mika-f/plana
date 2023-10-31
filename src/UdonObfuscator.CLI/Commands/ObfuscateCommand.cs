@@ -9,8 +9,9 @@ using System.CommandLine.Invocation;
 using UdonObfuscator.CLI.Bindings;
 using UdonObfuscator.CLI.Commands.Abstractions;
 using UdonObfuscator.CLI.Extensions;
-using UdonObfuscator.HostInfrastructure;
+using UdonObfuscator.Hosting.Abstractions;
 using UdonObfuscator.Logging.Abstractions;
+using UdonObfuscator.Workspace.Abstractions;
 
 namespace UdonObfuscator.CLI.Commands;
 
@@ -23,20 +24,15 @@ public class ObfuscateCommand : ISubCommand
     public ObfuscateCommand()
     {
         Command.AddOptions(_workspace, _dryRun, _write);
-        Command.SetHandlerEx(OnHandleCommand, new LoggerBinder(), new PluginBinder());
+        Command.SetHandlerEx(OnHandleCommand, new LoggerBinder(), new WorkspaceBinder(_workspace), new HostingContainerBinder());
     }
 
     public Command Command { get; } = new("obfuscate", "obfuscate workspace");
 
-    private async Task OnHandleCommand(InvocationContext context, ILogger logger, PluginResolver resolver, CancellationToken ct)
+    private async Task OnHandleCommand(InvocationContext context, ILogger logger, IWorkspace workspace, IHostingContainer container, CancellationToken ct)
     {
-        var workspace = context.ParseResult.GetValueForOption(_workspace) ?? throw new InvalidOperationException();
-        var obfuscator = new Obfuscator(logger);
-
-        // load plugins for obfuscating
-        await resolver.ResolveAsync();
-
-        var ret = await obfuscator.ObfuscateAsync(workspace);
+        var obfuscator = new Obfuscator(workspace, container, logger);
+        var ret = await obfuscator.ObfuscateAsync();
         var isDryRun = context.ParseResult.GetValueForOption(_dryRun);
         if (isDryRun)
         {

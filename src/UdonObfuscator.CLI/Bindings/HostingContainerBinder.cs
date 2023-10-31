@@ -6,23 +6,24 @@
 using System.CommandLine.Binding;
 
 using UdonObfuscator.CLI.Commands;
-using UdonObfuscator.HostInfrastructure;
+using UdonObfuscator.Hosting;
+using UdonObfuscator.Hosting.Abstractions;
 using UdonObfuscator.Logging.Abstractions;
 
 namespace UdonObfuscator.CLI.Bindings;
 
-internal class PluginBinder : BinderBase<PluginResolver>
+internal class HostingContainerBinder : BinderBase<IHostingContainer>
 {
-    protected override PluginResolver GetBoundValue(BindingContext bindingContext)
+    protected override IHostingContainer GetBoundValue(BindingContext bindingContext)
     {
         return GetResolver(bindingContext);
     }
 
-    private static PluginResolver GetResolver(BindingContext context)
+    private static IHostingContainer GetResolver(BindingContext context)
     {
-        var value = context.ParseResult.GetValueForOption(GlobalCommandLineOptions.LoadFrom) ?? throw new InvalidOperationException();
+        var value = context.ParseResult.GetValueForOption(GlobalCommandLineOptions.Plugins) ?? throw new InvalidOperationException();
         var logger = (ILogger?)context.GetService(typeof(ILogger));
 
-        return new PluginResolver(value, logger);
+        return new HostingContainer(value, logger);
     }
 }

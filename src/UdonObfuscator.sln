@@ -11,9 +11,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UdonObfuscator", "UdonObfus
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UdonObfuscator.CLI", "UdonObfuscator.CLI\UdonObfuscator.CLI.csproj", "{17DA4483-904D-4E6D-9EA4-52253B35C070}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CommandLine", "CommandLine", "{8653D3AE-964E-4A9C-B35B-14A2F0EF2207}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UdonObfuscator.Hosting", "UdonObfuscator.Hosting\UdonObfuscator.Hosting.csproj", "{2DBFCAAC-88D6-44E1-9883-109989EA86B7}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UdonObfuscator.Logging.Abstractions", "UdonObfuscator.Logging.Abstractions\UdonObfuscator.Logging.Abstractions.csproj", "{4FF5DE81-0E77-4F47-B9BF-DD713E521164}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Abstractions", "Abstractions", "{E1C21130-8089-48B2-B1D8-ABA452FC472B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UdonObfuscator.Hosting.Abstractions", "UdonObfuscator.Hosting.Abstractions\UdonObfuscator.Hosting.Abstractions.csproj", "{2C0A0717-0FF6-48FD-B5E8-E02CA1858BD3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UdonObfuscator.Workspace.Abstractions", "UdonObfuscator.Workspace.Abstractions\UdonObfuscator.Workspace.Abstractions.csproj", "{07369417-457E-42AE-9338-D420A7A3C35C}"
 EndProject
@@ -41,10 +47,18 @@ Global
 		{17DA4483-904D-4E6D-9EA4-52253B35C070}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{17DA4483-904D-4E6D-9EA4-52253B35C070}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{17DA4483-904D-4E6D-9EA4-52253B35C070}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DBFCAAC-88D6-44E1-9883-109989EA86B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DBFCAAC-88D6-44E1-9883-109989EA86B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DBFCAAC-88D6-44E1-9883-109989EA86B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DBFCAAC-88D6-44E1-9883-109989EA86B7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4FF5DE81-0E77-4F47-B9BF-DD713E521164}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4FF5DE81-0E77-4F47-B9BF-DD713E521164}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4FF5DE81-0E77-4F47-B9BF-DD713E521164}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4FF5DE81-0E77-4F47-B9BF-DD713E521164}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C0A0717-0FF6-48FD-B5E8-E02CA1858BD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C0A0717-0FF6-48FD-B5E8-E02CA1858BD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C0A0717-0FF6-48FD-B5E8-E02CA1858BD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C0A0717-0FF6-48FD-B5E8-E02CA1858BD3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{07369417-457E-42AE-9338-D420A7A3C35C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{07369417-457E-42AE-9338-D420A7A3C35C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07369417-457E-42AE-9338-D420A7A3C35C}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -61,6 +75,7 @@ Global
 		{7A6CF700-A43D-42ED-BE60-8B668D9987B3} = {E1C21130-8089-48B2-B1D8-ABA452FC472B}
 		{17DA4483-904D-4E6D-9EA4-52253B35C070} = {8653D3AE-964E-4A9C-B35B-14A2F0EF2207}
 		{4FF5DE81-0E77-4F47-B9BF-DD713E521164} = {E1C21130-8089-48B2-B1D8-ABA452FC472B}
+		{2C0A0717-0FF6-48FD-B5E8-E02CA1858BD3} = {E1C21130-8089-48B2-B1D8-ABA452FC472B}
 		{07369417-457E-42AE-9338-D420A7A3C35C} = {E1C21130-8089-48B2-B1D8-ABA452FC472B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

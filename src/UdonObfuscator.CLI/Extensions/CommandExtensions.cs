@@ -46,6 +46,18 @@ internal static class CommandExtensions
         });
     }
 
+    public static void SetHandlerEx<T1, T2, T3>(this Command command, Func<InvocationContext, T1, T2, T3, CancellationToken, Task> handle, IValueDescriptor<T1> symbol1, IValueDescriptor<T2> symbol2, IValueDescriptor<T3> symbol3)
+    {
+        command.Handler = new AnonymousCommandHandler(context =>
+        {
+            var value1 = GetValueForHandlerParameter(symbol1, context);
+            var value2 = GetValueForHandlerParameter(symbol2, context);
+            var value3 = GetValueForHandlerParameter(symbol3, context);
+            var ct = context.GetCancellationToken();
+            return handle(context, value1!, value2!, value3!, ct);
+        });
+    }
+
     private static T? GetValueForHandlerParameter<T>(IValueDescriptor<T> symbol, InvocationContext context)
     {
         if (symbol is IValueSource source && source.TryGetValue(symbol, context.BindingContext, out var ret) && ret is T value)

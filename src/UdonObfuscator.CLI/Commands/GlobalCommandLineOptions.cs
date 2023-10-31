@@ -19,11 +19,11 @@ internal class GlobalCommandLineOptions : ICommandLineOptions
 
     public static Option<LogLevel> LogLevel { get; } = new("--log-level", () => Logging.LogLevel.Normal, "log detail level");
 
-    public static Option<DirectoryInfo> LoadFrom { get; } = new Option<DirectoryInfo>("--load-from", () => new DirectoryInfo("./"), "path to plugins directory loaded from").ExistingOnly();
+    public static Option<DirectoryInfo> Plugins { get; } = new Option<DirectoryInfo>("--plugins", () => new DirectoryInfo("./"), "path to plugins directory loaded from").ExistingOnly();
 
     public GlobalCommandLineOptions()
     {
-        _options = [LogLevel, LoadFrom];
+        _options = [LogLevel, Plugins];
     }
 
     public void AddOption<T>(string name, string description)
