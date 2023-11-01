@@ -32,12 +32,14 @@ public class ObfuscateCommand : ISubCommand
     private async Task OnHandleCommand(InvocationContext context, ILogger logger, IWorkspace workspace, IHostingContainer container, CancellationToken ct)
     {
         var obfuscator = new Obfuscator(workspace, container, logger);
-        var ret = await obfuscator.ObfuscateAsync();
+        var ret = await obfuscator.ObfuscateAsync(ct);
         var isDryRun = context.ParseResult.GetValueForOption(_dryRun);
         if (isDryRun)
         {
             foreach (var (path, content) in ret)
             {
+                ct.ThrowIfCancellationRequested();
+
                 Console.WriteLine(path);
                 Console.WriteLine(content);
                 Console.WriteLine();

@@ -6,6 +6,7 @@
 using System.CommandLine;
 using System.CommandLine.Binding;
 
+using UdonObfuscator.Logging.Abstractions;
 using UdonObfuscator.Workspace;
 using UdonObfuscator.Workspace.Abstractions;
 
@@ -21,6 +22,8 @@ internal class WorkspaceBinder(Option<FileInfo> workspace) : BinderBase<IWorkspa
     private IWorkspace GetWorkspace(BindingContext context)
     {
         var path = context.ParseResult.GetValueForOption(workspace)!;
-        return path.Extension == ".sln" ? new SolutionWorkspace(path) : new ProjectWorkspace(path);
+        var logger = (ILogger?)context.GetService(typeof(ILogger));
+
+        return path.Extension == ".sln" ? new SolutionWorkspace(path, logger) : new ProjectWorkspace(path, logger);
     }
 }

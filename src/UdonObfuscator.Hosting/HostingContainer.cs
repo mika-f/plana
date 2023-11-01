@@ -16,7 +16,7 @@ public class HostingContainer(DirectoryInfo root, ILogger? logger) : IHostingCon
 {
     private readonly List<(IObfuscatorAlgorithm, ObfuscatorAlgorithmAttribute)> _items = new();
 
-    public Task ResolveAsync()
+    public Task ResolveAsync(CancellationToken ct)
     {
         logger?.LogDebug($"resolving plugins in: {root}");
 
@@ -31,6 +31,8 @@ public class HostingContainer(DirectoryInfo root, ILogger? logger) : IHostingCon
 
         foreach (var library in libraries)
         {
+            ct.ThrowIfCancellationRequested();
+
             logger?.LogDebug($"plugin found: {library.Name}");
 
             try

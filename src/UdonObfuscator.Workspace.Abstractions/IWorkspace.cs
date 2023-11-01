@@ -5,4 +5,7 @@
 
 namespace UdonObfuscator.Workspace.Abstractions;
 
-public interface IWorkspace { }
+public interface IWorkspace
+{
+    Task ActivateWorkspaceAsync(CancellationToken ct);
+}

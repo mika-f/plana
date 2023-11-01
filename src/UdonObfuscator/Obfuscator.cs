@@ -11,9 +11,10 @@ namespace UdonObfuscator;
 
 public class Obfuscator(IWorkspace workspace, IHostingContainer container, ILogger? logger)
 {
-    public async Task<Dictionary<string, string>> ObfuscateAsync()
+    public async Task<Dictionary<string, string>> ObfuscateAsync(CancellationToken ct)
     {
-        await container.ResolveAsync();
+        await container.ResolveAsync(ct);
+        await workspace.ActivateWorkspaceAsync(ct);
 
         return new Dictionary<string, string>();
     }

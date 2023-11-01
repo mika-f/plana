@@ -7,5 +7,5 @@ namespace UdonObfuscator.Hosting.Abstractions;
 
 public interface IHostingContainer
 {
-    Task ResolveAsync();
+    Task ResolveAsync(CancellationToken ct);
 }
