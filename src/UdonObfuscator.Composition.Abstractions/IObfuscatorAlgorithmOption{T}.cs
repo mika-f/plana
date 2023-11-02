@@ -7,5 +7,7 @@ namespace UdonObfuscator.Composition.Abstractions;
 
 public interface IObfuscatorAlgorithmOption<out T> : IObfuscatorAlgorithmOption
 {
-    Func<T> GetDefaultValue { get; }
+    new Func<T> GetDefaultValue { get; }
+
+    new Type ValueType => typeof(T);
 }

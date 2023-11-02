@@ -8,4 +8,6 @@ namespace UdonObfuscator.Composition.Abstractions;
 public interface IObfuscatorAlgorithm
 {
     IReadOnlyCollection<IObfuscatorAlgorithmOption> Options { get; }
+
+    void BindParameters(IObfuscatorParameterBinder binder);
 }

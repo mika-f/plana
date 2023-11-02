@@ -5,11 +5,15 @@ VisualStudioVersion = 17.7.34202.233
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UdonObfuscator.Composition.Abstractions", "UdonObfuscator.Composition.Abstractions\UdonObfuscator.Composition.Abstractions.csproj", "{7A6CF700-A43D-42ED-BE60-8B668D9987B3}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UdonObfuscator.RenameSymbols", "UdonObfuscator.RenameSymbols\UdonObfuscator.RenameSymbols.csproj", "{6AEC584C-C7D3-4F32-947D-54C337C7A676}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UdonObfuscator.Logging", "UdonObfuscator.Logging\UdonObfuscator.Logging.csproj", "{CD07BAD2-9BE6-4AE0-ADA0-4E8E20EE5055}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UdonObfuscator", "UdonObfuscator\UdonObfuscator.csproj", "{F95F626E-FB9F-4930-B531-61F87029751E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UdonObfuscator.CLI", "UdonObfuscator.CLI\UdonObfuscator.CLI.csproj", "{17DA4483-904D-4E6D-9EA4-52253B35C070}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Compositions", "Compositions", "{777490D7-C220-46FF-96CC-90FAE50D1884}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CommandLine", "CommandLine", "{8653D3AE-964E-4A9C-B35B-14A2F0EF2207}"
 EndProject
@@ -73,6 +77,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7A6CF700-A43D-42ED-BE60-8B668D9987B3} = {E1C21130-8089-48B2-B1D8-ABA452FC472B}
+		{6AEC584C-C7D3-4F32-947D-54C337C7A676} = {777490D7-C220-46FF-96CC-90FAE50D1884}
 		{17DA4483-904D-4E6D-9EA4-52253B35C070} = {8653D3AE-964E-4A9C-B35B-14A2F0EF2207}
 		{4FF5DE81-0E77-4F47-B9BF-DD713E521164} = {E1C21130-8089-48B2-B1D8-ABA452FC472B}
 		{2C0A0717-0FF6-48FD-B5E8-E02CA1858BD3} = {E1C21130-8089-48B2-B1D8-ABA452FC472B}

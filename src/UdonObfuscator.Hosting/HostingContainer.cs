@@ -16,6 +16,8 @@ public class HostingContainer(DirectoryInfo root, ILogger? logger) : IHostingCon
 {
     private readonly List<(IObfuscatorAlgorithm, ObfuscatorAlgorithmAttribute)> _items = new();
 
+    public IReadOnlyCollection<(IObfuscatorAlgorithm, ObfuscatorAlgorithmAttribute)> Items => _items.AsReadOnly();
+
     public Task ResolveAsync(CancellationToken ct)
     {
         logger?.LogDebug($"resolving plugins in: {root}");
@@ -48,7 +50,7 @@ public class HostingContainer(DirectoryInfo root, ILogger? logger) : IHostingCon
             {
                 logger?.LogError($"failed to load plugin: {e.Message}");
             }
-            catch
+            catch (Exception e)
             {
                 logger?.LogError($"failed to load plugin: {library.Name}");
             }

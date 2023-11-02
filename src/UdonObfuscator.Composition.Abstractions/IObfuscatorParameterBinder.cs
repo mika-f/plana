@@ -3,14 +3,11 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
-using UdonObfuscator.Composition.Abstractions;
-using UdonObfuscator.Composition.Abstractions.Attributes;
+namespace UdonObfuscator.Composition.Abstractions;
 
-namespace UdonObfuscator.Hosting.Abstractions;
-
-public interface IHostingContainer
+public interface IObfuscatorParameterBinder
 {
-    IReadOnlyCollection<(IObfuscatorAlgorithm, ObfuscatorAlgorithmAttribute)> Items { get; }
+    bool GetValue(IObfuscatorAlgorithmOption option);
 
-    Task ResolveAsync(CancellationToken ct);
+    T GetValue<T>(IObfuscatorAlgorithmOption<T> option);
 }

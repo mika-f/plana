@@ -9,9 +9,12 @@ using UdonObfuscator.CLI.Commands;
 using UdonObfuscator.CLI.Commands.Abstractions;
 using UdonObfuscator.CLI.Extensions;
 
-var app = new RootCommand("UdonObfuscator: An obfuscator for VRChat");
-var commands = new List<ISubCommand> { new ObfuscateCommand() };
+var app = new RootCommand("UdonObfuscator: An obfuscator for VRChat")
+{
+    TreatUnmatchedTokensAsErrors = false
+};
 
+var commands = new List<ISubCommand> { new ObfuscateCommand() };
 var globals = new GlobalCommandLineOptions();
 globals.BindTo(app);
 app.AddCommands(commands.Select(w => w.Command).ToArray());

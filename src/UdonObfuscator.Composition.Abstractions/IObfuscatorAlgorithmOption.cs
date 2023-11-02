@@ -10,4 +10,8 @@ public interface IObfuscatorAlgorithmOption
     string Name { get; }
 
     string Description { get; }
+
+    Func<bool> GetDefaultValue => () => false;
+
+    Type ValueType => typeof(bool);
 }
