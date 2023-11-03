@@ -28,9 +28,16 @@ public class SolutionWorkspace(FileInfo sln, ILogger? logger) : IWorkspace
         _solution = await _workspace.OpenSolutionAsync(sln.FullName, null, ct);
     }
 
-    public Task<List<IProject>> GetProjectsAsync(CancellationToken ct)
+    public async Task<List<IProject>> GetProjectsAsync(CancellationToken ct)
     {
-        var projects = _solution.Projects.Select(project => new CSharpProject(project)).Cast<IProject>().ToList();
-        return Task.FromResult(projects);
+        var projects = _solution.Projects.Select(project => new CSharpProject(project, logger)).ToList();
+        foreach (var project in projects)
+        {
+            ct.ThrowIfCancellationRequested();
+
+            await project.InflateDocumentsAsync(ct);
+        }
+
+        return projects.Cast<IProject>().ToList();
     }
 }

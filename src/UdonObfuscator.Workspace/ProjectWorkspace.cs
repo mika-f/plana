@@ -28,9 +28,16 @@ public class ProjectWorkspace(FileInfo csproj, ILogger? logger) : IWorkspace
         _project = await _workspace.OpenProjectAsync(csproj.FullName, null, ct);
     }
 
-    public Task<List<IProject>> GetProjectsAsync(CancellationToken ct)
+    public async Task<List<IProject>> GetProjectsAsync(CancellationToken ct)
     {
-        var projects = new List<IProject> { new CSharpProject(_project) };
-        return Task.FromResult(projects);
+        var projects = new List<CSharpProject> { new(_project, logger) };
+        foreach (var project in projects)
+        {
+            ct.ThrowIfCancellationRequested();
+
+            await project.InflateDocumentsAsync(ct);
+        }
+
+        return projects.Cast<IProject>().ToList();
     }
 }

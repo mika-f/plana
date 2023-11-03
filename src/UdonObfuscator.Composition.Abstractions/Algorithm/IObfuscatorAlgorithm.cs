@@ -11,6 +11,8 @@ public interface IObfuscatorAlgorithm
 {
     IReadOnlyCollection<IObfuscatorAlgorithmOption> Options { get; }
 
+    string Name { get; }
+
     void BindParameters(IObfuscatorParameterBinder binder);
 
     Task ObfuscateAsync(List<IProject> projects, CancellationToken ct);

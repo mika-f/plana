@@ -3,6 +3,9 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+
 using UdonObfuscator.Composition.Abstractions.Algorithm;
 using UdonObfuscator.Composition.Abstractions.Analysis;
 using UdonObfuscator.Composition.Abstractions.Attributes;
@@ -10,7 +13,7 @@ using UdonObfuscator.Composition.Abstractions.Attributes;
 namespace UdonObfuscator.Composition.RenameSymbols;
 
 [ObfuscatorAlgorithm("rename-symbols")]
-public class SymbolObfuscator : IObfuscatorAlgorithm
+public class SymbolObfuscator : CSharpSyntaxRewriter, IObfuscatorAlgorithm
 {
     private static readonly ObfuscatorAlgorithmOption<bool> Namespace = new("--rename-namespaces", "rename namespaces", () => true);
     private static readonly ObfuscatorAlgorithmOption<bool> ClassName = new("--rename-classes", "rename classes", () => true);
@@ -19,6 +22,8 @@ public class SymbolObfuscator : IObfuscatorAlgorithm
     private static readonly ObfuscatorAlgorithmOption<bool> Methods = new("--rename-methods", "rename methods without referencing by SendCustomEvent", () => true);
     private static readonly ObfuscatorAlgorithmOption<bool> WithSendCustomEvent = new("--with-send-custom-event", "rename all methods", () => false);
     private static readonly ObfuscatorAlgorithmOption<bool> Variables = new("--rename-variables", "rename local variables", () => true);
+
+    private readonly Dictionary<ISymbol, string> _dict = new();
 
     private bool _isEnableClassNameRenaming;
     private bool _isEnableFieldsRenaming;
@@ -29,6 +34,7 @@ public class SymbolObfuscator : IObfuscatorAlgorithm
     private bool _withSendCustomEvent;
 
     public IReadOnlyCollection<IObfuscatorAlgorithmOption> Options => new List<IObfuscatorAlgorithmOption> { Namespace, ClassName, Properties, Fields, Methods, WithSendCustomEvent, Variables }.AsReadOnly();
+    public string Name => "Rename Symbols";
 
     public void BindParameters(IObfuscatorParameterBinder binder)
     {
@@ -43,6 +49,28 @@ public class SymbolObfuscator : IObfuscatorAlgorithm
 
     public async Task ObfuscateAsync(List<IProject> projects, CancellationToken ct)
     {
-        //
+        foreach (var document in projects.SelectMany(w => w.Documents))
+        {
+            var walker = new CSharpSymbolsWalker(
+                document,
+                _isEnableNamespaceRenaming,
+                _isEnableClassNameRenaming,
+                _isEnablePropertiesRenaming,
+                _isEnableFieldsRenaming,
+                _isEnableMethodsRenaming,
+                _withSendCustomEvent,
+                _isEnableVariablesRenaming,
+                _dict
+            );
+
+            var oldNode = await document.SyntaxTree.GetRootAsync(ct);
+            walker.Visit(oldNode);
+
+            var rewriter = new CSharpSymbolsRewriter(document, _dict);
+            var newNode = (CSharpSyntaxNode)rewriter.Visit(oldNode);
+            var newTree = CSharpSyntaxTree.Create(newNode, document.SyntaxTree.Options, document.SyntaxTree.FilePath, document.SyntaxTree.Encoding);
+
+            await document.WriteSyntaxTreeAsync(newTree, ct);
+        }
     }
 }
