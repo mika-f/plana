@@ -7,7 +7,7 @@ Udon Obfuscator is a powerful obfuscator for UdonSharp, containing a variety of 
 - cli and unity integration
 - pluggable
 
-# Official Plugins
+## Official Plugins
 
 - UdonObfuscator.Composition.ControlFlowFlattening
 - UdonObfuscator.Composition.DeadCodeInjection
