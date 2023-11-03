@@ -62,9 +62,9 @@ public class ObfuscateCommand : ISubCommand
                 await File.WriteAllTextAsync(to, content, ct);
             }
         }
-        catch
+        catch (Exception e)
         {
-            // ignored
+            logger?.LogDebug($"an error occurred: {e.Message}");
         }
     }
 

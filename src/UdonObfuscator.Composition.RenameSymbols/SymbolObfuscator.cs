@@ -6,7 +6,7 @@
 using UdonObfuscator.Composition.Abstractions;
 using UdonObfuscator.Composition.Abstractions.Attributes;
 
-namespace UdonObfuscator.RenameSymbols;
+namespace UdonObfuscator.Composition.RenameSymbols;
 
 [ObfuscatorAlgorithm("rename-symbols")]
 public class SymbolObfuscator : IObfuscatorAlgorithm

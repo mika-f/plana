@@ -58,8 +58,14 @@ public class HostingContainer(DirectoryInfo root, ILogger? logger) : IHostingCon
 
         logger?.LogDebug($"successfully loaded {_items.Count} instance(s)");
 
-        if (_items.DistinctBy(w => w.Item2.Id).Count() != _items.Count)
-            logger?.LogWarning("some plugins have duplicate identifiers. this may cause unintended behavior");
+        var duplications = _items.GroupBy(w => w.Item2.Id).Where(w => w.Count() > 1).ToList();
+        if (duplications.Count > 0)
+        {
+            foreach (var duplication in duplications)
+                logger?.LogFatal($"Id={duplication.Key} is duplicated, the id must be unique");
+
+            throw new InvalidOperationException();
+        }
 
         return Task.CompletedTask;
     }
