@@ -58,6 +58,9 @@ public class HostingContainer(DirectoryInfo root, ILogger? logger) : IHostingCon
 
         logger?.LogDebug($"successfully loaded {_items.Count} instance(s)");
 
+        if (_items.DistinctBy(w => w.Item2.Id).Count() != _items.Count)
+            logger?.LogWarning("some plugins have duplicate identifiers. this may cause unintended behavior");
+
         return Task.CompletedTask;
     }
 
@@ -75,7 +78,7 @@ public class HostingContainer(DirectoryInfo root, ILogger? logger) : IHostingCon
                 if (Activator.CreateInstance(t) is not IObfuscatorAlgorithm instance)
                     continue;
 
-                logger?.LogDebug($"activated: {t.FullName}");
+                logger?.LogDebug($"activated: Type={t.FullName}, Id={attr.Id}");
 
                 count++;
 
