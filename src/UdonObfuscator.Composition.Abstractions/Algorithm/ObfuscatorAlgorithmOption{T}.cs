@@ -3,7 +3,7 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
-namespace UdonObfuscator.Composition.Abstractions;
+namespace UdonObfuscator.Composition.Abstractions.Algorithm;
 
 public class ObfuscatorAlgorithmOption<T>(string name, string description, Func<T> getDefaultValue) : IObfuscatorAlgorithmOption<T>
 {

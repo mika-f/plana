@@ -3,11 +3,15 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
-namespace UdonObfuscator.Composition.Abstractions;
+namespace UdonObfuscator.Composition.Abstractions.Algorithm;
 
-public class ObfuscatorAlgorithmOption(string name, string description) : IObfuscatorAlgorithmOption
+public interface IObfuscatorAlgorithmOption
 {
-    public string Name { get; } = name;
+    string Name { get; }
 
-    public string Description { get; } = description;
+    string Description { get; }
+
+    Func<bool> GetDefaultValue => () => false;
+
+    Type ValueType => typeof(bool);
 }

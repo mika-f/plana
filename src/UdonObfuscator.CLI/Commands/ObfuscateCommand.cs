@@ -9,7 +9,7 @@ using System.CommandLine.Invocation;
 using UdonObfuscator.CLI.Bindings;
 using UdonObfuscator.CLI.Commands.Abstractions;
 using UdonObfuscator.CLI.Extensions;
-using UdonObfuscator.Composition.Abstractions;
+using UdonObfuscator.Composition.Abstractions.Algorithm;
 using UdonObfuscator.Hosting.Abstractions;
 using UdonObfuscator.Logging.Abstractions;
 using UdonObfuscator.Workspace.Abstractions;

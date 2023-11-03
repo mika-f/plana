@@ -7,6 +7,7 @@ using Microsoft.Build.Locator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.MSBuild;
 
+using UdonObfuscator.Composition.Abstractions.Analysis;
 using UdonObfuscator.Logging.Abstractions;
 using UdonObfuscator.Workspace.Abstractions;
 
@@ -14,8 +15,8 @@ namespace UdonObfuscator.Workspace;
 
 public class ProjectWorkspace(FileInfo csproj, ILogger? logger) : IWorkspace
 {
-    private Project _project;
-    private MSBuildWorkspace _workspace;
+    private Project _project = null!;
+    private MSBuildWorkspace _workspace = null!;
 
     public async Task ActivateWorkspaceAsync(CancellationToken ct)
     {

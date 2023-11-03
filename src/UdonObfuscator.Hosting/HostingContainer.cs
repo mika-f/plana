@@ -5,7 +5,7 @@
 
 using System.Reflection;
 
-using UdonObfuscator.Composition.Abstractions;
+using UdonObfuscator.Composition.Abstractions.Algorithm;
 using UdonObfuscator.Composition.Abstractions.Attributes;
 using UdonObfuscator.Hosting.Abstractions;
 using UdonObfuscator.Logging.Abstractions;

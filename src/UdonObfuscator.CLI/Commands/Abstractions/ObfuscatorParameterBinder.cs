@@ -6,7 +6,7 @@
 using System.CommandLine;
 using System.CommandLine.Parsing;
 
-using UdonObfuscator.Composition.Abstractions;
+using UdonObfuscator.Composition.Abstractions.Algorithm;
 
 namespace UdonObfuscator.CLI.Commands.Abstractions;
 

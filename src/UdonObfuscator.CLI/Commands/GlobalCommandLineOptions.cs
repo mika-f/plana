@@ -14,9 +14,6 @@ internal class GlobalCommandLineOptions : ICommandLineOptions
 {
     private readonly List<Option> _options;
 
-    // public Option<FileInfo> Workspace { get; } = new Option<FileInfo>("--workspace", "path to workspace .csproj or .sln").ExistingOnly();
-
-
     public static Option<LogLevel> LogLevel { get; } = new("--log-level", () => Logging.LogLevel.Normal, "log detail level");
 
     public static Option<DirectoryInfo> Plugins { get; } = new Option<DirectoryInfo>("--plugins", () => new DirectoryInfo("./"), "path to plugins directory loaded from").ExistingOnly();

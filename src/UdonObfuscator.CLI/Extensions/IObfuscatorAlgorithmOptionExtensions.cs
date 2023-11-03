@@ -5,7 +5,7 @@
 
 using System.CommandLine;
 
-using UdonObfuscator.Composition.Abstractions;
+using UdonObfuscator.Composition.Abstractions.Algorithm;
 
 namespace UdonObfuscator.CLI.Extensions;
 
