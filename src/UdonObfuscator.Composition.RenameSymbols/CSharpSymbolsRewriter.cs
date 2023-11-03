@@ -38,4 +38,45 @@ internal class CSharpSymbolsRewriter(IDocument document, Dictionary<ISymbol, str
 
         return declaration;
     }
+
+    public override SyntaxNode? VisitEnumDeclaration(EnumDeclarationSyntax node)
+    {
+        var declaration = base.VisitEnumDeclaration(node);
+        if (declaration is EnumDeclarationSyntax @enum)
+        {
+            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
+            if (symbol != null && dict.TryGetValue(symbol, out var value))
+                return @enum.WithIdentifier(SyntaxFactory.Identifier(value));
+        }
+
+        return declaration;
+    }
+
+    public override SyntaxNode? VisitVariableDeclaration(VariableDeclarationSyntax node)
+    {
+        var declaration = base.VisitVariableDeclaration(node);
+        if (declaration is VariableDeclarationSyntax variable)
+        {
+            var si = document.SemanticModel.GetSymbolInfo(node.Type);
+            var symbol = si.Symbol;
+
+            if (symbol != null && dict.TryGetValue(symbol, out var value))
+                return variable.WithType(SyntaxFactory.IdentifierName(value));
+        }
+
+        return declaration;
+    }
+
+    public override SyntaxNode? VisitVariableDeclarator(VariableDeclaratorSyntax node)
+    {
+        var declarator = base.VisitVariableDeclarator(node);
+        if (declarator is VariableDeclaratorSyntax variable)
+        {
+            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
+            if (symbol != null && dict.TryGetValue(symbol, out var value))
+                return variable.WithIdentifier(SyntaxFactory.Identifier(value));
+        }
+
+        return declarator;
+    }
 }

@@ -49,11 +49,28 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
         base.VisitEnumDeclaration(node);
     }
 
+    public override void VisitVariableDeclarator(VariableDeclaratorSyntax node)
+    {
+        if (isRenameFields || isRenameVariables)
+        {
+            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
+            if (symbol != null)
+                switch (symbol)
+                {
+                    case IFieldSymbol when isRenameFields:
+                    case ILocalSymbol when isRenameVariables:
+                        SetIdentifier(symbol);
+                        break;
+                }
+        }
+
+        base.VisitVariableDeclarator(node);
+    }
+
     private void SetIdentifier(ISymbol symbol)
     {
         if (dict.ContainsKey(symbol))
             return;
-
 
         var counter = dict.Count;
         var identifier = $"_0x{counter:x8}";
