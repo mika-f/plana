@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\UdonObfuscator.Composition.Abstractions\UdonObfuscator.Composition.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -3,13 +3,11 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
-using UdonObfuscator.Composition.Abstractions.Analysis;
+namespace UdonObfuscator.Composition.Abstractions.Analysis;
 
-namespace UdonObfuscator.Workspace.Abstractions;
-
-public interface IWorkspace
+public interface IProject
 {
-    Task ActivateWorkspaceAsync(CancellationToken ct);
+    Guid Id { get; }
 
-    Task<List<IProject>> GetProjectsAsync(CancellationToken ct);
+    string Name { get; }
 }

@@ -27,4 +27,10 @@ public class ProjectWorkspace(FileInfo csproj, ILogger? logger) : IWorkspace
         _workspace = MSBuildWorkspace.Create();
         _project = await _workspace.OpenProjectAsync(csproj.FullName, null, ct);
     }
+
+    public Task<List<IProject>> GetProjectsAsync(CancellationToken ct)
+    {
+        var projects = new List<IProject> { new CSharpProject(_project) };
+        return Task.FromResult(projects);
+    }
 }

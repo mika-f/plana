@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------
 
 using UdonObfuscator.Composition.Abstractions.Algorithm;
+using UdonObfuscator.Composition.Abstractions.Analysis;
 using UdonObfuscator.Composition.Abstractions.Attributes;
 
 namespace UdonObfuscator.Composition.RenameSymbols;
@@ -38,5 +39,10 @@ public class SymbolObfuscator : IObfuscatorAlgorithm
         _isEnableMethodsRenaming = binder.GetValue(Methods);
         _withSendCustomEvent = binder.GetValue(WithSendCustomEvent);
         _isEnableVariablesRenaming = binder.GetValue(Variables);
+    }
+
+    public async Task ObfuscateAsync(List<IProject> projects, CancellationToken ct)
+    {
+        //
     }
 }

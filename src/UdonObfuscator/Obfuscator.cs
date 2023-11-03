@@ -13,7 +13,14 @@ public class Obfuscator(IWorkspace workspace, List<IObfuscatorAlgorithm> algorit
 {
     public async Task<Dictionary<string, string>> ObfuscateAsync(CancellationToken ct)
     {
+        logger?.LogInfo($"obfuscate workspace with {algorithms.Count} algorithm(s), this may take a few minutes......");
+
         await workspace.ActivateWorkspaceAsync(ct);
+
+        var projects = await workspace.GetProjectsAsync(ct);
+
+        foreach (var algorithm in algorithms)
+            await algorithm.ObfuscateAsync(projects, ct);
 
         return new Dictionary<string, string>();
     }

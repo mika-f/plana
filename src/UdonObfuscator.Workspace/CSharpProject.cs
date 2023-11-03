@@ -3,13 +3,15 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
+using Microsoft.CodeAnalysis;
+
 using UdonObfuscator.Composition.Abstractions.Analysis;
 
-namespace UdonObfuscator.Workspace.Abstractions;
+namespace UdonObfuscator.Workspace;
 
-public interface IWorkspace
+public class CSharpProject(Project project) : IProject
 {
-    Task ActivateWorkspaceAsync(CancellationToken ct);
+    public Guid Id => project.Id.Id;
 
-    Task<List<IProject>> GetProjectsAsync(CancellationToken ct);
+    public string Name => project.Name;
 }
