@@ -32,9 +32,10 @@ public class Obfuscator(IWorkspace workspace, List<IObfuscatorAlgorithm> algorit
 
             logger?.LogInfo("all algorithms are applied");
         }
-        catch
+        catch (Exception e)
         {
             logger?.LogError("an error occurred, rollback all algorithms");
+            logger?.LogDebug(e.Message);
         }
 
         var dict = new Dictionary<string, string>();
