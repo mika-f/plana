@@ -18,9 +18,22 @@ internal class CSharpSymbolsRewriter(IDocument document, Dictionary<ISymbol, str
         var declaration = base.VisitNamespaceDeclaration(node);
         if (declaration is NamespaceDeclarationSyntax @namespace)
         {
-            var symbol = document.SemanticModel.GetDeclaredSymbol(@namespace);
+            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
             if (symbol != null && dict.TryGetValue(symbol, out var value))
-                return node.WithName(SyntaxFactory.IdentifierName(value));
+                return @namespace.WithName(SyntaxFactory.IdentifierName(value));
+        }
+
+        return declaration;
+    }
+
+    public override SyntaxNode? VisitClassDeclaration(ClassDeclarationSyntax node)
+    {
+        var declaration = base.VisitClassDeclaration(node);
+        if (declaration is ClassDeclarationSyntax @class)
+        {
+            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
+            if (symbol != null && dict.TryGetValue(symbol, out var value))
+                return @class.WithIdentifier(SyntaxFactory.Identifier(value));
         }
 
         return declaration;

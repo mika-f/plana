@@ -37,6 +37,18 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
         base.VisitClassDeclaration(node);
     }
 
+    public override void VisitEnumDeclaration(EnumDeclarationSyntax node)
+    {
+        if (isRenameClasses)
+        {
+            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
+            if (symbol != null)
+                SetIdentifier(symbol);
+        }
+
+        base.VisitEnumDeclaration(node);
+    }
+
     private void SetIdentifier(ISymbol symbol)
     {
         if (dict.ContainsKey(symbol))
