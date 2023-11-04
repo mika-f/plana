@@ -5,6 +5,7 @@
 
 using Microsoft.Build.Locator;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.MSBuild;
 
 using UdonObfuscator.Composition.Abstractions.Analysis;
@@ -30,7 +31,7 @@ public class SolutionWorkspace(FileInfo sln, ILogger? logger) : IWorkspace
 
     public async Task<List<IProject>> GetProjectsAsync(CancellationToken ct)
     {
-        var projects = _solution.Projects.Select(project => new CSharpProject(project, logger)).ToList();
+        var projects = _solution.Projects.Select(WithPreprocessorSymbols).Select(project => new CSharpProject(project, logger)).ToList();
         foreach (var project in projects)
         {
             ct.ThrowIfCancellationRequested();
@@ -39,5 +40,11 @@ public class SolutionWorkspace(FileInfo sln, ILogger? logger) : IWorkspace
         }
 
         return projects.Cast<IProject>().ToList();
+    }
+
+    private static Project WithPreprocessorSymbols(Project project)
+    {
+        var options = (CSharpParseOptions?)project.ParseOptions;
+        return options == null ? project : project.WithParseOptions(options.WithPreprocessorSymbols("UDONSHARP", "COMPILER_UDONSHARP"));
     }
 }
