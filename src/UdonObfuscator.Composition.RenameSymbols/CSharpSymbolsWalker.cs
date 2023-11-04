@@ -3,6 +3,8 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
+using System.Security.Cryptography;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -13,6 +15,8 @@ namespace UdonObfuscator.Composition.RenameSymbols;
 
 internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, bool isRenameClasses, bool isRenameProperties, bool isRenameFields, bool isRenameMethods, bool isRenameMethodsWithEvents, bool isRenameVariables, Dictionary<ISymbol, string> dict) : CSharpSyntaxWalker
 {
+    private static readonly RandomNumberGenerator Rnd = RandomNumberGenerator.Create();
+
     public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
     {
         if (isRenameNamespaces)
@@ -68,12 +72,16 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
     }
 
     private void SetIdentifier(ISymbol symbol)
+    private void SetIdentifier(ISymbol symbol, string prefix = "_")
     {
         if (dict.ContainsKey(symbol))
             return;
 
-        var counter = dict.Count;
-        var identifier = $"_0x{counter:x8}";
+        var hex = "abcedf0123456789".ToCharArray();
+        var identifier = $"{prefix}0x{RandomNumberGenerator.GetString(hex, 8)}";
+
+        while (dict.ContainsValue(identifier))
+            identifier = $"{prefix}0x{RandomNumberGenerator.GetString(hex, 0)}";
 
         dict.Add(symbol, identifier);
     }
