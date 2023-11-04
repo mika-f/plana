@@ -78,6 +78,19 @@ internal class CSharpSymbolsRewriter(IDocument document, bool hasEnumAttributes,
         return newNode;
     }
 
+    public override SyntaxNode? VisitPropertyDeclaration(PropertyDeclarationSyntax node)
+    {
+        var newNode = base.VisitPropertyDeclaration(node);
+        if (newNode is PropertyDeclarationSyntax property)
+        {
+            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
+            if (symbol != null && dict.TryGetValue(symbol, out var value))
+                return property.WithIdentifier(SyntaxFactory.Identifier(value));
+        }
+
+        return newNode;
+    }
+
     public override SyntaxNode? VisitVariableDeclarator(VariableDeclaratorSyntax node)
     {
         var newNode = base.VisitVariableDeclarator(node);
