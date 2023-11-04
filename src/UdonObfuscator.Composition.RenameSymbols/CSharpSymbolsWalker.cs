@@ -15,6 +15,74 @@ namespace UdonObfuscator.Composition.RenameSymbols;
 
 internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, bool isRenameClasses, bool isRenameProperties, bool isRenameFields, bool isRenameMethods, bool isRenameMethodsWithEvents, bool isRenameVariables, Dictionary<ISymbol, string> dict) : CSharpSyntaxWalker
 {
+    private static readonly List<string> Messages = new()
+    {
+        "Awake",
+        "FixedUpdate",
+        "LateUpdate",
+        "OnAnimatorIK",
+        "OnAnimatorMove",
+        "OnApplicationFocus",
+        "OnApplicationPause",
+        "OnApplicationQuit",
+        "OnAudioFilterRead",
+        "OnBecameInvisible",
+        "OnBecameVisible",
+        "OnCollisionEnter",
+        "OnCollisionEnter2D",
+        "OnCollisionExit",
+        "OnCollisionExit2D",
+        "OnCollisionStay",
+        "OnCollisionStay2D",
+        "OnConnectedToServer",
+        "OnControllerColliderHit",
+        "OnDestroy",
+        "OnDisable",
+        "OnDisconnectedFromServer",
+        "OnDrawGizmos",
+        "OnDrawGizmosSelected",
+        "OnEnable",
+        "OnFailedToConnect",
+        "OnFailedToConnectToMasterServer",
+        "OnGUI",
+        "OnJoinBreak",
+        "OnJoinBreak2D",
+        "OnMasterServerEvent",
+        "OnMouseDown",
+        "OnMouseDrag",
+        "OnMouseEnter",
+        "OnMouseExit",
+        "OnMouseOver",
+        "OnMouseUp",
+        "OnMouseUpAsButton",
+        "OnNetworkInstantiate",
+        "OnParticleCollision",
+        "OnParticleSystemStopped",
+        "OnParticleTrigger",
+        "OnParticleUpdateJobScheduled",
+        "OnPlayerConnected",
+        "OnPlayerDisconnected",
+        "OnPostRender",
+        "OnPreCull",
+        "OnPreRender",
+        "OnRenderImage",
+        "OnRenderObject",
+        "OnSerializeNetworkView",
+        "OnTransformChildrenChanged",
+        "OnTransformParentChanged",
+        "OnTriggerEnter",
+        "OnTriggerEnter2D",
+        "OnTriggerExit",
+        "OnTriggerExit2D",
+        "OnTriggerStay",
+        "OnTriggerStay2D",
+        "OnValidate",
+        "OnWillRenderObject",
+        "Reset",
+        "Start",
+        "Update"
+    };
+
     private static readonly RandomNumberGenerator Rnd = RandomNumberGenerator.Create();
 
     public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
@@ -53,6 +121,18 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
         base.VisitEnumDeclaration(node);
     }
 
+    public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
+    {
+        if (isRenameMethods)
+        {
+            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
+            if (symbol != null && !Messages.Contains(symbol.Name))
+                SetIdentifier(symbol);
+        }
+
+        base.VisitMethodDeclaration(node);
+    }
+
     public override void VisitVariableDeclarator(VariableDeclaratorSyntax node)
     {
         if (isRenameFields || isRenameVariables)
@@ -71,7 +151,6 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
         base.VisitVariableDeclarator(node);
     }
 
-    private void SetIdentifier(ISymbol symbol)
     private void SetIdentifier(ISymbol symbol, string prefix = "_")
     {
         if (dict.ContainsKey(symbol))
