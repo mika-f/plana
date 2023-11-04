@@ -15,6 +15,9 @@ namespace UdonObfuscator.Composition.RenameSymbols;
 
 internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, bool isRenameClasses, bool isRenameProperties, bool isRenameFields, bool isRenameMethods, bool isRenameMethodsWithEvents, bool isRenameVariables, Dictionary<ISymbol, string> dict) : CSharpSyntaxWalker
 {
+    private const string AnnotateDisableNextSyntax = "/* udon-obfuscator:disable */";
+    private const string AnnotateNetworkingNextSyntax = "/* udon-obfuscator:networking */";
+
     private static readonly List<string> Messages = new()
     {
         "Awake",
@@ -83,11 +86,9 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
         "Update"
     };
 
-    private static readonly RandomNumberGenerator Rnd = RandomNumberGenerator.Create();
-
     public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
     {
-        if (isRenameNamespaces)
+        if (isRenameNamespaces && !HasAnnotationComment(node, AnnotateDisableNextSyntax))
         {
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
             if (symbol != null)
@@ -99,7 +100,7 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
 
     public override void VisitClassDeclaration(ClassDeclarationSyntax node)
     {
-        if (isRenameClasses)
+        if (isRenameClasses && !HasAnnotationComment(node, AnnotateDisableNextSyntax))
         {
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
             if (symbol != null)
@@ -111,7 +112,7 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
 
     public override void VisitEnumDeclaration(EnumDeclarationSyntax node)
     {
-        if (isRenameClasses)
+        if (isRenameClasses && !HasAnnotationComment(node, AnnotateDisableNextSyntax))
         {
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
             if (symbol != null)
@@ -123,7 +124,7 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
 
     public override void VisitEnumMemberDeclaration(EnumMemberDeclarationSyntax node)
     {
-        if (isRenameProperties)
+        if (isRenameProperties && !HasAnnotationComment(node, AnnotateDisableNextSyntax))
         {
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
             if (symbol != null)
@@ -135,11 +136,12 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
 
     public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
     {
-        if (isRenameMethods)
+        if (isRenameMethods && !HasAnnotationComment(node, AnnotateDisableNextSyntax))
         {
+            var isNetworking = HasAnnotationComment(node, AnnotateNetworkingNextSyntax);
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
             if (symbol != null && !Messages.Contains(symbol.Name))
-                SetIdentifier(symbol);
+                SetIdentifier(symbol, isNetworking ? "M" : "_");
         }
 
         base.VisitMethodDeclaration(node);
@@ -147,7 +149,9 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
 
     public override void VisitVariableDeclarator(VariableDeclaratorSyntax node)
     {
-        if (isRenameFields || isRenameVariables)
+        var declaration = node.Parent?.Parent;
+        var hasAnnotationComment = declaration != null && HasAnnotationComment((CSharpSyntaxNode)declaration, AnnotateDisableNextSyntax);
+        if ((isRenameFields || isRenameVariables) && !hasAnnotationComment)
         {
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
             if (symbol != null)
@@ -175,5 +179,16 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
             identifier = $"{prefix}0x{RandomNumberGenerator.GetString(hex, 0)}";
 
         dict.Add(symbol, identifier);
+    }
+
+    private bool HasAnnotationComment(CSharpSyntaxNode node, string comment)
+    {
+        if (node.HasLeadingTrivia)
+        {
+            var trivia = node.GetLeadingTrivia();
+            return trivia.ToFullString().Trim() == comment;
+        }
+
+        return false;
     }
 }
