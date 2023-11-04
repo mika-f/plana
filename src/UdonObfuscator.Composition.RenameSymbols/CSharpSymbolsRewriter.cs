@@ -11,7 +11,7 @@ using UdonObfuscator.Composition.Abstractions.Analysis;
 
 namespace UdonObfuscator.Composition.RenameSymbols;
 
-internal class CSharpSymbolsRewriter(IDocument document, IReadOnlyDictionary<ISymbol, string> dict) : CSharpSyntaxRewriter
+internal class CSharpSymbolsRewriter(IDocument document, bool hasEnumAttributes, IReadOnlyDictionary<ISymbol, string> dict) : CSharpSyntaxRewriter
 {
     public override SyntaxNode? VisitClassDeclaration(ClassDeclarationSyntax node)
     {
@@ -34,6 +34,32 @@ internal class CSharpSymbolsRewriter(IDocument document, IReadOnlyDictionary<ISy
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
             if (symbol != null && dict.TryGetValue(symbol, out var value))
                 return @enum.WithIdentifier(SyntaxFactory.Identifier(value));
+        }
+
+        return newNode;
+    }
+
+    public override SyntaxNode? VisitEnumMemberDeclaration(EnumMemberDeclarationSyntax node)
+    {
+        var newNode = base.VisitEnumMemberDeclaration(node);
+        if (newNode is EnumMemberDeclarationSyntax member)
+        {
+            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
+            if (symbol != null && dict.TryGetValue(symbol, out var value))
+            {
+                if (hasEnumAttributes)
+                {
+                    // UnityEngine.InspectorNameAttribute for Inspector
+                    var arg = SyntaxFactory.AttributeArgument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(symbol.Name)));
+                    var args = SyntaxFactory.AttributeArgumentList(SyntaxFactory.SeparatedList(new[] { arg }));
+                    var attr = SyntaxFactory.Attribute(SyntaxFactory.IdentifierName("global::UnityEngine.InspectorName"), args);
+                    var attrs = SyntaxFactory.AttributeList(SyntaxFactory.SeparatedList(new[] { attr }));
+
+                    return member.WithIdentifier(SyntaxFactory.Identifier(value)).AddAttributeLists(attrs);
+                }
+
+                return member.WithIdentifier(SyntaxFactory.Identifier(value));
+            }
         }
 
         return newNode;

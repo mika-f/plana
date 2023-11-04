@@ -22,6 +22,7 @@ public class SymbolObfuscator : CSharpSyntaxRewriter, IObfuscatorAlgorithm
     private static readonly ObfuscatorAlgorithmOption<bool> Methods = new("--rename-methods", "rename methods without referencing by SendCustomEvent", () => true);
     private static readonly ObfuscatorAlgorithmOption<bool> WithSendCustomEvent = new("--with-send-custom-event", "rename all methods", () => false);
     private static readonly ObfuscatorAlgorithmOption<bool> Variables = new("--rename-variables", "rename local variables", () => true);
+    private static readonly ObfuscatorAlgorithmOption<bool> EnumAttributes = new("--enum-attributes", "add UnityEngine.InspectorName to enum members", () => false);
 
     private readonly Dictionary<ISymbol, string> _dict = new();
 
@@ -32,8 +33,10 @@ public class SymbolObfuscator : CSharpSyntaxRewriter, IObfuscatorAlgorithm
     private bool _isEnablePropertiesRenaming;
     private bool _isEnableVariablesRenaming;
     private bool _withSendCustomEvent;
+    private bool _hasEnumAttributes;
 
-    public IReadOnlyCollection<IObfuscatorAlgorithmOption> Options => new List<IObfuscatorAlgorithmOption> { Namespace, ClassName, Properties, Fields, Methods, WithSendCustomEvent, Variables }.AsReadOnly();
+    public IReadOnlyCollection<IObfuscatorAlgorithmOption> Options => new List<IObfuscatorAlgorithmOption> { Namespace, ClassName, Properties, Fields, Methods, WithSendCustomEvent, Variables, EnumAttributes }.AsReadOnly();
+
     public string Name => "Rename Symbols";
 
     public void BindParameters(IObfuscatorParameterBinder binder)
@@ -45,6 +48,7 @@ public class SymbolObfuscator : CSharpSyntaxRewriter, IObfuscatorAlgorithm
         _isEnableMethodsRenaming = binder.GetValue(Methods);
         _withSendCustomEvent = binder.GetValue(WithSendCustomEvent);
         _isEnableVariablesRenaming = binder.GetValue(Variables);
+        _hasEnumAttributes = binder.GetValue(EnumAttributes);
     }
 
     public async Task ObfuscateAsync(List<IProject> projects, CancellationToken ct)
@@ -66,7 +70,7 @@ public class SymbolObfuscator : CSharpSyntaxRewriter, IObfuscatorAlgorithm
             var oldNode = await document.SyntaxTree.GetRootAsync(ct);
             walker.Visit(oldNode);
 
-            var rewriter = new CSharpSymbolsRewriter(document, _dict);
+            var rewriter = new CSharpSymbolsRewriter(document, _hasEnumAttributes, _dict);
             var newNode = (CSharpSyntaxNode)rewriter.Visit(oldNode);
             var newTree = CSharpSyntaxTree.Create(newNode, document.SyntaxTree.Options, document.SyntaxTree.FilePath, document.SyntaxTree.Encoding);
 
