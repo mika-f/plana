@@ -147,6 +147,20 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
         base.VisitMethodDeclaration(node);
     }
 
+    public override void VisitParameter(ParameterSyntax node)
+    {
+        var declaration = node.Parent?.Parent;
+        var hasAnnotationComment = declaration != null && HasAnnotationComment((CSharpSyntaxNode)declaration, AnnotateDisableNextSyntax);
+        if (isRenameVariables && !hasAnnotationComment)
+        {
+            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
+            if (symbol != null)
+                SetIdentifier(symbol);
+        }
+
+        base.VisitParameter(node);
+    }
+
     public override void VisitPropertyDeclaration(PropertyDeclarationSyntax node)
     {
         if (isRenameProperties && !HasAnnotationComment(node, AnnotateDisableNextSyntax))
