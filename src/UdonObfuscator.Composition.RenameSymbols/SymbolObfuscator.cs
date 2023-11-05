@@ -69,8 +69,13 @@ public class SymbolObfuscator : CSharpSyntaxRewriter, IObfuscatorAlgorithm
 
             var oldNode = await document.SyntaxTree.GetRootAsync(ct);
             walker.Visit(oldNode);
+        }
 
+        foreach (var document in projects.SelectMany(w => w.Documents))
+        {
             var rewriter = new CSharpSymbolsRewriter(document, _hasEnumAttributes, _dict);
+
+            var oldNode = await document.SyntaxTree.GetRootAsync(ct);
             var newNode = (CSharpSyntaxNode)rewriter.Visit(oldNode);
             var newTree = CSharpSyntaxTree.Create(newNode, document.SyntaxTree.Options, document.SyntaxTree.FilePath, document.SyntaxTree.Encoding);
 
