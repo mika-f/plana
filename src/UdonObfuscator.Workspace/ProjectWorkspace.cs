@@ -19,6 +19,8 @@ public class ProjectWorkspace(FileInfo csproj, ILogger? logger) : IWorkspace
     private Project _project = null!;
     private MSBuildWorkspace _workspace = null!;
 
+    public string Path => csproj.FullName;
+
     public async Task ActivateWorkspaceAsync(CancellationToken ct)
     {
         logger?.LogDebug("loading workspace as Visual Studio C# Project with MSBuild......");

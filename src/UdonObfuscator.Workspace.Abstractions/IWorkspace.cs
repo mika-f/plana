@@ -9,6 +9,8 @@ namespace UdonObfuscator.Workspace.Abstractions;
 
 public interface IWorkspace
 {
+    string Path { get; }
+
     Task ActivateWorkspaceAsync(CancellationToken ct);
 
     Task<List<IProject>> GetProjectsAsync(CancellationToken ct);

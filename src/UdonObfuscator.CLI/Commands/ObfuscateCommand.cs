@@ -19,13 +19,14 @@ namespace UdonObfuscator.CLI.Commands;
 public class ObfuscateCommand : ISubCommand
 {
     private readonly Option<bool> _dryRun = new("--dry-run", () => false, "dry-run obfuscate");
+    private readonly Option<DirectoryInfo> _output = new("--output", "path to directory write to");
     private readonly Option<FileInfo> _workspace = new Option<FileInfo>("--workspace", "path to workspace .csproj or .sln").ExistingOnly();
     private readonly Option<bool> _write = new("--write", () => false, "write obfuscated source code in place");
 
     public ObfuscateCommand()
     {
         Command.TreatUnmatchedTokensAsErrors = false;
-        Command.AddOptions(_workspace, _dryRun, _write);
+        Command.AddOptions(_workspace, _dryRun, _write, _output);
         Command.SetHandlerEx(OnHandleCommand, new LoggerBinder(), new WorkspaceBinder(_workspace), new HostingContainerBinder());
     }
 
@@ -56,11 +57,35 @@ public class ObfuscateCommand : ISubCommand
             }
 
             var write = context.ParseResult.GetValueForOption(_write);
-            foreach (var (path, content) in ret)
+            if (write)
             {
-                var to = write ? path : Path.Combine(Path.GetDirectoryName(path)!, $"{Path.GetFileNameWithoutExtension(path)}.g.cs");
-                await File.WriteAllTextAsync(to, content, ct);
+                foreach (var (path, content) in ret)
+                    await File.WriteAllTextAsync(path, content, ct);
+
+                return;
             }
+
+            var output = context.ParseResult.GetValueForOption(_output);
+            if (output != null)
+            {
+                var root = Path.GetDirectoryName(workspace.Path)!;
+
+                foreach (var (path, content) in ret)
+                {
+                    var rel = Path.GetRelativePath(root, path);
+                    var to = Path.Combine(output.FullName, rel);
+                    var dir = Path.GetDirectoryName(to)!;
+
+                    if (!Directory.Exists(dir))
+                        Directory.CreateDirectory(dir);
+
+                    await File.WriteAllTextAsync(to, content, ct);
+                }
+
+                return;
+            }
+
+            throw new InvalidOperationException("no output provider specified");
         }
         catch (Exception e)
         {
@@ -71,7 +96,7 @@ public class ObfuscateCommand : ISubCommand
     private async Task<List<IObfuscatorAlgorithm>> ParseExtraArguments(InvocationContext context, IHostingContainer container, ILogger logger)
     {
         var command = new Command("obfuscate");
-        command.AddOptions(_workspace, _dryRun, _write, GlobalCommandLineOptions.LogLevel, GlobalCommandLineOptions.Plugins);
+        command.AddOptions(_workspace, _dryRun, _write, _output, GlobalCommandLineOptions.LogLevel, GlobalCommandLineOptions.Plugins);
 
         var enablers = new Dictionary<Option<bool>, IObfuscatorAlgorithm>();
         var options = new Dictionary<IObfuscatorAlgorithm, Dictionary<IObfuscatorAlgorithmOption, Option>>();

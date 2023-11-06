@@ -19,6 +19,8 @@ public class SolutionWorkspace(FileInfo sln, ILogger? logger) : IWorkspace
     private Solution _solution = null!;
     private MSBuildWorkspace _workspace = null!;
 
+    public string Path => sln.FullName;
+
     public async Task ActivateWorkspaceAsync(CancellationToken ct)
     {
         logger?.LogDebug("loading workspace as Visual Studio Solution with MSBuild......");
