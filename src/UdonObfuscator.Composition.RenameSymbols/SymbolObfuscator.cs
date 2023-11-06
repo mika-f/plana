@@ -13,7 +13,7 @@ using UdonObfuscator.Composition.Abstractions.Attributes;
 namespace UdonObfuscator.Composition.RenameSymbols;
 
 [ObfuscatorAlgorithm("rename-symbols")]
-public class SymbolObfuscator : CSharpSyntaxRewriter, IObfuscatorAlgorithm
+public class SymbolObfuscator : IObfuscatorAlgorithm
 {
     private static readonly ObfuscatorAlgorithmOption<bool> Namespace = new("--rename-namespaces", "rename namespaces", () => true);
     private static readonly ObfuscatorAlgorithmOption<bool> ClassName = new("--rename-classes", "rename classes", () => true);
