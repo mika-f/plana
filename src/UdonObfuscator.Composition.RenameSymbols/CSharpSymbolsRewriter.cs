@@ -71,8 +71,14 @@ internal class CSharpSymbolsRewriter(IDocument document, bool hasEnumAttributes,
         if (newNode is MethodDeclarationSyntax method)
         {
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
-            if (symbol != null && dict.TryGetValue(symbol, out var value))
-                return method.WithIdentifier(SyntaxFactory.Identifier(value));
+            if (symbol != null)
+            {
+                if (symbol.OverriddenMethod != null)
+                    symbol = symbol.OverriddenMethod;
+
+                if (dict.TryGetValue(symbol, out var value))
+                    return method.WithIdentifier(SyntaxFactory.Identifier(value));
+            }
         }
 
         return newNode;
