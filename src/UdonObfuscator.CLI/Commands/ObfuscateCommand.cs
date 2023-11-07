@@ -60,7 +60,10 @@ public class ObfuscateCommand : ISubCommand
             if (write)
             {
                 foreach (var (path, content) in ret)
+                {
+                    logger.LogInfo($"write file in-place: {path}");
                     await File.WriteAllTextAsync(path, content, ct);
+                }
 
                 return;
             }
@@ -79,6 +82,7 @@ public class ObfuscateCommand : ISubCommand
                     if (!Directory.Exists(dir))
                         Directory.CreateDirectory(dir);
 
+                    logger.LogInfo($"write file: {path}");
                     await File.WriteAllTextAsync(to, content, ct);
                 }
 
