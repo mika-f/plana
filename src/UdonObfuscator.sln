@@ -31,6 +31,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UdonObfuscator.Workspace", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UdonObfuscator.Composition.ShuffleDeclarations", "UdonObfuscator.Composition.ShuffleDeclarations\UdonObfuscator.Composition.ShuffleDeclarations.csproj", "{168C3DA6-6D67-4032-A5A6-00A2BA12EAE9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UdonObfuscator.Composition.DisableConsoleOutput", "UdonObfuscator.Composition.DisableConsoleOutput\UdonObfuscator.Composition.DisableConsoleOutput.csproj", "{A4B9BA00-31BD-4E76-BECF-D70F480B654E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,10 @@ Global
 		{168C3DA6-6D67-4032-A5A6-00A2BA12EAE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{168C3DA6-6D67-4032-A5A6-00A2BA12EAE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{168C3DA6-6D67-4032-A5A6-00A2BA12EAE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4B9BA00-31BD-4E76-BECF-D70F480B654E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4B9BA00-31BD-4E76-BECF-D70F480B654E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4B9BA00-31BD-4E76-BECF-D70F480B654E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4B9BA00-31BD-4E76-BECF-D70F480B654E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -93,6 +99,7 @@ Global
 		{2C0A0717-0FF6-48FD-B5E8-E02CA1858BD3} = {E1C21130-8089-48B2-B1D8-ABA452FC472B}
 		{07369417-457E-42AE-9338-D420A7A3C35C} = {E1C21130-8089-48B2-B1D8-ABA452FC472B}
 		{168C3DA6-6D67-4032-A5A6-00A2BA12EAE9} = {777490D7-C220-46FF-96CC-90FAE50D1884}
+		{A4B9BA00-31BD-4E76-BECF-D70F480B654E} = {777490D7-C220-46FF-96CC-90FAE50D1884}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {129FBC52-9058-4F4A-88B3-A23978C16A72}
