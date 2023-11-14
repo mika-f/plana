@@ -1,0 +1,17 @@
+{
+    "name": "NatsunekoLaboratory.UdonObfuscator",
+    "references": [
+        "GUID:a8e25f4eb2ce45342b4a847108acb2d9"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

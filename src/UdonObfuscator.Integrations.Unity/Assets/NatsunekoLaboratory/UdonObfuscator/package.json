@@ -1,0 +1,22 @@
+{
+  "name": "cat.natsuneko.udon-obfuscator",
+  "version": "0.1.0",
+  "displayName": "Udon Obfuscator",
+  "description": "Udon Obfuscator is a powerful obfuscator for UdonSharp, containing a variety of features which provide protection for your source code.",
+  "unity": "2019.4",
+  "keywords": [
+    "Obfuscator",
+    "VRChat",
+    "Udon",
+    "UdonSharp"
+  ],
+  "author": {
+    "name": "Natsune Mochizuki",
+    "email": "me@natsuneko.cat",
+    "url": "https://github.com/mika-f/udon-obfuscator"
+  },
+  "license": "MIT",
+  "documentationUrl": "https://docs.natsuneko.cat/en-us/udon-obfuscator/",
+  "licensesUrl": "https://github.com/natsuneko-laboratory/udon-obfuscator/blob/main/LICENSE",
+  "dependencies": {}
+}
