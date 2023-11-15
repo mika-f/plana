@@ -99,7 +99,7 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
                 ((FileField)ve).Label = _label.GetValueFromBag(bag, cc);
                 ((FileField)ve).Filter = _filter.GetValueFromBag(bag, cc);
 
-                var t = _filter.GetValueFromBag(bag, cc);
+                var t = _type.GetValueFromBag(bag, cc);
                 ((FileField)ve).Type = Type.GetType(t) ?? typeof(DefaultAsset);
             }
         }
