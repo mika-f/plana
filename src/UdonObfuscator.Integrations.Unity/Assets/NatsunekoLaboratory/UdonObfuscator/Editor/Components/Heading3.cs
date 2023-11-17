@@ -11,26 +11,26 @@ using UnityEngine.UIElements;
 
 namespace NatsunekoLaboratory.UdonObfuscator.Components
 {
-    internal class Section : ContentControl
+    internal class Heading3 : Control
     {
-        private readonly Heading2 _title;
+        private readonly Label _label;
 
-        public string Title
+        public string Label
         {
-            get => _title.Label;
-            set => _title.Label = value;
+            get => _label.text;
+            set => _label.text = value;
         }
 
-        public Section() : base(StyledComponents.Create("0ad4cedc831a12241a0bb35110ec49ec", "1c2c6e9b9bf40564a93826a9c2ab16b7"))
+        public Heading3() : base(StyledComponents.Create("39cbb5ba539624f48a3264911213e425", "4fb1ad4fee4c8174db981c61b8290023"))
         {
-            _title = QuerySelector<Heading2>("[name='title']");
+            _label = QuerySelector<Label>();
         }
 
-        public new class UxmlFactory : UxmlFactory<Section, UxmlTraits> { }
+        public new class UxmlFactory : UxmlFactory<Heading3, UxmlTraits> { }
 
         public new class UxmlTraits : VisualElement.UxmlTraits
         {
-            private readonly UxmlStringAttributeDescription _title = new UxmlStringAttributeDescription { name = "title", defaultValue = "" };
+            private readonly UxmlStringAttributeDescription _label = new UxmlStringAttributeDescription { name = "label", defaultValue = "" };
 
             public override IEnumerable<UxmlChildElementDescription> uxmlChildElementsDescription
             {
@@ -41,7 +41,7 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
             {
                 base.Init(ve, bag, cc);
 
-                ((Section)ve).Title = _title.GetValueFromBag(bag, cc);
+                ((Heading3)ve).Label = _label.GetValueFromBag(bag, cc);
             }
         }
     }

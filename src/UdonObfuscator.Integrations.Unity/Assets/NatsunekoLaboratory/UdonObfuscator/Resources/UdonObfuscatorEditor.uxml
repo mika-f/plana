@@ -8,12 +8,19 @@
   xsi:noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd">
   <engine:VisualElement class="margin-left:16px margin-right:16px">
     <engine:VisualElement>
-      <engine:Label text="Udon Obfuscator"
-        class="margin-top:8px margin-bottom:12px padding-bottom:4px font-size:24px border-bottom:1px border-color:#ccc" />
-      <engine:Label
-        text="Udon Obfuscator is a powerful obfuscator optimized for UdonSharp, containing a variety of features which provide protection for your source code from the hackers."
-        class="font-size:14px white-space:normal" />
+      <controls:Heading1 label="Udon Obfuscator" />
+      <controls:Paragraph text="Udon Obfuscator is a powerful obfuscator optimized for UdonSharp, containing a variety of features which provide protection for your source code from the hackers." />
     </engine:VisualElement>
+
+    <controls:Section title="Preferences">
+      <controls:ToggleGroup label="Obfuscate Project" mode="EnabledWhenFalse">
+        <controls:FileField label="Workspace" class="font-size:14px margin-top:2px margin-bottom:2px" filter="*.asmdef" type="UnityEditorInternal.AssemblyDefinitionAsset, UnityEditor" />
+      </controls:ToggleGroup>
+
+      <controls:ToggleGroup label="Write In-Place" mode="EnabledWhenFalse">
+        <controls:DirectoryField label="Output Dir" class="font-size:14px margin-top:2px margin-bottom:2px" />
+      </controls:ToggleGroup>
+    </controls:Section>
 
   </engine:VisualElement>
 </engine:UXML>

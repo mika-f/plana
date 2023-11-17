@@ -4,12 +4,10 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:engine="UnityEngine.UIElements"
   xmlns:editor="UnityEditor.UIElements"
-  xsi:noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd"
-  xsi:schemaLocation="UnityEditor.UIElements ../../../../UIElementsSchema/UnityEditor.UIElements.xsd
-                      UnityEngine.UIElements ../../../../UIElementsSchema/UnityEngine.UIElements.xsd">
+  xmlns:controls="NatsunekoLaboratory.UdonObfuscator.Components"
+  xsi:noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd">
   <engine:VisualElement class="margin-top:24px margin-bottom:24px">
-    <engine:Label name="title" class="font-size:18px margin-bottom:6px" />
-
+    <controls:Heading2 name="title" />
     <engine:VisualElement name="container" />
   </engine:VisualElement>
 </engine:UXML>
