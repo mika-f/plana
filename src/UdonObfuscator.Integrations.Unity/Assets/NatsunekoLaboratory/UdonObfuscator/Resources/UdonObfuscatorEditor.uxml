@@ -7,19 +7,32 @@
   xmlns:controls="NatsunekoLaboratory.UdonObfuscator.Components"
   xsi:noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd">
   <engine:VisualElement class="margin-left:16px margin-right:16px">
-    <engine:VisualElement>
+    <engine:VisualElement class="margin-bottom:24px">
       <controls:Heading1 label="Udon Obfuscator" />
-      <controls:Paragraph text="Udon Obfuscator is a powerful obfuscator optimized for UdonSharp, containing a variety of features which provide protection for your source code from the hackers." />
+      <controls:Paragraph
+        text="Udon Obfuscator is a powerful obfuscator optimized for UdonSharp, containing a variety of features which provide protection for your source code from the hackers." />
     </engine:VisualElement>
 
-    <controls:Section title="Preferences">
+    <controls:Section title="Preferences" class="margin-bottom:24px">
       <controls:ToggleGroup label="Obfuscate Project" mode="EnabledWhenFalse">
-        <controls:FileField label="Workspace" class="font-size:14px margin-top:2px margin-bottom:2px" filter="*.asmdef" type="UnityEditorInternal.AssemblyDefinitionAsset, UnityEditor" />
+        <controls:FileField label="Workspace" class="margin-top:2px margin-bottom:2px" filter="*.asmdef"
+                            type="UnityEditorInternal.AssemblyDefinitionAsset, UnityEditor" />
       </controls:ToggleGroup>
 
       <controls:ToggleGroup label="Write In-Place" mode="EnabledWhenFalse">
-        <controls:DirectoryField label="Output Dir" class="font-size:14px margin-top:2px margin-bottom:2px" />
+        <controls:DirectoryField label="Output Dir" class="margin-top:2px margin-bottom:2px" />
       </controls:ToggleGroup>
+
+      <controls:DirectoryField label="Plugins Dir" />
+      <controls:Checkbox label="Dry Run" />
+    </controls:Section>
+
+    <controls:Section title="Plugins" class="margin-bottom:24px">
+      <controls:Button text="Scan Plugins" />
+    </controls:Section>
+
+    <controls:Section title="Actions">
+      <controls:Button text="Obfuscate" />
     </controls:Section>
 
   </engine:VisualElement>
