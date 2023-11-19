@@ -6,6 +6,7 @@
 using System.Collections.Generic;
 
 using NatsunekoLaboratory.UdonObfuscator.Components.Abstractions;
+using NatsunekoLaboratory.UdonObfuscator.Extensions;
 
 using UnityEngine.UIElements;
 
@@ -38,8 +39,8 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
 
         public ToggleGroup() : base(StyledComponents.Create("65842bc485392d54cace7e2bb32e3a3e", "d3ef72825c3a976439f450a2d327004f"))
         {
-            _toggle = QuerySelector<Toggle>("[name='toggle']");
             _toggle.RegisterValueChangedCallback(OnValueChanged);
+            _toggle = this.QuerySelector<Checkbox>();
         }
 
         private void OnValueChanged(ChangeEvent<bool> e)

@@ -3,7 +3,6 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
-
 using UnityEditor;
 
 using UnityEngine;
@@ -19,12 +18,11 @@ namespace NatsunekoLaboratory.UdonObfuscator
 
     public class UdonObfuscatorEditor : EditorWindow
     {
+        private const string UxmlGuid = "512581237e5c880478d0c1a9d8a40ef5";
+        private const string UssGuid = "b84460955893c6149baab61b8cf213a1";
 #if USTYLED
         private static readonly UStyledCompiler UStyled;
 #endif
-
-        private const string UxmlGuid = "512581237e5c880478d0c1a9d8a40ef5";
-        private const string UssGuid = "b84460955893c6149baab61b8cf213a1";
 
         private SerializedObject _so;
 

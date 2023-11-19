@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 
 using NatsunekoLaboratory.UdonObfuscator.Components.Abstractions;
+using NatsunekoLaboratory.UdonObfuscator.Extensions;
 
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -47,7 +48,7 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
 
         public FileField() : base(StyledComponents.Create("0ba11867e8d00b84882b0bade54f787a", "37dbb67b6aa66684a99564da5d186b54"))
         {
-            _field = QuerySelector<ObjectField>();
+            _field = this.QuerySelector<ObjectField>();
             _field.RegisterValueChangedCallback(OnValueChanged);
         }
 

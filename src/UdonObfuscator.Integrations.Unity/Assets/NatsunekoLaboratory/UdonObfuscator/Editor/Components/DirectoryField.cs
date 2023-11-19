@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 
 using NatsunekoLaboratory.UdonObfuscator.Components.Abstractions;
+using NatsunekoLaboratory.UdonObfuscator.Extensions;
 
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -30,7 +31,7 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
 
         public DirectoryField() : base(StyledComponents.Create("0ba11867e8d00b84882b0bade54f787a", "37dbb67b6aa66684a99564da5d186b54"))
         {
-            _field = QuerySelector<ObjectField>();
+            _field = this.QuerySelector<ObjectField>();
             _field.objectType = typeof(DefaultAsset);
             _field.RegisterValueChangedCallback(OnValueChanged);
         }

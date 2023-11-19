@@ -6,6 +6,7 @@
 using System.Collections.Generic;
 
 using NatsunekoLaboratory.UdonObfuscator.Components.Abstractions;
+using NatsunekoLaboratory.UdonObfuscator.Extensions;
 
 using UnityEngine.UIElements;
 
@@ -23,7 +24,7 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
 
         public Heading1() : base(StyledComponents.Create("46a2346e020f9f14c9c42386cce8defc", "67a1b812bae7e1e46be014d9a7a3cb2e"))
         {
-            _label = QuerySelector<Label>();
+            _label = this.QuerySelector<Label>();
         }
 
         public new class UxmlFactory : UxmlFactory<Heading1, UxmlTraits> { }
