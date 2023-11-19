@@ -1,1 +1,5 @@
-﻿VisualElement {}
+﻿/* override defaults */
+
+.unity-object-field__input {
+	border-radius: 0;
+}
