@@ -6,7 +6,7 @@
   xmlns:editor="UnityEditor.UIElements"
   xmlns:controls="NatsunekoLaboratory.UdonObfuscator.Components"
   xsi:noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd">
-  <engine:VisualElement class="margin-top:24px margin-bottom:24px">
+  <engine:VisualElement>
     <controls:Heading2 name="title" />
     <engine:VisualElement name="container" />
   </engine:VisualElement>

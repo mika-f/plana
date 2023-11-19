@@ -21,26 +21,26 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
             EnabledWhenFalse
         }
 
-        private readonly Toggle _toggle;
+        private readonly Checkbox _toggle;
 
         public string Label
         {
-            get => _toggle.label;
-            set => _toggle.label = value;
+            get => _toggle.Label;
+            set => _toggle.Label = value;
         }
 
         public bool Value
         {
-            get => _toggle.value;
-            set => _toggle.value = value;
+            get => _toggle.Value;
+            set => _toggle.Value = value;
         }
 
         public ToggleMode Mode { get; set; }
 
         public ToggleGroup() : base(StyledComponents.Create("65842bc485392d54cace7e2bb32e3a3e", "d3ef72825c3a976439f450a2d327004f"))
         {
-            _toggle.RegisterValueChangedCallback(OnValueChanged);
             _toggle = this.QuerySelector<Checkbox>();
+            _toggle.AddValueChangedEventListener(OnValueChanged);
         }
 
         private void OnValueChanged(ChangeEvent<bool> e)

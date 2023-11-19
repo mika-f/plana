@@ -4,9 +4,10 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:engine="UnityEngine.UIElements"
   xmlns:editor="UnityEditor.UIElements"
+  xmlns:controls="NatsunekoLaboratory.UdonObfuscator.Components"
   xsi:noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd">
   <engine:VisualElement class="width:100%">
-    <engine:Toggle name="toggle" class="font-size:14px margin-top:2px margin-bottom:2px" />
+    <controls:Checkbox />
 
     <engine:VisualElement name="container" class="padding-left:8px" />
   </engine:VisualElement>
