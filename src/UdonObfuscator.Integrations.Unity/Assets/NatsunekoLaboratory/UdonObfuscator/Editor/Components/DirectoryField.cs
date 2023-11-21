@@ -3,6 +3,7 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -12,16 +13,16 @@ using NatsunekoLaboratory.UdonObfuscator.Extensions;
 using UnityEditor;
 using UnityEditor.UIElements;
 
-using UnityEngine;
 using UnityEngine.UIElements;
+
+using Object = UnityEngine.Object;
 
 namespace NatsunekoLaboratory.UdonObfuscator.Components
 {
-    internal class DirectoryField : Control
+    internal class DirectoryField : Control, IValueChangeNotifiable<DirectoryInfo>
     {
         private readonly ObjectField _field;
-
-        public DirectoryInfo Path { get; set; }
+        private readonly List<Action<ChangeEvent<DirectoryInfo>>> _listeners;
 
         public string Label
         {
@@ -31,24 +32,42 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
 
         public DirectoryField() : base(StyledComponents.Create("0ba11867e8d00b84882b0bade54f787a", "37dbb67b6aa66684a99564da5d186b54"))
         {
+            _listeners = new List<Action<ChangeEvent<DirectoryInfo>>>();
+
             _field = this.QuerySelector<ObjectField>();
             _field.objectType = typeof(DefaultAsset);
             _field.RegisterValueChangedCallback(OnValueChanged);
         }
 
+        public DirectoryInfo Value { get; set; }
+
+        public void AddValueChangedEventListener(Action<ChangeEvent<DirectoryInfo>> listener)
+        {
+            _listeners.Add(listener);
+        }
+
         private void OnValueChanged(ChangeEvent<Object> e)
         {
             var obj = e.newValue as DefaultAsset;
-            if (obj == null)
-                _field.SetValueWithoutNotify(null);
-
-            var path = AssetDatabase.GetAssetPath(obj);
+            var path = obj == null ? null : AssetDatabase.GetAssetPath(obj);
 
             try
             {
-                var attr = File.GetAttributes(path);
-                if (!attr.HasFlag(FileAttributes.Directory))
-                    _field.SetValueWithoutNotify(null);
+                if (!string.IsNullOrWhiteSpace(path))
+                {
+                    var attr = File.GetAttributes(path);
+                    if (!attr.HasFlag(FileAttributes.Directory))
+                        path = null;
+                }
+
+                var newValue = path == null ? null : new DirectoryInfo(path);
+                var oldValue = Value;
+
+                _field.SetValueWithoutNotify(path == null ? null : obj);
+                Value = newValue;
+
+                foreach (var listener in _listeners)
+                    listener.Invoke(ChangeEvent<DirectoryInfo>.GetPooled(oldValue, newValue));
             }
             catch
             {

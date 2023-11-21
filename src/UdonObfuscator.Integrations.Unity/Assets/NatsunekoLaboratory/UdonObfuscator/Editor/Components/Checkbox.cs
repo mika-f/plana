@@ -13,7 +13,7 @@ using UnityEngine.UIElements;
 
 namespace NatsunekoLaboratory.UdonObfuscator.Components
 {
-    internal class Checkbox : Control, IValueChangedEvent<bool>
+    internal class Checkbox : Control, IValueChangeNotifiable<bool>
     {
         private readonly List<Action<ChangeEvent<bool>>> _listeners;
         private readonly Toggle _toggle;

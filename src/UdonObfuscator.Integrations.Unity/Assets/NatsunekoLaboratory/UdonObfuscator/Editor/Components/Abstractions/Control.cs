@@ -54,9 +54,5 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components.Abstractions
         {
             return AssetDatabase.LoadAssetAtPath<T>(AssetDatabase.GUIDToAssetPath(guid));
         }
-
-        #region Web Compats
-
-        #endregion
     }
 }
