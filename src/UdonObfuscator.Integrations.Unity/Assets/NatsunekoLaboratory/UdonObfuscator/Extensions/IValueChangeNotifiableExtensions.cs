@@ -46,7 +46,7 @@ namespace NatsunekoLaboratory.UdonObfuscator.Extensions
             obj.PropertyChanged += (sender, e) =>
             {
                 if (mode == BindingMode.OneWay || mode == BindingMode.TwoWay)
-                    if (variable != e.PropertyName && !onRaiseByThis)
+                    if (variable == e.PropertyName && !onRaiseByThis)
                         field.Value = GetReflectedValue<TValue>(obj, GetCachedMemberInfo(t, variable));
 
                 onRaiseByThis = false;
