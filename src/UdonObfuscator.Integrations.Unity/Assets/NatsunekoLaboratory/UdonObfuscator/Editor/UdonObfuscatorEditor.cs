@@ -3,6 +3,16 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
+using System.Runtime.CompilerServices;
+
+using JetBrains.Annotations;
+
+using NatsunekoLaboratory.UdonObfuscator.Components;
+using NatsunekoLaboratory.UdonObfuscator.Extensions;
+
 using UnityEditor;
 
 using UnityEngine;
@@ -17,9 +27,11 @@ namespace NatsunekoLaboratory.UdonObfuscator
 #endif
 
     public class UdonObfuscatorEditor : EditorWindow
+    public class UdonObfuscatorEditor : EditorWindow, INotifyPropertyChanged
     {
         private const string UxmlGuid = "512581237e5c880478d0c1a9d8a40ef5";
         private const string UssGuid = "b84460955893c6149baab61b8cf213a1";
+        private const string Plugins = "aa64d32311d16b64384036813c06488a";
 #if USTYLED
         private static readonly UStyledCompiler UStyled;
 #endif
@@ -35,6 +47,8 @@ namespace NatsunekoLaboratory.UdonObfuscator
                       .Build();
         }
 #endif
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         [MenuItem("Window/Natsuneko Laboratory/Udon Obfuscator")]
         public static void ShowWindow()
@@ -66,6 +80,50 @@ namespace NatsunekoLaboratory.UdonObfuscator
 
             var tree = uxml.CloneTree();
             rootVisualElement.Add(tree);
+
+            rootVisualElement.GetElementByName<DirectoryField>("plugins").Binding(this, () => PluginsDir);
+
+            OnGUICreated();
         }
+
+        private void OnGUICreated()
+        {
+            PluginsDir = new DirectoryInfo(AssetDatabase.GUIDToAssetPath(Plugins));
+        }
+
+        }
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
+        {
+            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+            field = value;
+            OnPropertyChanged(propertyName);
+            return true;
+        }
+
+        #region Properties
+
+        #region PluginsDir
+
+        private DirectoryInfo _pluginsDir;
+
+        public DirectoryInfo PluginsDir
+        {
+            get => _pluginsDir;
+            set
+            {
+                if (SetField(ref _pluginsDir, value))
+                    _scan.Disabled = _pluginsDir == null;
+            }
+        }
+
+        #endregion
+
+        #endregion
     }
 }

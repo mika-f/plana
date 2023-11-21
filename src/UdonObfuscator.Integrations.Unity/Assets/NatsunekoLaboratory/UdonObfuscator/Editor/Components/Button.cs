@@ -26,6 +26,12 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
             set => _button.text = value;
         }
 
+        public bool Disabled
+        {
+            get => !_button.enabledSelf;
+            set => _button.SetEnabled(!value);
+        }
+
         public Button() : base(StyledComponents.Create("bdd8ef457ffffa841a24a66347750c70", "87729b99b94bdb54aac2fd66189f38d4"))
         {
             _listeners = new List<Action>();
