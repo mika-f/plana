@@ -23,6 +23,7 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
     {
         private readonly ObjectField _field;
         private readonly List<Action<ChangeEvent<DirectoryInfo>>> _listeners;
+        private DirectoryInfo _value;
 
         public string Label
         {
@@ -36,17 +37,29 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
 
             _field = this.QuerySelector<ObjectField>();
             _field.objectType = typeof(DefaultAsset);
-            _field.RegisterValueChangedCallback(OnValueChanged);
+            _field.RegisterValueChangedCallback(OnFormValueChanged);
         }
 
-        public DirectoryInfo Value { get; set; }
+        public DirectoryInfo Value
+        {
+            get => _value;
+            set
+            {
+                if (_value == value)
+                    return;
+
+                var obj = value == null ? null : AssetDatabase.LoadAssetAtPath<DefaultAsset>(value.ToRelativePath());
+                _field.SetValueWithoutNotify(obj);
+                _value = value;
+            }
+        }
 
         public void AddValueChangedEventListener(Action<ChangeEvent<DirectoryInfo>> listener)
         {
             _listeners.Add(listener);
         }
 
-        private void OnValueChanged(ChangeEvent<Object> e)
+        private void OnFormValueChanged(ChangeEvent<Object> e)
         {
             var obj = e.newValue as DefaultAsset;
             var path = obj == null ? null : AssetDatabase.GetAssetPath(obj);
@@ -61,10 +74,10 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
                 }
 
                 var newValue = path == null ? null : new DirectoryInfo(path);
-                var oldValue = Value;
+                var oldValue = _value;
 
                 _field.SetValueWithoutNotify(path == null ? null : obj);
-                Value = newValue;
+                _value = newValue;
 
                 foreach (var listener in _listeners)
                     listener.Invoke(ChangeEvent<DirectoryInfo>.GetPooled(oldValue, newValue));
