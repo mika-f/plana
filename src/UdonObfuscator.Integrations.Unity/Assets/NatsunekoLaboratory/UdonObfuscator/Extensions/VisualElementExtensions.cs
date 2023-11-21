@@ -14,6 +14,16 @@ namespace NatsunekoLaboratory.UdonObfuscator.Extensions
 {
     public static class VisualElementExtensions
     {
+        public static T GetElementByName<T>(this VisualElement ve, string name) where T : VisualElement
+        {
+            return GetElementsByName<T>(ve, name).First();
+        }
+
+        public static List<T> GetElementsByName<T>(this VisualElement ve, string name) where T : VisualElement
+        {
+            return ve.Query<T>().Name(name).Build().ToList();
+        }
+
         public static T QuerySelector<T>(this VisualElement ve, string selector = null) where T : VisualElement
         {
             return QuerySelectorAll<T>(ve, selector).FirstOrDefault();
