@@ -28,7 +28,6 @@ namespace NatsunekoLaboratory.UdonObfuscator
     using UStyled.Configurations.Presets;
 #endif
 
-    public class UdonObfuscatorEditor : EditorWindow
     public class UdonObfuscatorEditor : EditorWindow, INotifyPropertyChanged
     {
         private const string UxmlGuid = "512581237e5c880478d0c1a9d8a40ef5";
