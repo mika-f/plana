@@ -18,6 +18,8 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+using Button = NatsunekoLaboratory.UdonObfuscator.Components.Button;
+
 namespace NatsunekoLaboratory.UdonObfuscator
 {
 #if USTYLED
@@ -35,6 +37,7 @@ namespace NatsunekoLaboratory.UdonObfuscator
 #if USTYLED
         private static readonly UStyledCompiler UStyled;
 #endif
+        private Button _scan;
 
         private SerializedObject _so;
 
@@ -81,6 +84,7 @@ namespace NatsunekoLaboratory.UdonObfuscator
             var tree = uxml.CloneTree();
             rootVisualElement.Add(tree);
 
+            _scan = rootVisualElement.GetElementByName<Button>("scan");
             rootVisualElement.GetElementByName<DirectoryField>("plugins").Binding(this, () => PluginsDir);
 
             OnGUICreated();
