@@ -12,6 +12,7 @@ using JetBrains.Annotations;
 
 using NatsunekoLaboratory.UdonObfuscator.Components;
 using NatsunekoLaboratory.UdonObfuscator.Extensions;
+using NatsunekoLaboratory.UdonObfuscator.Models;
 
 using UnityEditor;
 
@@ -36,7 +37,14 @@ namespace NatsunekoLaboratory.UdonObfuscator
 #if USTYLED
         private static readonly UStyledCompiler UStyled;
 #endif
-        private Button _scan;
+        private Button _obfuscateButton;
+        private Button _scanButton;
+        private ToggleGroup _obfuscateLevelField;
+        private FileField _workspaceField;
+        private ToggleGroup _isWriteInPlaceField;
+        private DirectoryField _outputDirField;
+        private Checkbox _isDryRunField;
+        private DirectoryField _pluginsField;
 
         private SerializedObject _so;
 
@@ -83,8 +91,25 @@ namespace NatsunekoLaboratory.UdonObfuscator
             var tree = uxml.CloneTree();
             rootVisualElement.Add(tree);
 
-            _scan = rootVisualElement.GetElementByName<Button>("scan");
-            rootVisualElement.GetElementByName<DirectoryField>("plugins").Binding(this, () => PluginsDir);
+            _obfuscateLevelField = rootVisualElement.GetElementByName<ToggleGroup>("obfuscate-level");
+            _workspaceField = rootVisualElement.GetElementByName<FileField>("workspace");
+            _isWriteInPlaceField = rootVisualElement.GetElementByName<ToggleGroup>("is-write-in-place");
+            _outputDirField = rootVisualElement.GetElementByName<DirectoryField>("output-dir");
+            _pluginsField = rootVisualElement.GetElementByName<DirectoryField>("plugins");
+            _isDryRunField = rootVisualElement.GetElementByName<Checkbox>("is-dry-run");
+            _scanButton = rootVisualElement.GetElementByName<Button>("scan");
+            _obfuscateButton = rootVisualElement.GetElementByName<Button>("obfuscate");
+
+            // bindings
+            _obfuscateLevelField.Binding(this, () => IsProjectLevelObfuscate);
+            _workspaceField.Binding(this, () => Workspace);
+            _isWriteInPlaceField.Binding(this, () => IsWriteInPlace);
+            _outputDirField.Binding(this, () => OutputDir);
+            _pluginsField.Binding(this, () => PluginsDir);
+            _isDryRunField.Binding(this, () => IsDryRun);
+
+            // handlers
+            _scanButton.AddClickEventHandler(OnClickScanPlugins);
 
             OnGUICreated();
         }
@@ -94,7 +119,24 @@ namespace NatsunekoLaboratory.UdonObfuscator
             PluginsDir = new DirectoryInfo(AssetDatabase.GUIDToAssetPath(Plugins));
         }
 
+        private async void OnClickScanPlugins()
+        {
+            var dir = PluginsDir.FullName;
+            var workspace = Workspace ?? GetProjectScopeWorkspace();
+            var obfuscator = new ObfuscateCommand(workspace, PluginsDir, IsDryRun);
+            var o = await obfuscator.ExtractPropertiesAsync();
+            var sections = obfuscator.ChunkByPlugins(o);
         }
+
+        private FileInfo GetProjectScopeWorkspace()
+        {
+            var segments = Application.dataPath.Split('/');
+            var project = segments[segments.Length - 2];
+            var path = Path.GetFullPath(Path.Combine(Application.dataPath, "..", $"{project}.sln"));
+
+            return new FileInfo(path);
+        }
+
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
@@ -111,6 +153,54 @@ namespace NatsunekoLaboratory.UdonObfuscator
 
         #region Properties
 
+        #region ObfuscateLevel
+
+        private bool _isProjectLevelObfuscate;
+
+        public bool IsProjectLevelObfuscate
+        {
+            get => _isProjectLevelObfuscate;
+            set => SetField(ref _isProjectLevelObfuscate, value);
+        }
+
+        #endregion
+
+        #region Workspace
+
+        private FileInfo _workspace;
+
+        public FileInfo Workspace
+        {
+            get => _workspace;
+            set => SetField(ref _workspace, value);
+        }
+
+        #endregion
+
+        #region IsWriteInPlace
+
+        private bool _isWriteInPlace;
+
+        public bool IsWriteInPlace
+        {
+            get => _isWriteInPlace;
+            set => SetField(ref _isWriteInPlace, value);
+        }
+
+        #endregion
+
+        #region OutputDir
+
+        private DirectoryInfo _outputDir;
+
+        public DirectoryInfo OutputDir
+        {
+            get => _outputDir;
+            set => SetField(ref _outputDir, value);
+        }
+
+        #endregion
+
         #region PluginsDir
 
         private DirectoryInfo _pluginsDir;
@@ -121,8 +211,20 @@ namespace NatsunekoLaboratory.UdonObfuscator
             set
             {
                 if (SetField(ref _pluginsDir, value))
-                    _scan.Disabled = _pluginsDir == null;
+                    _scanButton.Disabled = _pluginsDir == null;
             }
+        }
+
+        #endregion
+
+        #region IsDryRun
+
+        private bool _isDryRun;
+
+        public bool IsDryRun
+        {
+            get => _isDryRun;
+            set => SetField(ref _isDryRun, value);
         }
 
         #endregion
