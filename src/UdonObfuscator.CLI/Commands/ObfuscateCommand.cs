@@ -109,6 +109,7 @@ public class ObfuscateCommand : ISubCommand
         {
             var enabler = new Option<bool>($"--{attr.Id}", () => false, $"use {attr.Id}");
             enablers.Add(enabler, obfuscator);
+            command.AddOptions(enabler);
 
             var dict = new Dictionary<IObfuscatorAlgorithmOption, Option>();
 
@@ -122,7 +123,6 @@ public class ObfuscateCommand : ISubCommand
                 command.AddOptions(option);
             }
 
-            command.AddOptions(enabler);
             options.Add(obfuscator, dict);
         }
 
