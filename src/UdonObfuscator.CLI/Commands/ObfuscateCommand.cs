@@ -126,6 +126,14 @@ public class ObfuscateCommand : ISubCommand
             options.Add(obfuscator, dict);
         }
 
+        if (context.ParseResult.GetValueForOption(GlobalCommandLineOptions.RetrieveArgs))
+        {
+            foreach (var o in command.Options)
+                Console.WriteLine($"Name=--{o.Name}, Type={o.ValueType.FullName}, Required={o.IsRequired}, Description={o.Description}");
+
+            throw new ArgumentException();
+        }
+
         var args = string.Join(" ", context.ParseResult.Tokens);
         var ret = command.Parse(args);
         if (ret.UnmatchedTokens.Count > 0)

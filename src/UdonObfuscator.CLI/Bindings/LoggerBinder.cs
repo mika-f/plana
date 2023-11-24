@@ -21,7 +21,8 @@ internal class LoggerBinder : BinderBase<ILogger>
     private static ILogger GetLogger(BindingContext context)
     {
         var value = context.ParseResult.GetValueForOption(GlobalCommandLineOptions.LogLevel);
-        var logger = new Logger(value);
+        var r = context.ParseResult.GetValueForOption(GlobalCommandLineOptions.RetrieveArgs);
+        var logger = new Logger(r ? LogLevel.Silent : value);
 
         context.AddService(typeof(ILogger), _ => logger);
         return logger;

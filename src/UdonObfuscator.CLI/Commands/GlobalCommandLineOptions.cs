@@ -12,16 +12,14 @@ namespace UdonObfuscator.CLI.Commands;
 
 internal class GlobalCommandLineOptions : ICommandLineOptions
 {
-    private readonly List<Option> _options;
+    private readonly List<Option> _options = [LogLevel, Plugins, RetrieveArgs];
 
     public static Option<LogLevel> LogLevel { get; } = new("--log-level", () => Logging.LogLevel.Normal, "log detail level");
 
     public static Option<DirectoryInfo> Plugins { get; } = new Option<DirectoryInfo>("--plugins", () => new DirectoryInfo("./"), "path to plugins directory loaded from").ExistingOnly();
 
-    public GlobalCommandLineOptions()
-    {
-        _options = [LogLevel, Plugins];
-    }
+    public static Option<bool> RetrieveArgs { get; } = new("--retrieve-args", () => false) { IsHidden = true };
+
 
     public void AddOption<T>(string name, string description)
     {
