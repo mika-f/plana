@@ -24,7 +24,7 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
 
         public Section() : base(StyledComponents.Create("0ad4cedc831a12241a0bb35110ec49ec", "1c2c6e9b9bf40564a93826a9c2ab16b7"))
         {
-            _title = this.QuerySelector<Heading2>("[name='title']");
+            _title = this.GetElementByName<Heading2>("title");
         }
 
         public new class UxmlFactory : UxmlFactory<Section, UxmlTraits> { }

@@ -3,6 +3,7 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 
 using NatsunekoLaboratory.UdonObfuscator.Components.Abstractions;
@@ -12,7 +13,7 @@ using UnityEngine.UIElements;
 
 namespace NatsunekoLaboratory.UdonObfuscator.Components
 {
-    internal class ToggleGroup : ContentControl
+    internal class ToggleGroup : ContentControl, IValueChangeNotifiable<bool>
     {
         public enum ToggleMode
         {
@@ -69,6 +70,11 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
                 ((ToggleGroup)ve).Value = _value.GetValueFromBag(bag, cc);
                 ((ToggleGroup)ve).Mode = _mode.GetValueFromBag(bag, cc);
             }
+        }
+
+        public void AddValueChangedEventListener(Action<ChangeEvent<bool>> listener)
+        {
+            _toggle.AddValueChangedEventListener(listener);
         }
     }
 }
