@@ -14,25 +14,25 @@
     </engine:VisualElement>
 
     <controls:Section title="Preferences" class="margin-bottom:24px">
-      <controls:ToggleGroup label="Obfuscate Project" mode="EnabledWhenFalse">
+      <controls:ToggleGroup label="Obfuscate Project" mode="EnabledWhenFalse" name="obfuscate-level">
         <controls:FileField label="Workspace" class="margin-top:2px margin-bottom:2px" filter="*.asmdef"
-                            type="UnityEditorInternal.AssemblyDefinitionAsset, UnityEditor" />
+                            type="UnityEditorInternal.AssemblyDefinitionAsset, UnityEditor" name="workspace" />
       </controls:ToggleGroup>
 
-      <controls:ToggleGroup label="Write In-Place" mode="EnabledWhenFalse">
-        <controls:DirectoryField label="Output Dir" class="margin-top:2px margin-bottom:2px" />
+      <controls:ToggleGroup label="Write In-Place" mode="EnabledWhenFalse" name="is-write-in-place">
+        <controls:DirectoryField label="Output Dir" class="margin-top:2px margin-bottom:2px" name="output-dir" />
       </controls:ToggleGroup>
 
-      <controls:DirectoryField label="Plugins Dir" />
-      <controls:Checkbox label="Dry Run" />
+      <controls:DirectoryField label="Plugins Dir" name="plugins" />
+      <controls:Checkbox label="Dry Run" name="is-dry-run" />
     </controls:Section>
 
     <controls:Section title="Plugins" class="margin-bottom:24px">
-      <controls:Button text="Scan Plugins" />
+      <controls:Button text="Scan Plugins" name="scan" disabled="true" />
     </controls:Section>
 
     <controls:Section title="Actions">
-      <controls:Button text="Obfuscate" />
+      <controls:Button text="Obfuscate" name="obfuscate" />
     </controls:Section>
 
   </engine:VisualElement>
