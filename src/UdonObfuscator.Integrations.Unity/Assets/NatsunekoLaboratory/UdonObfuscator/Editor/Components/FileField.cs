@@ -6,7 +6,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 using NatsunekoLaboratory.UdonObfuscator.Components.Abstractions;
 using NatsunekoLaboratory.UdonObfuscator.Extensions;
@@ -20,10 +19,12 @@ using Object = UnityEngine.Object;
 
 namespace NatsunekoLaboratory.UdonObfuscator.Components
 {
-    internal class FileField : Control
+    internal class FileField : Control, IValueChangeNotifiable<FileInfo>
     {
         private readonly ObjectField _field;
+        private readonly List<Action<ChangeEvent<FileInfo>>> _listeners;
         private Type _t;
+        private FileInfo _value;
 
         public string Label
         {
@@ -48,31 +49,53 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
 
         public FileField() : base(StyledComponents.Create("0ba11867e8d00b84882b0bade54f787a", "37dbb67b6aa66684a99564da5d186b54"))
         {
+            _listeners = new List<Action<ChangeEvent<FileInfo>>>();
+
             _field = this.QuerySelector<ObjectField>();
-            _field.RegisterValueChangedCallback(OnValueChanged);
+            _field.RegisterValueChangedCallback(OnFormValueChanged);
         }
 
-        private void OnValueChanged(ChangeEvent<Object> e)
+        public FileInfo Value
+        {
+            get => _value;
+            set
+            {
+                if (_value == value)
+                    return;
+
+                var obj = value == null ? null : AssetDatabase.LoadAssetAtPath(value.ToRelativePath(), Type);
+                _field.SetValueWithoutNotify(obj);
+                _value = value;
+            }
+        }
+
+        public void AddValueChangedEventListener(Action<ChangeEvent<FileInfo>> listener)
+        {
+            _listeners.Add(listener);
+        }
+
+        private void OnFormValueChanged(ChangeEvent<Object> e)
         {
             var obj = e.newValue as DefaultAsset;
-            if (obj == null)
-                _field.SetValueWithoutNotify(null);
-
-            var path = AssetDatabase.GetAssetPath(obj);
+            var path = obj == null ? null : AssetDatabase.GetAssetPath(obj);
 
             try
             {
-                var attr = File.GetAttributes(path);
-                if (attr.HasFlag(FileAttributes.Directory))
-                    _field.SetValueWithoutNotify(null);
+                if (!string.IsNullOrWhiteSpace(path))
+                {
+                    var attr = File.GetAttributes(path);
+                    if (attr.IsDirectory())
+                        path = null;
+                }
 
-                var dir = Path.GetDirectoryName(path) ?? throw new InvalidOperationException();
-                var entries = Directory.GetFiles(dir, Filter, SearchOption.TopDirectoryOnly);
+                var newValue = path == null ? null : new FileInfo(path);
+                var oldValue = _value;
 
-                if (entries.Contains(path))
-                    return;
+                _field.SetValueWithoutNotify(path == null ? null : obj);
+                _value = newValue;
 
-                _field.SetValueWithoutNotify(null);
+                foreach (var listener in _listeners)
+                    listener.Invoke(ChangeEvent<FileInfo>.GetPooled(oldValue, newValue));
             }
             catch
             {

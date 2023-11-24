@@ -69,7 +69,7 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
                 if (!string.IsNullOrWhiteSpace(path))
                 {
                     var attr = File.GetAttributes(path);
-                    if (!attr.HasFlag(FileAttributes.Directory))
+                    if (attr.IsFile())
                         path = null;
                 }
 
