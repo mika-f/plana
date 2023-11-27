@@ -24,6 +24,12 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
             set => _toggle.label = value;
         }
 
+        public string Text
+        {
+            get => _toggle.text;
+            set => _toggle.text = value;
+        }
+
         public bool Value
         {
             get => _toggle.value;
@@ -54,6 +60,7 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
         public new class UxmlTraits : VisualElement.UxmlTraits
         {
             private readonly UxmlStringAttributeDescription _label = new UxmlStringAttributeDescription { name = "label", defaultValue = "" };
+            private readonly UxmlStringAttributeDescription _text = new UxmlStringAttributeDescription { name = "text", defaultValue = "" };
             private readonly UxmlBoolAttributeDescription _value = new UxmlBoolAttributeDescription { name = "value", defaultValue = false };
 
             public override IEnumerable<UxmlChildElementDescription> uxmlChildElementsDescription
@@ -66,6 +73,7 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
                 base.Init(ve, bag, cc);
 
                 ((Checkbox)ve).Label = _label.GetValueFromBag(bag, cc);
+                ((Checkbox)ve).Text = _text.GetValueFromBag(bag, cc);
                 ((Checkbox)ve).Value = _value.GetValueFromBag(bag, cc);
             }
         }

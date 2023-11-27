@@ -30,6 +30,12 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
             set => _toggle.Label = value;
         }
 
+        public string Text
+        {
+            get => _toggle.Text;
+            set => _toggle.Text = value;
+        }
+
         public bool Value
         {
             get => _toggle.Value;
@@ -46,7 +52,16 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
 
         private void OnValueChanged(ChangeEvent<bool> e)
         {
-            contentContainer.SetEnabled(Mode == ToggleMode.EnabledWhenTrue ? e.newValue : !e.newValue);
+            ReflectToState();
+        }
+
+        public void ReflectToState()
+        {
+            if (Mode == ToggleMode.EnabledWhenTrue)
+                contentContainer.SetEnabled(Value);
+
+            if (Mode == ToggleMode.EnabledWhenFalse)
+                contentContainer.SetEnabled(!Value);
         }
 
         public new class UxmlFactory : UxmlFactory<ToggleGroup, UxmlTraits> { }
@@ -54,6 +69,7 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
         public new class UxmlTraits : VisualElement.UxmlTraits
         {
             private readonly UxmlStringAttributeDescription _label = new UxmlStringAttributeDescription { name = "label" };
+            private readonly UxmlStringAttributeDescription _text = new UxmlStringAttributeDescription { name = "text" };
             private readonly UxmlEnumAttributeDescription<ToggleMode> _mode = new UxmlEnumAttributeDescription<ToggleMode> { name = "mode", defaultValue = ToggleMode.EnabledWhenTrue };
             private readonly UxmlBoolAttributeDescription _value = new UxmlBoolAttributeDescription { name = "value" };
 
@@ -67,8 +83,11 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
                 base.Init(ve, bag, cc);
 
                 ((ToggleGroup)ve).Label = _label.GetValueFromBag(bag, cc);
+                ((ToggleGroup)ve).Text = _text.GetValueFromBag(bag, cc);
                 ((ToggleGroup)ve).Value = _value.GetValueFromBag(bag, cc);
                 ((ToggleGroup)ve).Mode = _mode.GetValueFromBag(bag, cc);
+
+                ((ToggleGroup)ve).ReflectToState();
             }
         }
 
