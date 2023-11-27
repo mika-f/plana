@@ -13,6 +13,8 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components.Abstractions
     {
         public override VisualElement contentContainer { get; }
 
+        public VisualElement Container => contentContainer;
+
         protected ContentControl(StyledComponents sc) : base(sc)
         {
             contentContainer = this.QuerySelector<VisualElement>("[name='container']");
