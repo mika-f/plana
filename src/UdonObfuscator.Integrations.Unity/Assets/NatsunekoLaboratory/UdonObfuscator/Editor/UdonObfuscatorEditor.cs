@@ -3,9 +3,13 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 using JetBrains.Annotations;
@@ -20,6 +24,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 using Button = NatsunekoLaboratory.UdonObfuscator.Components.Button;
+using Object = UnityEngine.Object;
 
 namespace NatsunekoLaboratory.UdonObfuscator
 {
@@ -45,7 +50,8 @@ namespace NatsunekoLaboratory.UdonObfuscator
         private DirectoryField _outputDirField;
         private Checkbox _isDryRunField;
         private DirectoryField _pluginsField;
-
+        private ItemsControl _items;
+        private ObservableDictionary<string, object> _extras;
         private SerializedObject _so;
 
 #if USTYLED
@@ -99,6 +105,8 @@ namespace NatsunekoLaboratory.UdonObfuscator
             _isDryRunField = rootVisualElement.GetElementByName<Checkbox>("is-dry-run");
             _scanButton = rootVisualElement.GetElementByName<Button>("scan");
             _obfuscateButton = rootVisualElement.GetElementByName<Button>("obfuscate");
+            _items = rootVisualElement.GetElementByName<ItemsControl>("items");
+            _extras = new ObservableDictionary<string, object>();
 
             // bindings
             _obfuscateLevelField.Binding(this, () => IsProjectLevelObfuscate);
@@ -107,6 +115,7 @@ namespace NatsunekoLaboratory.UdonObfuscator
             _outputDirField.Binding(this, () => OutputDir);
             _pluginsField.Binding(this, () => PluginsDir);
             _isDryRunField.Binding(this, () => IsDryRun);
+            _items.Binding(Items);
 
             // handlers
             _scanButton.AddClickEventHandler(OnClickScanPlugins);
@@ -121,11 +130,58 @@ namespace NatsunekoLaboratory.UdonObfuscator
 
         private async void OnClickScanPlugins()
         {
-            var dir = PluginsDir.FullName;
             var workspace = Workspace ?? GetProjectScopeWorkspace();
             var obfuscator = new ObfuscateCommand(workspace, PluginsDir, IsDryRun);
             var o = await obfuscator.ExtractPropertiesAsync();
-            var sections = obfuscator.ChunkByPlugins(o);
+            var plugins = obfuscator.ChunkByPlugins(o);
+
+            Items.Clear();
+
+            var culture = new CultureInfo("en-us", false);
+            var ti = culture.TextInfo;
+
+            foreach (var plugin in plugins)
+            {
+                var t = plugin.Key;
+                var items = plugin.Value;
+                var section = new BorderedSection { Title = ToTitleCase(ti, t) };
+                var enabler = items[0];
+                var group = new ToggleGroup { Text = $"Enable {ToTitleCase(ti, enabler.Arg)}", Value = false }.Binding(enabler.Arg, _extras);
+
+                group.ReflectToState();
+                section.Container.Add(group);
+
+                var collection = new ObservableCollection<VisualElement>();
+                group.Container.Add(new ItemsControl().Binding(collection));
+
+                _extras.Add(enabler.Arg, false);
+
+                foreach (var item in items.Skip(1))
+                {
+                    var arg = item.Arg;
+                    var description = item.Description;
+                    var type = item.Type;
+
+                    switch (type)
+                    {
+                        case Type s when s == typeof(bool):
+                            collection.Add(new Checkbox { Text = ToTitleCase(ti, arg) }.Binding(arg, _extras));
+                            _extras.Add(arg, false);
+                            break;
+
+                        default:
+                            Debug.LogWarning($"unsupported type found: {type.FullName}");
+                            break;
+                    }
+                }
+
+                Items.Add(section);
+            }
+        }
+
+        private string ToTitleCase(TextInfo ti, string text)
+        {
+            return ti.ToTitleCase(text).Substring("--".Length).Replace("-", " ");
         }
 
         private FileInfo GetProjectScopeWorkspace()
@@ -228,6 +284,8 @@ namespace NatsunekoLaboratory.UdonObfuscator
         }
 
         #endregion
+
+        public ObservableCollection<VisualElement> Items { get; } = new ObservableCollection<VisualElement>();
 
         #endregion
     }

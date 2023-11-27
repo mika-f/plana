@@ -5,23 +5,35 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-using CodiceApp.EventTracking.Plastic;
-
+using NatsunekoLaboratory.UdonObfuscator.Components;
 using NatsunekoLaboratory.UdonObfuscator.Components.Abstractions;
+using NatsunekoLaboratory.UdonObfuscator.Models;
+
+using UnityEngine.UIElements;
 
 namespace NatsunekoLaboratory.UdonObfuscator.Extensions
 {
     // ReSharper disable once InconsistentNaming
     internal static class IValueChangeNotifiableExtensions
     {
+        public enum BindingMode
+        {
+            TwoWay,
+            OneWay,
+            OneTime,
+            OneWaoToSource
+        }
+
         private static readonly Dictionary<Type, Dictionary<string, MemberInfo>> Members = new Dictionary<Type, Dictionary<string, MemberInfo>>();
 
-        public static TElement Binding<TElement, TValue>(this TElement field, INotifyPropertyChanged obj, Expression<TrackEvent.Func<TValue>> reference, BindingMode mode = BindingMode.TwoWay) where TElement : IValueChangeNotifiable<TValue>
+        public static TElement Binding<TElement, TValue>(this TElement field, INotifyPropertyChanged obj, Expression<Func<TValue>> reference, BindingMode mode = BindingMode.TwoWay) where TElement : IValueChangeNotifiable<TValue>
         {
             var variable = (reference.Body as MemberExpression)?.Member.Name;
             var onRaiseByThis = false;
@@ -56,6 +68,56 @@ namespace NatsunekoLaboratory.UdonObfuscator.Extensions
                 field.Value = GetReflectedValue<TValue>(obj, GetCachedMemberInfo(t, variable));
 
             return field;
+        }
+
+        public static TElement Binding<TElement>(this TElement obj, ObservableCollection<VisualElement> collection, BindingMode mode = BindingMode.TwoWay) where TElement : ItemsControl
+        {
+            collection.CollectionChanged += (sender, e) =>
+            {
+                switch (e.Action)
+                {
+                    case NotifyCollectionChangedAction.Add:
+                    {
+                        if (e.NewItems[0] is VisualElement ve)
+                            obj.Items.Insert(e.NewStartingIndex, ve);
+                        break;
+                    }
+
+                    case NotifyCollectionChangedAction.Move:
+                    {
+                        var ve = obj.Items[e.OldStartingIndex];
+                        obj.Items.Insert(e.NewStartingIndex, ve);
+                        obj.Items.RemoveAt(e.OldStartingIndex);
+                        break;
+                    }
+
+                    case NotifyCollectionChangedAction.Remove:
+                        if (e.OldStartingIndex >= 0)
+                            obj.Items.RemoveAt(e.OldStartingIndex);
+                        break;
+
+                    case NotifyCollectionChangedAction.Replace:
+                    {
+                        if (e.NewItems[0] is VisualElement ve)
+                            obj.Items[e.NewStartingIndex] = ve;
+                        break;
+                    }
+
+                    case NotifyCollectionChangedAction.Reset:
+                        obj.Items.Clear();
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            };
+
+            return obj;
+        }
+
+        public static TElement Binding<TElement, TFieldValue, TKey, TStoreValue>(this TElement obj, TKey key, ObservableDictionary<TKey, TStoreValue> collection, Func<TStoreValue, TFieldValue> convert = null, Func<TFieldValue, TStoreValue> convertBack = null, BindingMode mode = BindingMode.TwoWay)
+            where TElement : IValueChangeNotifiable<TFieldValue>
+        {
+            return obj;
         }
 
         private static MemberInfo GetCachedMemberInfo(Type t, string name)
@@ -100,14 +162,6 @@ namespace NatsunekoLaboratory.UdonObfuscator.Extensions
                 property.SetMethod.Invoke(obj, new object[] { newValue });
             else if (member is FieldInfo field)
                 field.SetValue(obj, newValue);
-        }
-
-        public enum BindingMode
-        {
-            TwoWay,
-            OneWay,
-            OneTime,
-            OneWaoToSource
         }
     }
 }
