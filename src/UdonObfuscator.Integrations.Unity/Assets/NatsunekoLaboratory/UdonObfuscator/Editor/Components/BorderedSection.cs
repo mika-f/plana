@@ -6,33 +6,16 @@
 using System.Collections.Generic;
 
 using NatsunekoLaboratory.UdonObfuscator.Components.Abstractions;
-using NatsunekoLaboratory.UdonObfuscator.Extensions;
 
 using UnityEngine.UIElements;
 
 namespace NatsunekoLaboratory.UdonObfuscator.Components
 {
-    internal class Section : ContentControl
+    internal class BorderedSection : Section
     {
-        private readonly Heading2 _title;
+        public BorderedSection() : base(StyledComponents.Create("2e36091e25bfde9499683ee2ba42f40e", "94fa0b39c08264844a241073e34c3f2a")) { }
 
-        public string Title
-        {
-            get => _title.Label;
-            set => _title.Label = value;
-        }
-
-        public Section() : base(StyledComponents.Create("0ad4cedc831a12241a0bb35110ec49ec", "1c2c6e9b9bf40564a93826a9c2ab16b7"))
-        {
-            _title = this.GetElementByName<Heading2>("title");
-        }
-
-        protected Section(StyledComponents sc) : base(sc)
-        {
-            _title = this.GetElementByName<Heading2>("title");
-        }
-
-        public new class UxmlFactory : UxmlFactory<Section, UxmlTraits> { }
+        public new class UxmlFactory : UxmlFactory<BorderedSection, UxmlTraits> { }
 
         public new class UxmlTraits : VisualElement.UxmlTraits
         {
@@ -47,7 +30,7 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
             {
                 base.Init(ve, bag, cc);
 
-                ((Section)ve).Title = _title.GetValueFromBag(bag, cc);
+                ((BorderedSection)ve).Title = _title.GetValueFromBag(bag, cc);
             }
         }
     }
