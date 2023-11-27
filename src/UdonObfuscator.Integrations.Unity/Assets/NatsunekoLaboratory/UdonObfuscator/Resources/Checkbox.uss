@@ -1,1 +1,3 @@
-﻿
+﻿.unity-toggle__text {
+	padding-left: 4px;
+}
