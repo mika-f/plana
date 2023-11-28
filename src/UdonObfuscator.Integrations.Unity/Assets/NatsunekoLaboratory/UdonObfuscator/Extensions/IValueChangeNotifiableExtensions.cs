@@ -114,9 +114,53 @@ namespace NatsunekoLaboratory.UdonObfuscator.Extensions
             return obj;
         }
 
-        public static TElement Binding<TElement, TFieldValue, TKey, TStoreValue>(this TElement obj, TKey key, ObservableDictionary<TKey, TStoreValue> collection, Func<TStoreValue, TFieldValue> convert = null, Func<TFieldValue, TStoreValue> convertBack = null, BindingMode mode = BindingMode.TwoWay)
+        public static TElement Binding<TElement, TFieldValue, TKey, TStoreValue>(this TElement obj, TKey key, ObservableDictionary<TKey, TStoreValue> collection, IValueConverter<TStoreValue, TFieldValue> converter, BindingMode mode = BindingMode.TwoWay)
             where TElement : IValueChangeNotifiable<TFieldValue>
         {
+            var onRaiseByThis = false;
+
+            obj.AddValueChangedEventListener(e =>
+            {
+                if (mode == BindingMode.OneWaoToSource || mode == BindingMode.TwoWay)
+                {
+                    obj.Value = e.newValue;
+                    collection[key] = converter.ConvertBack(e.newValue, typeof(TStoreValue));
+                }
+
+                onRaiseByThis = true;
+            });
+
+            collection.CollectionChanged += (sender, e) =>
+            {
+                switch (e.Action)
+                {
+                    case NotifyCollectionChangedAction.Add:
+                    {
+                        if (e.NewItems[0] is KeyValuePair<TKey, TStoreValue> item && key.Equals(item.Key))
+                            obj.Value = converter.Convert(item.Value, typeof(TFieldValue));
+                        break;
+                    }
+
+                    case NotifyCollectionChangedAction.Replace:
+                    {
+                        if (e.NewItems[0] is KeyValuePair<TKey, TStoreValue> item && key.Equals(item.Key) && !onRaiseByThis)
+                            obj.Value = converter.Convert(item.Value, typeof(TFieldValue));
+                        break;
+                    }
+
+                    case NotifyCollectionChangedAction.Move:
+                    case NotifyCollectionChangedAction.Remove:
+                    case NotifyCollectionChangedAction.Reset:
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+                onRaiseByThis = false;
+            };
+
+
             return obj;
         }
 
