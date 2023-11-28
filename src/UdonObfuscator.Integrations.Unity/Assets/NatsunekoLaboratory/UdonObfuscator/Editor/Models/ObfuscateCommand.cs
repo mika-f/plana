@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 
 using NatsunekoLaboratory.UdonObfuscator.Models.Abstractions;
 
+using UnityEngine;
+
 namespace NatsunekoLaboratory.UdonObfuscator.Models
 {
     internal class ObfuscateCommand : CommandBase
@@ -102,6 +104,10 @@ namespace NatsunekoLaboratory.UdonObfuscator.Models
             }
 
             return dict;
+        }
+
+        public async Task ObfuscateAsync()
+        {
         }
 
         private List<string> BuildArgs()

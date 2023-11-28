@@ -119,6 +119,7 @@ namespace NatsunekoLaboratory.UdonObfuscator
 
             // handlers
             _scanButton.AddClickEventHandler(OnClickScanPlugins);
+            _obfuscateButton.AddClickEventHandler(OnClickObfuscate);
 
             OnGUICreated();
         }
@@ -136,6 +137,7 @@ namespace NatsunekoLaboratory.UdonObfuscator
             var plugins = obfuscator.ChunkByPlugins(o);
 
             Items.Clear();
+            _extras.Clear();
 
             var culture = new CultureInfo("en-us", false);
             var ti = culture.TextInfo;
@@ -146,7 +148,7 @@ namespace NatsunekoLaboratory.UdonObfuscator
                 var items = plugin.Value;
                 var section = new BorderedSection { Title = ToTitleCase(ti, t) };
                 var enabler = items[0];
-                var group = new ToggleGroup { Text = $"Enable {ToTitleCase(ti, enabler.Arg)}", Value = false }.Binding(enabler.Arg, _extras);
+                var group = new ToggleGroup { Text = $"Enable {ToTitleCase(ti, enabler.Arg)}", Value = false }.Binding(enabler.Arg, _extras, new ObjectToBooleanConverter());
 
                 group.ReflectToState();
                 section.Container.Add(group);
@@ -159,13 +161,12 @@ namespace NatsunekoLaboratory.UdonObfuscator
                 foreach (var item in items.Skip(1))
                 {
                     var arg = item.Arg;
-                    var description = item.Description;
                     var type = item.Type;
 
                     switch (type)
                     {
                         case Type s when s == typeof(bool):
-                            collection.Add(new Checkbox { Text = ToTitleCase(ti, arg) }.Binding(arg, _extras));
+                            collection.Add(new Checkbox { Text = ToTitleCase(ti, arg) }.Binding(arg, _extras, new ObjectToBooleanConverter()));
                             _extras.Add(arg, false);
                             break;
 
@@ -177,6 +178,12 @@ namespace NatsunekoLaboratory.UdonObfuscator
 
                 Items.Add(section);
             }
+        }
+
+        private async void OnClickObfuscate()
+        {
+            var workspace = Workspace ?? GetProjectScopeWorkspace();
+            var obfuscator = new ObfuscateCommand(workspace, PluginsDir, IsDryRun, IsWriteInPlace, OutputDir, _extras.ToDictionary());
         }
 
         private string ToTitleCase(TextInfo ti, string text)

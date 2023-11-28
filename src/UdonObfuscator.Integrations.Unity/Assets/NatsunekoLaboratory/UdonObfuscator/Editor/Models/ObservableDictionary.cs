@@ -132,5 +132,10 @@ namespace NatsunekoLaboratory.UdonObfuscator.Models
             add => _internal.CollectionChanged += value;
             remove => _internal.CollectionChanged -= value;
         }
+
+        public Dictionary<TKey, TValue> ToDictionary()
+        {
+            return _internal.ToDictionary(pair => pair.Key, pair => pair.Value);
+        }
     }
 }
