@@ -103,8 +103,24 @@ namespace NatsunekoLaboratory.UdonObfuscator.Models
 
         public TValue this[TKey key]
         {
-            get => throw new NotImplementedException();
-            set => throw new NotImplementedException();
+            get
+            {
+                if (TryGetValue(key, out var value))
+                    return value;
+                throw new ArgumentException();
+            }
+
+            set
+            {
+                if (ContainsKey(key))
+                {
+                    var idx = _internal.Select((w, i) => (Value: w, Index: i)).First(w => w.Value.Key.Equals(key)).Index;
+                    _internal[idx] = new KeyValuePair<TKey, TValue>(key, value);
+                    return;
+                }
+
+                Add(key, value);
+            }
         }
 
         public ICollection<TKey> Keys => _internal.Select(w => w.Key).ToList();
