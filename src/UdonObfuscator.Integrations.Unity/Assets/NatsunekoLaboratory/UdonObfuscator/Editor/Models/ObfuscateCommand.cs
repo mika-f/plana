@@ -108,6 +108,31 @@ namespace NatsunekoLaboratory.UdonObfuscator.Models
 
         public async Task ObfuscateAsync()
         {
+            var args = BuildArgs();
+            var (code, stdout) = await RunAsync("obfuscate", string.Join(" ", args));
+
+            Action<string> logger = null;
+
+            switch (code)
+            {
+                case 0:
+                    logger = Debug.Log;
+                    break;
+
+                case 1:
+                    logger = Debug.LogError;
+                    break;
+
+                default:
+                    throw new ArgumentException();
+            }
+
+            using (var sr = new StringReader(stdout))
+            {
+                var line = "";
+                while ((line = await sr.ReadLineAsync()) != null)
+                    logger.Invoke(line);
+            }
         }
 
         private List<string> BuildArgs()
@@ -133,10 +158,15 @@ namespace NatsunekoLaboratory.UdonObfuscator.Models
                     var k = extra.Key;
                     var v = extra.Value;
 
-                    if (v is bool b && b)
-                        args.Add(k);
+                    if (v is bool b)
+                    {
+                        if (b)
+                            args.Add(k);
+                    }
                     else
+                    {
                         args.AddRange(new[] { k, v.ToString() });
+                    }
                 }
 
             return args;
