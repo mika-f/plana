@@ -82,3 +82,9 @@ crashlytics-build.properties
 !/[Aa]ssets/NatsunekoLaboratory/UdonObfuscator/Plugins/*.meta
 /[Aa]ssets/NatsunekoLaboratory/UStyled.meta
 /[Aa]ssets/NatsunekoLaboratory/UStyled/*
+/[Aa]ssets/ObfuscateTest.meta
+/[Aa]ssets/ObfuscateTest/*
+/[Aa]ssets/TextMesh Pro.meta
+/[Aa]ssets/TextMesh Pro/*
+/[Aa]ssets/UdonSharp.meta
+/[Aa]ssets/UdonSharp/*
