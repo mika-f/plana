@@ -131,7 +131,7 @@ namespace NatsunekoLaboratory.UdonObfuscator
 
         private async void OnClickScanPlugins()
         {
-            var workspace = Workspace ?? GetProjectScopeWorkspace();
+            var workspace = Workspace;
             var obfuscator = new ObfuscateCommand(workspace, PluginsDir, IsDryRun);
             var o = await obfuscator.ExtractPropertiesAsync();
             var plugins = obfuscator.ChunkByPlugins(o);
@@ -182,8 +182,9 @@ namespace NatsunekoLaboratory.UdonObfuscator
 
         private async void OnClickObfuscate()
         {
-            var workspace = Workspace ?? GetProjectScopeWorkspace();
+            var workspace = GetProjectScopeWorkspace(Workspace);
             var obfuscator = new ObfuscateCommand(workspace, PluginsDir, IsDryRun, IsWriteInPlace, OutputDir, _extras.ToDictionary());
+            await obfuscator.ObfuscateAsync();
         }
 
         private string ToTitleCase(TextInfo ti, string text)
@@ -191,13 +192,23 @@ namespace NatsunekoLaboratory.UdonObfuscator
             return ti.ToTitleCase(text).Substring("--".Length).Replace("-", " ");
         }
 
-        private FileInfo GetProjectScopeWorkspace()
+        private FileInfo GetProjectScopeWorkspace(FileInfo fi)
         {
-            var segments = Application.dataPath.Split('/');
-            var project = segments[segments.Length - 2];
-            var path = Path.GetFullPath(Path.Combine(Application.dataPath, "..", $"{project}.sln"));
+            if (fi == null)
+            {
+                var segments = Application.dataPath.Split('/');
+                var project = segments[segments.Length - 2];
+                var path = Path.GetFullPath(Path.Combine(Application.dataPath, "..", $"{project}.sln"));
 
-            return new FileInfo(path);
+                return new FileInfo(path);
+            }
+            else
+            {
+                var path = Application.dataPath;
+                var filename = Path.GetFileNameWithoutExtension(fi.FullName);
+
+                return new FileInfo(Path.GetFullPath(Path.Combine(path, "..", $"{filename}.csproj")));
+            }
         }
 
         [NotifyPropertyChangedInvocator]
