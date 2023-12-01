@@ -15,13 +15,13 @@ namespace UdonObfuscator.Composition.RenameSymbols;
 [ObfuscatorAlgorithm("rename-symbols")]
 public class SymbolObfuscator : IObfuscatorAlgorithm
 {
-    private static readonly ObfuscatorAlgorithmOption<bool> Namespace = new("--rename-namespaces", "rename namespaces", () => true);
-    private static readonly ObfuscatorAlgorithmOption<bool> ClassName = new("--rename-classes", "rename classes", () => true);
-    private static readonly ObfuscatorAlgorithmOption<bool> Properties = new("--rename-properties", "rename properties", () => true);
-    private static readonly ObfuscatorAlgorithmOption<bool> Fields = new("--rename-fields", "rename fields", () => true);
-    private static readonly ObfuscatorAlgorithmOption<bool> Methods = new("--rename-methods", "rename methods without referencing by SendCustomEvent", () => true);
+    private static readonly ObfuscatorAlgorithmOption<bool> Namespace = new("--rename-namespaces", "rename namespaces", () => false);
+    private static readonly ObfuscatorAlgorithmOption<bool> ClassName = new("--rename-classes", "rename classes", () => false);
+    private static readonly ObfuscatorAlgorithmOption<bool> Properties = new("--rename-properties", "rename properties", () => false);
+    private static readonly ObfuscatorAlgorithmOption<bool> Fields = new("--rename-fields", "rename fields", () => false);
+    private static readonly ObfuscatorAlgorithmOption<bool> Methods = new("--rename-methods", "rename methods without referencing by SendCustomEvent", () => false);
     private static readonly ObfuscatorAlgorithmOption<bool> WithSendCustomEvent = new("--with-send-custom-event", "rename all methods", () => false);
-    private static readonly ObfuscatorAlgorithmOption<bool> Variables = new("--rename-variables", "rename local variables", () => true);
+    private static readonly ObfuscatorAlgorithmOption<bool> Variables = new("--rename-variables", "rename local variables", () => false);
     private static readonly ObfuscatorAlgorithmOption<bool> EnumAttributes = new("--enum-attributes", "add UnityEngine.InspectorName to enum members", () => false);
 
     private readonly Dictionary<ISymbol, string> _dict = new();
