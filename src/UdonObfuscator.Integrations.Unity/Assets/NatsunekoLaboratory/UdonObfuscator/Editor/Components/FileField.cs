@@ -76,7 +76,7 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
 
         private void OnFormValueChanged(ChangeEvent<Object> e)
         {
-            var obj = e.newValue as DefaultAsset;
+            var obj = e.newValue;
             var path = obj == null ? null : AssetDatabase.GetAssetPath(obj);
 
             try
