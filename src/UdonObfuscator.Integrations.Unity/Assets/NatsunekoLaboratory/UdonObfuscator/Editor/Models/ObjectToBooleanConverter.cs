@@ -18,7 +18,7 @@ namespace NatsunekoLaboratory.UdonObfuscator.Models
 
         public object ConvertBack(bool value, Type targetType)
         {
-            return value.ToString();
+            return value;
         }
     }
 }
