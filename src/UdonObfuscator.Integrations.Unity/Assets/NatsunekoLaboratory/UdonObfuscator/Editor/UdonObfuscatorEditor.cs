@@ -245,19 +245,26 @@ namespace NatsunekoLaboratory.UdonObfuscator
         {
             if (fi == null)
             {
-                var segments = Application.dataPath.Split('/');
-                var project = segments[segments.Length - 2];
-                var path = Path.GetFullPath(Path.Combine(Application.dataPath, "..", $"{project}.sln"));
+                if (IsProjectLevelObfuscate)
+                {
+                    var segments = Application.dataPath.Split('/');
+                    var project = segments[segments.Length - 2];
+                    var path = Path.GetFullPath(Path.Combine(Application.dataPath, "..", $"{project}.sln"));
+                    return new FileInfo(path);
+                }
 
-                return new FileInfo(path);
+                return GetCSharpProjectWorkspace("Assembly-CSharp");
             }
-            else
-            {
-                var path = Application.dataPath;
-                var filename = Path.GetFileNameWithoutExtension(fi.FullName);
 
-                return new FileInfo(Path.GetFullPath(Path.Combine(path, "..", $"{filename}.csproj")));
-            }
+
+            var filename = Path.GetFileNameWithoutExtension(fi.FullName);
+            return GetCSharpProjectWorkspace(filename);
+        }
+
+        private FileInfo GetCSharpProjectWorkspace(string name)
+        {
+            var path = Application.dataPath;
+            return new FileInfo(Path.GetFullPath(Path.Combine(path, "..", $"{name}.csproj")));
         }
 
         [NotifyPropertyChangedInvocator]
