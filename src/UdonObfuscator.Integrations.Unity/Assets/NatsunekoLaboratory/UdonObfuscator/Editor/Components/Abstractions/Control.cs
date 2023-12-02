@@ -16,11 +16,12 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components.Abstractions
     using UStyled.Configurations.Presets;
 #endif
 
-    internal class Control : VisualElement
+    internal class Control : VisualElement, IStyledComponents
     {
 #if USTYLED
         private static readonly UStyledCompiler UStyled;
 #endif
+        private readonly StyledComponents _sc;
 
         static Control()
         {
@@ -34,21 +35,27 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components.Abstractions
 
         protected Control(StyledComponents sc)
         {
+            _sc = sc;
+
 #if USTYLED
-            var xaml = LoadAssetByGuid<VisualTreeAsset>(sc.Uxml);
-            var css = LoadAssetByGuid<StyleSheet>(sc.Uss);
+            var xaml = LoadAssetByGuid<VisualTreeAsset>(_sc.Uxml);
             var (uxml, uss) = UStyled.CompileAsAsset(xaml);
 #else
             var uxml = LoadAssetByGuid<VisualTreeAsset>(sc.Uxml);
             var uss = LoadAssetByGuid<StyleSheet>(sc.Uss);
 #endif
 
+            var css = LoadAssetByGuid<StyleSheet>(_sc.Uss);
             if (css != null)
                 styleSheets.Add(css);
 
             styleSheets.Add(uss);
             hierarchy.Add(uxml.CloneTree());
         }
+
+        public string UxmlGuid => _sc.Uxml;
+
+        public string AdditionalUssGuid => _sc.Uss;
 
         protected static T LoadAssetByGuid<T>(string guid) where T : Object
         {

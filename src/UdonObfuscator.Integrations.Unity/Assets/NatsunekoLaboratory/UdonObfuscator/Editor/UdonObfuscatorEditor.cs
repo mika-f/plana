@@ -131,7 +131,7 @@ namespace NatsunekoLaboratory.UdonObfuscator
 
         private async void OnClickScanPlugins()
         {
-            var workspace = Workspace;
+            var workspace = GetProjectScopeWorkspace(Workspace);
             var obfuscator = new ObfuscateCommand(workspace, PluginsDir, IsDryRun);
             var o = await obfuscator.ExtractPropertiesAsync();
             var plugins = obfuscator.ChunkByPlugins(o);
