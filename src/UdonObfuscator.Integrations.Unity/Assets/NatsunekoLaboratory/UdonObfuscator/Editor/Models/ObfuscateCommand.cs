@@ -139,8 +139,8 @@ namespace NatsunekoLaboratory.UdonObfuscator.Models
         {
             var args = new List<string>
             {
-                "--workspace", _workspace.FullName,
-                "--plugins", _plugins.FullName
+                "--workspace", $"\"{_workspace.FullName}\"",
+                "--plugins", $"\"{_plugins.FullName}\""
             };
 
             if (_isDryRun)
