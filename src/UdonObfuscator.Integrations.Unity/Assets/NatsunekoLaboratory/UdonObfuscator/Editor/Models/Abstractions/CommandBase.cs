@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------
 
 using System.Diagnostics;
+using System.Text;
 using System.Threading.Tasks;
 
 using NatsunekoLaboratory.UdonObfuscator.Extensions;
@@ -38,10 +39,12 @@ namespace NatsunekoLaboratory.UdonObfuscator.Models.Abstractions
         public async Task<(int ExitCode, string o)> RunAsync(string command, string arguments)
         {
             var process = CreateProcess("dotnet", $"{Path} {command} {arguments}");
-            var code = await process.RunAsync();
-            var o = await process.StandardOutput.ReadToEndAsync();
+            var o = new StringBuilder();
 
-            return (code, o);
+            // NOTE: StringBuilder is not thread-safe instance. But the output order of stdout and stderr is not important (as long as the order is maintained between stdout and stderr, it is fine)
+            var code = await process.RunAsync(o, o);
+
+            return (code, o.ToString());
         }
 
         protected static Process CreateProcess(string name, string arguments = null)
