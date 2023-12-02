@@ -1,0 +1,5 @@
+.jltdbgufct { font-size: 14px }/* override defaults */
+
+.unity-object-field__input {
+	border-radius: 0;
+}

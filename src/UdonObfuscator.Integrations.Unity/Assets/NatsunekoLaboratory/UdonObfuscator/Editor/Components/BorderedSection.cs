@@ -13,7 +13,7 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
 {
     internal class BorderedSection : Section
     {
-        public BorderedSection() : base(StyledComponents.Create("2e36091e25bfde9499683ee2ba42f40e", "94fa0b39c08264844a241073e34c3f2a")) { }
+        public BorderedSection() : base(StyledComponents.Create("2e36091e25bfde9499683ee2ba42f40e", "94fa0b39c08264844a241073e34c3f2a", "8a23a29802c92a04882c55ff1ea7cf01", "cb82dee2f5d109944997637a811681b6")) { }
 
         public new class UxmlFactory : UxmlFactory<BorderedSection, UxmlTraits> { }
 

@@ -31,7 +31,7 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
             set => _field.label = value;
         }
 
-        public DirectoryField() : base(StyledComponents.Create("0ba11867e8d00b84882b0bade54f787a", "37dbb67b6aa66684a99564da5d186b54"))
+        public DirectoryField() : base(StyledComponents.Create("0ba11867e8d00b84882b0bade54f787a", "37dbb67b6aa66684a99564da5d186b54", "59dce5b9892f3c540bf858bb7a2a6e7c", "7901b3dd8a2a70448b5f34510a301741"))
         {
             _listeners = new List<Action<ChangeEvent<DirectoryInfo>>>();
 

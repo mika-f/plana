@@ -13,10 +13,10 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components.Abstractions
 
         public static StyledComponents Create(string uxml, string uss)
         {
-            return Create(uxml, uxml, uss, uss);
+            return Create(uxml, uss, uxml, uss);
         }
 
-        public static StyledComponents Create(string devUxml, string prodUxml, string devUss, string prodUss)
+        public static StyledComponents Create(string devUxml, string devUss, string prodUxml, string prodUss)
         {
 #if USTYLED
             return new StyledComponents

@@ -32,7 +32,7 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
             set => _button.SetEnabled(!value);
         }
 
-        public Button() : base(StyledComponents.Create("bdd8ef457ffffa841a24a66347750c70", "87729b99b94bdb54aac2fd66189f38d4"))
+        public Button() : base(StyledComponents.Create("bdd8ef457ffffa841a24a66347750c70", "87729b99b94bdb54aac2fd66189f38d4", "808e1ba23cecd8f428bad55ef4a8f500", "023ec3d472daecf4386e1fd60b41db61"))
         {
             _listeners = new List<Action>();
             _button = this.QuerySelector<NativeButton>();

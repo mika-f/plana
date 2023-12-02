@@ -15,6 +15,7 @@ using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 
 using NatsunekoLaboratory.UdonObfuscator.Components;
+using NatsunekoLaboratory.UdonObfuscator.Components.Abstractions;
 using NatsunekoLaboratory.UdonObfuscator.Extensions;
 using NatsunekoLaboratory.UdonObfuscator.Models;
 
@@ -34,25 +35,30 @@ namespace NatsunekoLaboratory.UdonObfuscator
     using UStyled.Configurations.Presets;
 #endif
 
-    public class UdonObfuscatorEditor : EditorWindow, INotifyPropertyChanged
+    public class UdonObfuscatorEditor : EditorWindow, INotifyPropertyChanged, IStyledComponents
     {
-        private const string UxmlGuid = "512581237e5c880478d0c1a9d8a40ef5";
-        private const string UssGuid = "b84460955893c6149baab61b8cf213a1";
         private const string Plugins = "aa64d32311d16b64384036813c06488a";
+
+        private readonly StyledComponents _sc = StyledComponents.Create(
+            "512581237e5c880478d0c1a9d8a40ef5",
+            "b84460955893c6149baab61b8cf213a1",
+            "fb937f4bb333fa14c909bf77ac1d5a67",
+            "c93f385d6149dfa48bacbfa0f60f923f");
+
 #if USTYLED
         private static readonly UStyledCompiler UStyled;
 #endif
-        private Button _obfuscateButton;
-        private Button _scanButton;
-        private ToggleGroup _obfuscateLevelField;
-        private FileField _workspaceField;
-        private ToggleGroup _isWriteInPlaceField;
-        private DirectoryField _outputDirField;
-        private Checkbox _isDryRunField;
-        private DirectoryField _pluginsField;
-        private ItemsControl _items;
         private ObservableDictionary<string, object> _extras;
+        private Checkbox _isDryRunField;
+        private ToggleGroup _isWriteInPlaceField;
+        private ItemsControl _items;
+        private Button _obfuscateButton;
+        private ToggleGroup _obfuscateLevelField;
+        private DirectoryField _outputDirField;
+        private DirectoryField _pluginsField;
+        private Button _scanButton;
         private SerializedObject _so;
+        private FileField _workspaceField;
 
 #if USTYLED
         static UdonObfuscatorEditor()
@@ -66,12 +72,55 @@ namespace NatsunekoLaboratory.UdonObfuscator
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public string UxmlGuid => _sc.Uxml;
+
+        public string AdditionalUssGuid => _sc.Uss;
+
         [MenuItem("Window/Natsuneko Laboratory/Udon Obfuscator")]
         public static void ShowWindow()
         {
             var window = GetWindow<UdonObfuscatorEditor>("Udon Obfuscator");
             window.Show();
         }
+
+#if USTYLED
+        [MenuItem("Window/Natsuneko Laboratory/Debug/Export Compiled Assets")]
+        public static void Export()
+        {
+            var types = typeof(UdonObfuscatorEditor)
+                        .Assembly
+                        .GetTypes()
+                        .Where(w => typeof(IStyledComponents).IsAssignableFrom(w))
+                        .Where(w => w.GetConstructors().Any())
+                        .Select(Activator.CreateInstance)
+                        .Cast<IStyledComponents>()
+                        .ToList();
+
+            foreach (var type in types)
+            {
+                var path = AssetDatabase.GUIDToAssetPath(type.UxmlGuid);
+                var asset = LoadAssetByGuid<VisualTreeAsset>(type.UxmlGuid);
+                var (uxml, uss) = UStyled.CompileAsString(asset);
+
+                if (!string.IsNullOrEmpty(type.AdditionalUssGuid))
+                {
+                    var str = AssetDatabase.GUIDToAssetPath(type.AdditionalUssGuid);
+                    using (var sr = new StreamReader(str))
+                        uss += sr.ReadToEnd();
+                }
+
+                var dir = Path.GetDirectoryName(path) ?? throw new ArgumentException();
+                var filename = Path.GetFileNameWithoutExtension(path);
+                var generatedUxml = Path.Combine(dir, $"{filename}.g.uxml");
+                var generatedUss = Path.Combine(dir, $"{filename}.g.uss");
+
+                File.WriteAllText(generatedUxml, uxml);
+                File.WriteAllText(generatedUss, uss);
+            }
+
+            AssetDatabase.SaveAssets();
+        }
+#endif
 
         private static T LoadAssetByGuid<T>(string guid) where T : Object
         {
@@ -84,13 +133,13 @@ namespace NatsunekoLaboratory.UdonObfuscator
             _so = new SerializedObject(this);
             _so.Update();
 
-            var xaml = LoadAssetByGuid<VisualTreeAsset>(UxmlGuid);
+            var xaml = LoadAssetByGuid<VisualTreeAsset>(_sc.Uxml);
 
 #if USTYLED
             var (uxml, uss) = UStyled.CompileAsAsset(xaml);
 #else
-            var uxml = LoadAssetByGuid<VisualTreeAsset>(UxmlGuid);
-            var uss = LoadAssetByGuid<StyleSheet>(UssGuid);
+            var uxml = LoadAssetByGuid<VisualTreeAsset>(_sc.Uxml);
+            var uss = LoadAssetByGuid<StyleSheet>(_sc.Uss);
 #endif
             rootVisualElement.styleSheets.Add(uss);
 

@@ -37,7 +37,7 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
         }
 
 
-        public Checkbox() : base(StyledComponents.Create("84651a7aeb61342438ed3151794dd07c", "9ad74141476795e4293466c737e8f6aa"))
+        public Checkbox() : base(StyledComponents.Create("84651a7aeb61342438ed3151794dd07c", "9ad74141476795e4293466c737e8f6aa", "f7767e6d222c9e4489cdbc01fac94ae6", "0047e4fbe8c9cdd4788ff73418ab3b76"))
         {
             _listeners = new List<Action<ChangeEvent<bool>>>();
             _toggle = this.QuerySelector<Toggle>();

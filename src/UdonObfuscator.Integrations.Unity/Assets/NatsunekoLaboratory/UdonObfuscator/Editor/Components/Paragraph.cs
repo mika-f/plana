@@ -22,7 +22,7 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
             set => _label.text = value;
         }
 
-        public Paragraph() : base(StyledComponents.Create("4d93c728735b2a84586976f7c776c7df", "053e1d291c84ef54b940f16f9a8ad722"))
+        public Paragraph() : base(StyledComponents.Create("4d93c728735b2a84586976f7c776c7df", "053e1d291c84ef54b940f16f9a8ad722", "ff63739756d70244e99aca784e33eecb", "7b84de402cd0a924b981b471caebb551"))
         {
             _label = this.QuerySelector<Label>();
         }

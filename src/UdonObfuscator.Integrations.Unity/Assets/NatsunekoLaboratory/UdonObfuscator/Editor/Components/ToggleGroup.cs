@@ -44,7 +44,7 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
 
         public ToggleMode Mode { get; set; }
 
-        public ToggleGroup() : base(StyledComponents.Create("65842bc485392d54cace7e2bb32e3a3e", "d3ef72825c3a976439f450a2d327004f"))
+        public ToggleGroup() : base(StyledComponents.Create("65842bc485392d54cace7e2bb32e3a3e", "d3ef72825c3a976439f450a2d327004f", "c5e005dc8632f42439f215e8377c3a6b", "c496b8e6734d6f944b864134ca64ea70"))
         {
             _toggle = this.QuerySelector<Checkbox>();
             _toggle.AddValueChangedEventListener(OnValueChanged);

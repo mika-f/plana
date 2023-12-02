@@ -17,7 +17,7 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
     {
         public IList<VisualElement> Items => new ItemsControlImpl(Container);
 
-        public ItemsControl() : base(StyledComponents.Create("fa8f32e3c48207645a253b1faef8b409", "447d72a2c34860e40a43b53506195997")) { }
+        public ItemsControl() : base(StyledComponents.Create("fa8f32e3c48207645a253b1faef8b409", "447d72a2c34860e40a43b53506195997", "9578bf91344544c4693d1700f74c7887", "78e4c3853c876944eab481eff0bae1dd")) { }
 
         public new class UxmlFactory : UxmlFactory<ItemsControl, UxmlTraits> { }
 
