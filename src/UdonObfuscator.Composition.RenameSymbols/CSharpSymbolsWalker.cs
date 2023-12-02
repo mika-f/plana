@@ -18,8 +18,8 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
     private const string AnnotateDisableNextSyntax = "/* udon-obfuscator:disable */";
     private const string AnnotateNetworkingNextSyntax = "/* udon-obfuscator:networking */";
 
-    private static readonly List<string> Messages = new()
-    {
+    private static readonly List<string> Messages =
+    [
         "Awake",
         "FixedUpdate",
         "LateUpdate",
@@ -84,7 +84,7 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
         "Reset",
         "Start",
         "Update"
-    };
+    ];
 
     public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
     {
