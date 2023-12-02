@@ -150,7 +150,7 @@ namespace NatsunekoLaboratory.UdonObfuscator.Models
                 args.Add("--write");
 
             if (_outputDir != null)
-                args.AddRange(new[] { "--output", _outputDir.FullName });
+                args.AddRange(new[] { "--output", $"\"{_outputDir.FullName}\"" });
 
             if (_extras.Any())
                 foreach (var extra in _extras)
@@ -162,11 +162,16 @@ namespace NatsunekoLaboratory.UdonObfuscator.Models
                     {
                         if (b)
                             args.Add(k);
+                        continue;
                     }
-                    else
+
+                    if (v is FileSystemInfo f)
                     {
-                        args.AddRange(new[] { k, v.ToString() });
+                        args.AddRange(new[] { k, $"\"{f.FullName}\"" });
+                        continue;
                     }
+
+                    args.AddRange(new[] { k, v.ToString() });
                 }
 
             return args;
