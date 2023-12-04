@@ -119,6 +119,7 @@ namespace NatsunekoLaboratory.UdonObfuscator
             }
 
             AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
         }
 #endif
 
@@ -234,6 +235,8 @@ namespace NatsunekoLaboratory.UdonObfuscator
             var workspace = GetProjectScopeWorkspace(Workspace);
             var obfuscator = new ObfuscateCommand(workspace, PluginsDir, IsDryRun, IsWriteInPlace, OutputDir, _extras.ToDictionary());
             await obfuscator.ObfuscateAsync();
+
+            AssetDatabase.Refresh();
         }
 
         private string ToTitleCase(TextInfo ti, string text)
