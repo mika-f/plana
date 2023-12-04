@@ -5,6 +5,8 @@
 
 using System.CommandLine;
 using System.CommandLine.Invocation;
+using System.CommandLine.Parsing;
+using System.Text;
 
 using UdonObfuscator.CLI.Bindings;
 using UdonObfuscator.CLI.Commands.Abstractions;
@@ -134,7 +136,53 @@ public class ObfuscateCommand : ISubCommand
             throw new ArgumentException();
         }
 
-        var args = string.Join(" ", context.ParseResult.Tokens);
+        IEnumerable<string> AsArgs(IReadOnlyList<Token> tokens)
+        {
+            foreach (var token in tokens)
+                switch (token.Type)
+                {
+                    case TokenType.Argument:
+                        if (token.Value.Contains(' '))
+                        {
+                            var sb = new StringBuilder();
+                            foreach (var c in token.Value)
+                                switch (c)
+                                {
+                                    case '"':
+                                        sb.Append('\\');
+                                        sb.Append(c);
+                                        continue;
+
+                                    case '\\':
+                                        sb.Append(@"\\");
+                                        continue;
+
+                                    default:
+                                        sb.Append(c);
+                                        break;
+                                }
+
+                            yield return $"\"{sb}\"";
+                            break;
+                        }
+
+                        yield return token.Value;
+                        break;
+
+                    case TokenType.Command:
+                    case TokenType.Option:
+                    case TokenType.DoubleDash:
+                    case TokenType.Unparsed:
+                    case TokenType.Directive:
+                        yield return token.Value;
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+        }
+
+        var args = string.Join(" ", AsArgs(context.ParseResult.Tokens));
         var ret = command.Parse(args);
         if (ret.UnmatchedTokens.Count > 0)
         {
