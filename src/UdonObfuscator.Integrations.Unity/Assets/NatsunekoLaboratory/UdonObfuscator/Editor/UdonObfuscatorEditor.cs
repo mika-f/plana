@@ -179,6 +179,9 @@ namespace NatsunekoLaboratory.UdonObfuscator
         {
             PluginsDir = new DirectoryInfo(AssetDatabase.GUIDToAssetPath(Plugins));
 
+            // initial state
+            _obfuscateButton.Disabled = _outputDir == null;
+
             // 1st scan
             OnClickScanPlugins();
         }
@@ -333,7 +336,11 @@ namespace NatsunekoLaboratory.UdonObfuscator
         public DirectoryInfo OutputDir
         {
             get => _outputDir;
-            set => SetField(ref _outputDir, value);
+            set
+            {
+                if (SetField(ref _outputDir, value))
+                    _obfuscateButton.Disabled = _outputDir == null;
+            }
         }
 
         #endregion
