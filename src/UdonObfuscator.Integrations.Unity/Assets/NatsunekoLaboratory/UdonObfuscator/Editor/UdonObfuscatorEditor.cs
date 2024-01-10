@@ -11,6 +11,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 using JetBrains.Annotations;
 
@@ -177,6 +178,9 @@ namespace NatsunekoLaboratory.UdonObfuscator
         private void OnGUICreated()
         {
             PluginsDir = new DirectoryInfo(AssetDatabase.GUIDToAssetPath(Plugins));
+
+            // 1st scan
+            OnClickScanPlugins();
         }
 
         private async void OnClickScanPlugins()
