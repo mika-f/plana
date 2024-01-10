@@ -51,9 +51,6 @@ namespace NatsunekoLaboratory.UdonObfuscator
             "c93f385d6149dfa48bacbfa0f60f923f"
         );
 
-#if USTYLED
-        private static readonly UStyledCompiler UStyled;
-#endif
         private ObservableDictionary<string, object> _extras;
         private Checkbox _isDryRunField;
         private ToggleGroup _isWriteInPlaceField;
@@ -332,7 +329,16 @@ namespace NatsunekoLaboratory.UdonObfuscator
         public bool IsWriteInPlace
         {
             get => _isWriteInPlace;
-            set => SetField(ref _isWriteInPlace, value);
+            set
+            {
+                if (SetField(ref _isWriteInPlace, value))
+                {
+                    if (_isWriteInPlace)
+                        _obfuscateButton.Disabled = false;
+                    else
+                        _obfuscateButton.Disabled = _outputDir == null;
+                }
+            }
         }
 
         #endregion
