@@ -15,8 +15,8 @@
 
     <engine:ScrollView class="flex-grow:1 padding:4px padding-bottom:8px">
       <controls:Section title="Preferences" class="margin-bottom:24px">
-        <controls:ToggleGroup label="Obfuscate Project" mode="EnabledWhenFalse" name="obfuscate-level">
-          <controls:FileField label="Workspace" class="margin-top:2px margin-bottom:2px" filter="*.asmdef"
+        <controls:ToggleGroup label="Obfuscate Solution" mode="EnabledWhenFalse" name="obfuscate-level">
+          <controls:FileField label="Project" class="margin-top:2px margin-bottom:2px" filter="*.asmdef"
                               type="UnityEditorInternal.AssemblyDefinitionAsset, UnityEditor" name="workspace" />
         </controls:ToggleGroup>
 
