@@ -8,6 +8,10 @@ using System.Collections.Generic;
 
 using NatsunekoLaboratory.UdonObfuscator.Components.Abstractions;
 using NatsunekoLaboratory.UdonObfuscator.Extensions;
+using NatsunekoLaboratory.UdonObfuscator.Models;
+using NatsunekoLaboratory.UdonObfuscator.Models.Abstractions;
+
+using UnityEditor;
 
 using UnityEngine.UIElements;
 
@@ -18,7 +22,7 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
     internal class Button : Control, IClickable
     {
         private readonly NativeButton _button;
-        private readonly List<Action> _listeners;
+        private readonly List<Action<IAsyncCallbackHandler>> _listeners;
 
         public string Text
         {
@@ -34,20 +38,34 @@ namespace NatsunekoLaboratory.UdonObfuscator.Components
 
         public Button() : base(StyledComponents.Create("bdd8ef457ffffa841a24a66347750c70", "87729b99b94bdb54aac2fd66189f38d4", "808e1ba23cecd8f428bad55ef4a8f500", "023ec3d472daecf4386e1fd60b41db61"))
         {
-            _listeners = new List<Action>();
+            _listeners = new List<Action<IAsyncCallbackHandler>>();
             _button = this.QuerySelector<NativeButton>();
             _button.clicked += OnButtonClicked;
         }
 
-        public void AddClickEventHandler(Action listener)
+        public void AddClickEventHandler(Action<IAsyncCallbackHandler> listener)
         {
             _listeners.Add(listener);
         }
 
-        private void OnButtonClicked()
+        private async void OnButtonClicked()
         {
-            foreach (var listener in _listeners)
-                listener.Invoke();
+            try
+            {
+                EditorUtility.DisplayProgressBar("Executing......", $"execute command{(_listeners.Count > 1 ? "s" : "")}......", 0f);
+
+                foreach (var listener in _listeners)
+                {
+                    var handler = new AsyncCallbackHandler();
+                    listener.Invoke(handler);
+
+                    await handler.WaitForCompleted();
+                }
+            }
+            finally
+            {
+                EditorUtility.ClearProgressBar();
+            }
         }
 
         public new class UxmlFactory : UxmlFactory<Button, UxmlTraits> { }

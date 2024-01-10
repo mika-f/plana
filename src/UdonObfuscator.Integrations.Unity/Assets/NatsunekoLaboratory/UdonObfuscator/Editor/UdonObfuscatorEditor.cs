@@ -11,7 +11,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 
 using JetBrains.Annotations;
 
@@ -19,6 +18,7 @@ using NatsunekoLaboratory.UdonObfuscator.Components;
 using NatsunekoLaboratory.UdonObfuscator.Components.Abstractions;
 using NatsunekoLaboratory.UdonObfuscator.Extensions;
 using NatsunekoLaboratory.UdonObfuscator.Models;
+using NatsunekoLaboratory.UdonObfuscator.Models.Abstractions;
 
 using UnityEditor;
 
@@ -40,11 +40,16 @@ namespace NatsunekoLaboratory.UdonObfuscator
     {
         private const string Plugins = "aa64d32311d16b64384036813c06488a";
 
+#if USTYLED
+        private static readonly UStyledCompiler UStyled;
+#endif
+
         private readonly StyledComponents _sc = StyledComponents.Create(
             "512581237e5c880478d0c1a9d8a40ef5",
             "b84460955893c6149baab61b8cf213a1",
             "fb937f4bb333fa14c909bf77ac1d5a67",
-            "c93f385d6149dfa48bacbfa0f60f923f");
+            "c93f385d6149dfa48bacbfa0f60f923f"
+        );
 
 #if USTYLED
         private static readonly UStyledCompiler UStyled;
@@ -183,10 +188,10 @@ namespace NatsunekoLaboratory.UdonObfuscator
             _obfuscateButton.Disabled = _outputDir == null;
 
             // 1st scan
-            OnClickScanPlugins();
+            OnClickScanPlugins(null);
         }
 
-        private async void OnClickScanPlugins()
+        private async void OnClickScanPlugins([CanBeNull] IAsyncCallbackHandler handler)
         {
             var workspace = GetProjectScopeWorkspace(Workspace);
             var obfuscator = new ObfuscateCommand(workspace, PluginsDir, IsDryRun);
@@ -235,15 +240,18 @@ namespace NatsunekoLaboratory.UdonObfuscator
 
                 Items.Add(section);
             }
+
+            handler?.Next();
         }
 
-        private async void OnClickObfuscate()
+        private async void OnClickObfuscate(IAsyncCallbackHandler handler)
         {
             var workspace = GetProjectScopeWorkspace(Workspace);
             var obfuscator = new ObfuscateCommand(workspace, PluginsDir, IsDryRun, IsWriteInPlace, OutputDir, _extras.ToDictionary());
             await obfuscator.ObfuscateAsync();
 
             AssetDatabase.Refresh();
+            handler.Next();
         }
 
         private string ToTitleCase(TextInfo ti, string text)
