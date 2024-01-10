@@ -6,29 +6,29 @@
   xmlns:editor="UnityEditor.UIElements"
   xmlns:controls="NatsunekoLaboratory.UdonObfuscator.Components"
   xsi:noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd">
-  <engine:VisualElement class="rrejrnwkil vludqvibyd">
-    <engine:VisualElement class="xwyboytksc yuptjkvbso">
+  <engine:VisualElement class="uwdottjysn bvayupslms">
+    <engine:VisualElement class="riqqnybbbd lxuinfxxpo">
       <controls:Heading1 label="Udon Obfuscator" />
       <controls:Paragraph
         text="Udon Obfuscator is a powerful obfuscator optimized for UdonSharp, containing a variety of features which provide protection for your source code from the hackers." />
     </engine:VisualElement>
 
-    <engine:ScrollView class="ooqegubckn omtyfvtcut ulrfnavatf">
-      <controls:Section title="Preferences" class="xwyboytksc">
-        <controls:ToggleGroup label="Obfuscate Project" mode="EnabledWhenFalse" name="obfuscate-level">
-          <controls:FileField label="Workspace" class="zhjjoiftuu wqaeolbrno" filter="*.asmdef"
+    <engine:ScrollView class="whkmrzwsvb oouywmgmau siwpbearlo">
+      <controls:Section title="Preferences" class="riqqnybbbd">
+        <controls:ToggleGroup label="Obfuscate Solution" mode="EnabledWhenFalse" name="obfuscate-level">
+          <controls:FileField label="Project" class="svvywkxezo cifapwcvmb" filter="*.asmdef"
                               type="UnityEditorInternal.AssemblyDefinitionAsset, UnityEditor" name="workspace" />
         </controls:ToggleGroup>
 
         <controls:ToggleGroup label="Write In-Place" mode="EnabledWhenFalse" name="is-write-in-place">
-          <controls:DirectoryField label="Output Dir" class="zhjjoiftuu wqaeolbrno" name="output-dir" />
+          <controls:DirectoryField label="Output Dir" class="svvywkxezo cifapwcvmb" name="output-dir" />
         </controls:ToggleGroup>
 
         <controls:DirectoryField label="Plugins Dir" name="plugins" />
         <controls:Checkbox label="Dry Run" name="is-dry-run" />
       </controls:Section>
 
-      <controls:Section title="Plugins" class="xwyboytksc">
+      <controls:Section title="Plugins" class="riqqnybbbd">
         <controls:ItemsControl name="items" />
         <controls:Button text="Scan Plugins" name="scan" disabled="true" />
       </controls:Section>

@@ -6,9 +6,9 @@
   xmlns:editor="UnityEditor.UIElements"
   xmlns:controls="NatsunekoLaboratory.UdonObfuscator.Components"
   xsi:noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd">
-  <engine:VisualElement class="bbrbfgkpbb">
+  <engine:VisualElement class="ihbxbssqau">
     <controls:Checkbox />
 
-    <engine:VisualElement name="container" class="tkjbxvsmcr" />
+    <engine:VisualElement name="container" class="kacqgyhqhh" />
   </engine:VisualElement>
 </engine:UXML>
