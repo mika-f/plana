@@ -84,7 +84,13 @@ crashlytics-build.properties
 /[Aa]ssets/NatsunekoLaboratory/UStyled/*
 /[Aa]ssets/ObfuscateTest.meta
 /[Aa]ssets/ObfuscateTest/*
+/[Aa]ssets/Scenes/VRCDefaultWorldScene*
+/[Aa]ssets/Scenes/VRCDefaultWorldScene/*
 /[Aa]ssets/TextMesh Pro.meta
 /[Aa]ssets/TextMesh Pro/*
 /[Aa]ssets/UdonSharp.meta
 /[Aa]ssets/UdonSharp/*
+/[Aa]ssets/XR.meta
+/[Aa]ssets/XR/*
+
+/[Pp]ackages/com.vrchat.core.vpm-resolver/*
