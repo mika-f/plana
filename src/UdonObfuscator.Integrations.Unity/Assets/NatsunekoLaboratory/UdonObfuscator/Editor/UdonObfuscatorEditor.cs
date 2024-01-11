@@ -55,10 +55,12 @@ namespace NatsunekoLaboratory.UdonObfuscator
         private Checkbox _isDryRunField;
         private ToggleGroup _isWriteInPlaceField;
         private ItemsControl _items;
+        private Button _loadPreferencesButton;
         private Button _obfuscateButton;
         private ToggleGroup _obfuscateLevelField;
         private DirectoryField _outputDirField;
         private DirectoryField _pluginsField;
+        private Button _savePreferencesButton;
         private Button _scanButton;
         private SerializedObject _so;
         private FileField _workspaceField;
@@ -158,6 +160,8 @@ namespace NatsunekoLaboratory.UdonObfuscator
             _isDryRunField = rootVisualElement.GetElementByName<Checkbox>("is-dry-run");
             _scanButton = rootVisualElement.GetElementByName<Button>("scan");
             _obfuscateButton = rootVisualElement.GetElementByName<Button>("obfuscate");
+            _savePreferencesButton = rootVisualElement.GetElementByName<Button>("save-preferences");
+            _loadPreferencesButton = rootVisualElement.GetElementByName<Button>("load-preferences");
             _items = rootVisualElement.GetElementByName<ItemsControl>("items");
             _extras = new ObservableDictionary<string, object>();
 
@@ -173,6 +177,8 @@ namespace NatsunekoLaboratory.UdonObfuscator
             // handlers
             _scanButton.AddClickEventHandler(OnClickScanPlugins);
             _obfuscateButton.AddClickEventHandler(OnClickObfuscate);
+            _savePreferencesButton.AddClickEventHandler(OnClickSavePreferences);
+            _loadPreferencesButton.AddClickEventHandler(OnClickLoadPreferences);
 
             OnGUICreated();
         }
@@ -185,16 +191,80 @@ namespace NatsunekoLaboratory.UdonObfuscator
             _obfuscateButton.Disabled = _outputDir == null;
 
             // 1st scan
-            OnClickScanPlugins(null);
+            OnClickLoadPreferences(null);
         }
 
-        private async void OnClickScanPlugins([CanBeNull] IAsyncCallbackHandler handler)
+        private async void OnClickScanPlugins(IAsyncCallbackHandler handler)
         {
-            var workspace = GetProjectScopeWorkspace(Workspace);
-            var obfuscator = new ObfuscateCommand(workspace, PluginsDir, IsDryRun);
-            var o = await obfuscator.ExtractPropertiesAsync();
-            var plugins = obfuscator.ChunkByPlugins(o);
+            try
+            {
+                var workspace = GetProjectScopeWorkspace(Workspace);
+                var obfuscator = new ObfuscateCommand(workspace, PluginsDir, IsDryRun);
+                var o = await obfuscator.ExtractPropertiesAsync();
+                var plugins = obfuscator.ChunkByPlugins(o);
+                InflatePluginsSection(plugins, new Dictionary<string, bool>());
 
+                handler.Next();
+            }
+            catch
+            {
+                handler.Abort();
+            }
+        }
+
+        private async void OnClickObfuscate(IAsyncCallbackHandler handler)
+        {
+            try
+            {
+                var workspace = GetProjectScopeWorkspace(Workspace);
+                var obfuscator = new ObfuscateCommand(workspace, PluginsDir, IsDryRun, IsWriteInPlace, OutputDir, _extras.ToDictionary());
+                await obfuscator.ObfuscateAsync();
+
+                AssetDatabase.Refresh();
+                handler.Next();
+            }
+            catch
+            {
+                handler.Abort();
+            }
+        }
+
+        private void OnClickSavePreferences(IAsyncCallbackHandler handler)
+        {
+            try
+            {
+                var v = _extras.ToDictionary().Where(w => (bool)w.Value).Select(w => w.Key);
+                EditorUserSettings.SetConfigValue("UdonObfuscatorPreferences", string.Join(" ", v));
+
+                handler.Next();
+            }
+            catch
+            {
+                handler.Abort();
+            }
+        }
+
+        private async void OnClickLoadPreferences([CanBeNull] IAsyncCallbackHandler handler)
+        {
+            try
+            {
+                var workspace = GetProjectScopeWorkspace(Workspace);
+                var obfuscator = new ObfuscateCommand(workspace, PluginsDir, IsDryRun);
+                var o = await obfuscator.ExtractPropertiesAsync();
+                var v = EditorUserSettings.GetConfigValue("UdonObfuscatorPreferences");
+                var plugins = obfuscator.ChunkByPlugins(o);
+                InflatePluginsSection(plugins, v.Split(' ').ToDictionary(w => w, w => true));
+
+                handler?.Next();
+            }
+            catch
+            {
+                handler?.Abort();
+            }
+        }
+
+        private void InflatePluginsSection(Dictionary<string, List<(string Arg, string Description, Type Type)>> plugins, Dictionary<string, bool> defaults)
+        {
             Items.Clear();
             _extras.Clear();
 
@@ -207,7 +277,7 @@ namespace NatsunekoLaboratory.UdonObfuscator
                 var items = plugin.Value;
                 var section = new BorderedSection { Title = ToTitleCase(ti, t) };
                 var enabler = items[0];
-                var group = new ToggleGroup { Text = $"Enable {ToTitleCase(ti, enabler.Arg)}", Value = false }.Binding(enabler.Arg, _extras, new ObjectToBooleanConverter());
+                var group = new ToggleGroup { Text = $"Enable {ToTitleCase(ti, enabler.Arg)}", Value = defaults.GetValueOrDefault(enabler.Arg, false) }.Binding(enabler.Arg, _extras, new ObjectToBooleanConverter());
 
                 group.ReflectToState();
                 section.Container.Add(group);
@@ -215,7 +285,7 @@ namespace NatsunekoLaboratory.UdonObfuscator
                 var collection = new ObservableCollection<VisualElement>();
                 group.Container.Add(new ItemsControl().Binding(collection));
 
-                _extras.Add(enabler.Arg, false);
+                _extras.Add(enabler.Arg, defaults.GetValueOrDefault(enabler.Arg, false));
 
                 foreach (var item in items.Skip(1))
                 {
@@ -225,8 +295,10 @@ namespace NatsunekoLaboratory.UdonObfuscator
                     switch (type)
                     {
                         case Type s when s == typeof(bool):
-                            collection.Add(new Checkbox { Text = ToTitleCase(ti, arg) }.Binding(arg, _extras, new ObjectToBooleanConverter()));
-                            _extras.Add(arg, false);
+                            var b = defaults.GetValueOrDefault(arg, false);
+
+                            collection.Add(new Checkbox { Text = ToTitleCase(ti, arg), Value = b }.Binding(arg, _extras, new ObjectToBooleanConverter()));
+                            _extras.Add(arg, b);
                             break;
 
                         default:
@@ -237,18 +309,6 @@ namespace NatsunekoLaboratory.UdonObfuscator
 
                 Items.Add(section);
             }
-
-            handler?.Next();
-        }
-
-        private async void OnClickObfuscate(IAsyncCallbackHandler handler)
-        {
-            var workspace = GetProjectScopeWorkspace(Workspace);
-            var obfuscator = new ObfuscateCommand(workspace, PluginsDir, IsDryRun, IsWriteInPlace, OutputDir, _extras.ToDictionary());
-            await obfuscator.ObfuscateAsync();
-
-            AssetDatabase.Refresh();
-            handler.Next();
         }
 
         private string ToTitleCase(TextInfo ti, string text)

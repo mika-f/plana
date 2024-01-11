@@ -35,6 +35,8 @@
 
       <controls:Section title="Actions">
         <controls:Button text="Obfuscate" name="obfuscate" />
+        <controls:Button text="Save Preferences" name="save-preferences" />
+        <controls:Button text="Load Preferences" name="load-preferences" />
       </controls:Section>
     </engine:ScrollView>
 
