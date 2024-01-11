@@ -79,10 +79,10 @@ namespace NatsunekoLaboratory.UdonObfuscator
 
         public string AdditionalUssGuid => _sc.Uss;
 
-        [MenuItem("Window/Natsuneko Laboratory/Udon Obfuscator")]
+        [MenuItem("Window/Natsuneko Laboratory/Plana")]
         public static void ShowWindow()
         {
-            var window = GetWindow<UdonObfuscatorEditor>("Udon Obfuscator");
+            var window = GetWindow<UdonObfuscatorEditor>("Plana");
             window.Show();
         }
 

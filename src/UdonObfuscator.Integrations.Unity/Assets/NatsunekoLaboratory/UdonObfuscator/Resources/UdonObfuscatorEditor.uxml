@@ -8,9 +8,9 @@
   xsi:noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd">
   <engine:VisualElement class="margin-left:16px margin-right:16px">
     <engine:VisualElement class="margin-bottom:24px flex-shrink:0">
-      <controls:Heading1 label="Udon Obfuscator" />
+      <controls:Heading1 label="Plana" />
       <controls:Paragraph
-        text="Udon Obfuscator is a powerful obfuscator optimized for UdonSharp, containing a variety of features which provide protection for your source code from the hackers." />
+        text="Plana (formerly Udon Obfuscator) is a powerful general purpose obfuscator for C#, but optimized for Unity and UdonSharp, containing a variety of features which provide protection for your source code from the hackers." />
     </engine:VisualElement>
 
     <engine:ScrollView class="flex-grow:1 padding:4px padding-bottom:8px">
