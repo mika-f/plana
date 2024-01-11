@@ -1,10 +1,11 @@
-# Udon Obfuscator
+# Plana
 
-Udon Obfuscator is a powerful obfuscator for UdonSharp, containing a variety of features which provide protection for your source code.
+Plana is a powerful general purpose obfuscator for C#, but optimized for Unity and UdonSharp, containing a variety of features which provide protection for your source code from the hackers.
 
 ## Key Features
 
 - cli and unity integration
+- support C#, Unity C#, and UdonSharp
 - pluggable
 
 ## Official Plugins
@@ -21,7 +22,7 @@ Udon Obfuscator is a powerful obfuscator for UdonSharp, containing a variety of 
 
 ## How to use
 
-You can use Udon Obfuscator from an Unity GUI or Command-Line Tool.
+You can use Plana from an Unity GUI or Command-Line Tool.
 
 ### Command Line
 
@@ -35,7 +36,7 @@ $ udon-obfuscator-cli obfuscate --workspace ./YourUnityProject.sln --plugins ./p
 
 ### Unity Integration
 
-Coming Soon...
+See https://docs.natsuneko.com/udon-obfuscator
 
 ## Develop Plugin
 
