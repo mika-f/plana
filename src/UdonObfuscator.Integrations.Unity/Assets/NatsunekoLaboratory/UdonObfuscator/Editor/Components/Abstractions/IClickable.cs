@@ -5,10 +5,12 @@
 
 using System;
 
+using NatsunekoLaboratory.UdonObfuscator.Models.Abstractions;
+
 namespace NatsunekoLaboratory.UdonObfuscator.Components.Abstractions
 {
     internal interface IClickable
     {
-        void AddClickEventHandler(Action listener);
+        void AddClickEventHandler(Action<IAsyncCallbackHandler> listener);
     }
 }
