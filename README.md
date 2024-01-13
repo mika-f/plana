@@ -10,15 +10,15 @@ Plana is a powerful general purpose obfuscator for C#, but optimized for Unity a
 
 ## Official Plugins
 
-- UdonObfuscator.Composition.ControlFlowFlattening
-- UdonObfuscator.Composition.DeadCodeInjection
-- UdonObfuscator.Composition.DisableConsoleOutput
-- UdonObfuscator.Composition.NumbersToExpressions
-- UdonObfuscator.Composition.RenameSymbols
-- UdonObfuscator.Composition.ShuffleDeclarations
-- UdonObfuscator.Composition.SourceMaps
-- UdonObfuscator.Composition.SplitStrings
-- UdonObfuscator.Composition.StringEncryption
+- Plana.Composition.ControlFlowFlattening
+- Plana.Composition.DeadCodeInjection
+- Plana.Composition.DisableConsoleOutput
+- Plana.Composition.NumbersToExpressions
+- Plana.Composition.RenameSymbols
+- Plana.Composition.ShuffleDeclarations
+- Plana.Composition.SourceMaps
+- Plana.Composition.SplitStrings
+- Plana.Composition.StringEncryption
 
 ## How to use
 
@@ -43,14 +43,14 @@ See https://docs.natsuneko.com/udon-obfuscator
 You can add obfuscate algorithm with plugin.
 
 1. Create a C# project with .NET 8.
-2. Add a new reference of `UdonObfuscator.Composition.Abstractions` to project
+2. Add a new reference of `Plana.Composition.Abstractions` to project
 3. Create a new C# source with the following template:
 
 ```csharp
-using UdonObfuscator.Composition.Abstractions;
-using UdonObfuscator.Composition.Abstractions.Attributes;
+using Plana.Composition.Abstractions;
+using Plana.Composition.Abstractions.Attributes;
 
-namespace UdonObfuscator.Composition.YourFirstPlugin;
+namespace Plana.Composition.YourFirstPlugin;
 
 [ObfuscatorAlgorithm("your-first-plugin")]
 public class YourFirstPlugin : IObfuscatorAlgorithm

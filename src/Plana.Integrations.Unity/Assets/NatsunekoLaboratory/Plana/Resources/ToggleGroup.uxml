@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<engine:UXML
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:engine="UnityEngine.UIElements"
+  xmlns:editor="UnityEditor.UIElements"
+  xmlns:controls="NatsunekoLaboratory.Plana.Components"
+  xsi:noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd">
+  <engine:VisualElement class="width:100%">
+    <controls:Checkbox />
+
+    <engine:VisualElement name="container" class="padding-left:8px" />
+  </engine:VisualElement>
+</engine:UXML>

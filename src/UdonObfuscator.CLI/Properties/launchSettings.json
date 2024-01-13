@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "UdonObfuscator.CLI": {
-      "commandName": "Project",
-      "commandLineArgs": "obfuscate --workspace ../../UdonObfuscator/UdonObfuscator.Testing.csproj --log-level verbose --plugins ./UdonObfuscator.CLI/bin/Debug/net8.0/plugins --dry-run --rename-symbols --enum-attributes",
-      "workingDirectory": "../"
-    }
-  }
-}
