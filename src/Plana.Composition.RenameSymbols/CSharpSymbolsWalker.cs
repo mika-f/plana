@@ -10,14 +10,12 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Plana.Composition.Abstractions.Analysis;
+using Plana.Composition.Extensions;
 
 namespace Plana.Composition.RenameSymbols;
 
 internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, bool isRenameClasses, bool isRenameProperties, bool isRenameFields, bool isRenameMethods, bool isRenameMethodsWithEvents, bool isRenameVariables, Dictionary<ISymbol, string> dict) : CSharpSyntaxWalker
 {
-    private const string AnnotateDisableNextSyntax = "/* udon-obfuscator:disable */";
-    private const string AnnotateNetworkingNextSyntax = "/* udon-obfuscator:networking */";
-
     private static readonly List<string> Messages =
     [
         "Awake",
@@ -86,9 +84,11 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
         "Update"
     ];
 
+    private static AnnotationComment NetworkingAnnotation => new("networking");
+
     public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
     {
-        if (isRenameNamespaces && !HasAnnotationComment(node, AnnotateDisableNextSyntax))
+        if (isRenameNamespaces && !node.HasAnnotationComment())
         {
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
             if (symbol != null)
@@ -100,7 +100,7 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
 
     public override void VisitClassDeclaration(ClassDeclarationSyntax node)
     {
-        if (isRenameClasses && !HasAnnotationComment(node, AnnotateDisableNextSyntax))
+        if (isRenameClasses && !node.HasAnnotationComment())
         {
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
             if (symbol != null)
@@ -112,7 +112,7 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
 
     public override void VisitEnumDeclaration(EnumDeclarationSyntax node)
     {
-        if (isRenameClasses && !HasAnnotationComment(node, AnnotateDisableNextSyntax))
+        if (isRenameClasses && !node.HasAnnotationComment())
         {
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
             if (symbol != null)
@@ -124,7 +124,7 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
 
     public override void VisitEnumMemberDeclaration(EnumMemberDeclarationSyntax node)
     {
-        if (isRenameProperties && !HasAnnotationComment(node, AnnotateDisableNextSyntax))
+        if (isRenameProperties && !node.HasAnnotationComment())
         {
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
             if (symbol != null)
@@ -136,9 +136,9 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
 
     public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
     {
-        if (isRenameMethods && !HasAnnotationComment(node, AnnotateDisableNextSyntax))
+        if (isRenameMethods && !node.HasAnnotationComment())
         {
-            var isNetworking = HasAnnotationComment(node, AnnotateNetworkingNextSyntax);
+            var isNetworking = node.HasAnnotationComment(NetworkingAnnotation);
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
             if (symbol != null && !Messages.Contains(symbol.Name))
                 SetIdentifier(symbol, isNetworking ? "M" : "_");
@@ -150,7 +150,7 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
     public override void VisitParameter(ParameterSyntax node)
     {
         var declaration = node.Parent?.Parent;
-        var hasAnnotationComment = declaration != null && HasAnnotationComment((CSharpSyntaxNode)declaration, AnnotateDisableNextSyntax);
+        var hasAnnotationComment = declaration != null && node.HasAnnotationComment();
         if (isRenameVariables && !hasAnnotationComment)
         {
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
@@ -163,7 +163,7 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
 
     public override void VisitPropertyDeclaration(PropertyDeclarationSyntax node)
     {
-        if (isRenameProperties && !HasAnnotationComment(node, AnnotateDisableNextSyntax))
+        if (isRenameProperties && !node.HasAnnotationComment())
         {
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
             if (symbol != null)
@@ -176,7 +176,7 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
     public override void VisitVariableDeclarator(VariableDeclaratorSyntax node)
     {
         var declaration = node.Parent?.Parent;
-        var hasAnnotationComment = declaration != null && HasAnnotationComment((CSharpSyntaxNode)declaration, AnnotateDisableNextSyntax);
+        var hasAnnotationComment = declaration != null && node.HasAnnotationComment();
         if ((isRenameFields || isRenameVariables) && !hasAnnotationComment)
         {
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
@@ -205,16 +205,5 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
             identifier = $"{prefix}0x{RandomNumberGenerator.GetString(hex, 0)}";
 
         dict.Add(symbol, identifier);
-    }
-
-    private bool HasAnnotationComment(CSharpSyntaxNode node, string comment)
-    {
-        if (node.HasLeadingTrivia)
-        {
-            var trivia = node.GetLeadingTrivia();
-            return trivia.ToFullString().Trim() == comment;
-        }
-
-        return false;
     }
 }
