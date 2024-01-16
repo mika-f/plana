@@ -27,7 +27,6 @@ jobs:
 
       - name: Test
         run: |
-          dotnet add package coverlet.collector
           dotnet test ./src/Plana.sln --no-restore --verbosity=normal  --collect="XPlat Code Coverage" --results-directory=./coverage
 
       - name: Publish Coverage
