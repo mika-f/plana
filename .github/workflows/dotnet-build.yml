@@ -1,0 +1,26 @@
+name: Build with .NET
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET tools
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore NuGet dependencies
+        run: |
+          dotnet restore ./src/Plana.sln
+
+      - name: Build
+        run: |
+          dotnet build ./src/Plana.sln --no-restore --configuration=Release
