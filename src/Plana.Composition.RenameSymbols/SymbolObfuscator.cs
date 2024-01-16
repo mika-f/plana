@@ -22,9 +22,9 @@ public class SymbolObfuscator : IObfuscatorAlgorithm
     private static readonly ObfuscatorAlgorithmOption<bool> Methods = new("--rename-methods", "rename methods without referencing by SendCustomEvent", () => false);
     private static readonly ObfuscatorAlgorithmOption<bool> WithSendCustomEvent = new("--with-send-custom-event", "rename all methods", () => false);
     private static readonly ObfuscatorAlgorithmOption<bool> Variables = new("--rename-variables", "rename local variables", () => false);
-    private static readonly ObfuscatorAlgorithmOption<bool> EnumAttributes = new("--enum-attributes", "add UnityEngine.InspectorName to enum members", () => false);
+    private static readonly ObfuscatorAlgorithmOption<bool> KeepNameOnInspector = new("--enum-attributes", "add UnityEngine.InspectorName to enum members", () => false);
 
-    private readonly Dictionary<ISymbol, string> _dict = new();
+    private readonly Dictionary<ISymbol, string> _dict = [];
 
     private bool _isEnableClassNameRenaming;
     private bool _isEnableFieldsRenaming;
@@ -33,9 +33,9 @@ public class SymbolObfuscator : IObfuscatorAlgorithm
     private bool _isEnablePropertiesRenaming;
     private bool _isEnableVariablesRenaming;
     private bool _withSendCustomEvent;
-    private bool _hasEnumAttributes;
+    private bool _keepNameOnInspector;
 
-    public IReadOnlyCollection<IObfuscatorAlgorithmOption> Options => new List<IObfuscatorAlgorithmOption> { Namespace, ClassName, Properties, Fields, Methods, WithSendCustomEvent, Variables, EnumAttributes }.AsReadOnly();
+    public IReadOnlyCollection<IObfuscatorAlgorithmOption> Options => new List<IObfuscatorAlgorithmOption> { Namespace, ClassName, Properties, Fields, Methods, WithSendCustomEvent, Variables, KeepNameOnInspector }.AsReadOnly();
 
     public string Name => "Rename Symbols";
 
@@ -48,7 +48,7 @@ public class SymbolObfuscator : IObfuscatorAlgorithm
         _isEnableMethodsRenaming = binder.GetValue(Methods);
         _withSendCustomEvent = binder.GetValue(WithSendCustomEvent);
         _isEnableVariablesRenaming = binder.GetValue(Variables);
-        _hasEnumAttributes = binder.GetValue(EnumAttributes);
+        _keepNameOnInspector = binder.GetValue(KeepNameOnInspector);
     }
 
     public async Task ObfuscateAsync(List<IProject> projects, CancellationToken ct)
@@ -73,7 +73,7 @@ public class SymbolObfuscator : IObfuscatorAlgorithm
 
         foreach (var document in projects.SelectMany(w => w.Documents))
         {
-            var rewriter = new CSharpSymbolsRewriter(document, _hasEnumAttributes, _dict);
+            var rewriter = new CSharpSymbolsRewriter(document, _keepNameOnInspector, _dict);
 
             var oldNode = await document.SyntaxTree.GetRootAsync(ct);
             var newNode = (CSharpSyntaxNode)rewriter.Visit(oldNode);

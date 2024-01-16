@@ -11,7 +11,7 @@ using Plana.Composition.Abstractions.Analysis;
 
 namespace Plana.Composition.RenameSymbols;
 
-internal class CSharpSymbolsRewriter(IDocument document, bool hasEnumAttributes, IReadOnlyDictionary<ISymbol, string> dict) : CSharpSyntaxRewriter
+internal class CSharpSymbolsRewriter(IDocument document, bool keepNameOnInspector, IReadOnlyDictionary<ISymbol, string> dict) : CSharpSyntaxRewriter
 {
     public override SyntaxNode? VisitClassDeclaration(ClassDeclarationSyntax node)
     {
@@ -47,7 +47,7 @@ internal class CSharpSymbolsRewriter(IDocument document, bool hasEnumAttributes,
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
             if (symbol != null && dict.TryGetValue(symbol, out var value))
             {
-                if (hasEnumAttributes)
+                if (keepNameOnInspector)
                 {
                     // UnityEngine.InspectorNameAttribute for Inspector
                     var arg = SyntaxFactory.AttributeArgument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(symbol.Name)));
