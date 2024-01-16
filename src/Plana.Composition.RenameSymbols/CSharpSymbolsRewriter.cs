@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Plana.Composition.Abstractions.Analysis;
+using Plana.Composition.Extensions;
 
 namespace Plana.Composition.RenameSymbols;
 
@@ -47,7 +48,7 @@ internal class CSharpSymbolsRewriter(IDocument document, bool keepNameOnInspecto
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
             if (symbol != null && dict.TryGetValue(symbol, out var value))
             {
-                if (keepNameOnInspector)
+                if (keepNameOnInspector && !node.HasAttribute(document.SemanticModel, "UnityEngine.InspectorNameAttribute"))
                 {
                     // UnityEngine.InspectorNameAttribute for Inspector
                     var arg = SyntaxFactory.AttributeArgument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(symbol.Name)));
