@@ -1,0 +1,23 @@
+"Area: CLI":
+  - changed-files:
+      - any-glob-to-any-file: "src/Plana.CLI/**/*"
+
+"Area: Plugin/Disable Console Output":
+  - changed-files:
+      - any-glob-to-any-file: "src/Plana.Composition.DisableConsoleOutput/**/*"
+
+"Area: Plugin/Rename Symbols":
+  - changed-files:
+      - any-glob-to-any-file: "src/Plana.Composition.RenameSymbols/**/*"
+
+"Area: Plugin/Shuffle Declarations":
+  - changed-files:
+      - any-glob-to-any-file: "src/Plana.Composition.ShuffleDeclarations/**/*"
+
+"Area: Unity":
+  - changed-files:
+      - any-glob-to-any-file: "src/Plana.Integrations.Unity/**/*"
+
+"Type: CI":
+  - changed-files:
+      - any-glob-to-any-file: ".github/workflows/**/*"
