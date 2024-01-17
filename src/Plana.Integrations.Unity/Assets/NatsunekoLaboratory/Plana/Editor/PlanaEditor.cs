@@ -188,7 +188,7 @@ namespace NatsunekoLaboratory.Plana
             PluginsDir = new DirectoryInfo(AssetDatabase.GUIDToAssetPath(Plugins));
 
             // initial state
-            _obfuscateButton.Disabled = _outputDir == null;
+            UpdateObfuscateButton();
 
             // 1st scan
             OnClickLoadPreferences(null);
@@ -342,6 +342,17 @@ namespace NatsunekoLaboratory.Plana
             return new FileInfo(Path.GetFullPath(Path.Combine(path, "..", $"{name}.csproj")));
         }
 
+        private void UpdateObfuscateButton()
+        {
+            if (_isWriteInPlace)
+            {
+                _obfuscateButton.Disabled = false; // always enabled when is write in-place
+                return;
+            }
+
+            _obfuscateButton.Disabled = _outputDir == null;
+        }
+
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
@@ -392,12 +403,7 @@ namespace NatsunekoLaboratory.Plana
             set
             {
                 if (SetField(ref _isWriteInPlace, value))
-                {
-                    if (_isWriteInPlace)
-                        _obfuscateButton.Disabled = false;
-                    else
-                        _obfuscateButton.Disabled = _outputDir == null;
-                }
+                    UpdateObfuscateButton();
             }
         }
 
@@ -413,7 +419,7 @@ namespace NatsunekoLaboratory.Plana
             set
             {
                 if (SetField(ref _outputDir, value))
-                    _obfuscateButton.Disabled = _outputDir == null;
+                    UpdateObfuscateButton();
             }
         }
 
