@@ -12,7 +12,9 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="cp $(TargetDir)$(ProjectName).dll $(SolutionDir)/Plana.CLI/bin/$(Configuration)/$(TargetFramework)/plugins" />
+    <Exec Command="pwsh -Command New-Item -Force -ItemType Directory '$(SolutionDir)/Plana.CLI/bin/$(Configuration)/$(TargetFramework)/plugins/'" />
+    <Exec Command="pwsh -Command Copy-Item '$(TargetDir)$(ProjectName).dll' '$(SolutionDir)/Plana.CLI/bin/$(Configuration)/$(TargetFramework)/plugins/$(ProjectName).dll'" />
+    <Exec Command="pwsh -Command Copy-Item '$(TargetDir)$(ProjectName).dll' '$(SolutionDir)/Plana.Integrations.Unity/Assets/NatsunekoLaboratory/Plana/Plugins/externals/$(ProjectName).dll'" Condition="'$(Configuration)' == 'Release'" />
   </Target>
 
 </Project>

@@ -3,14 +3,6 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
-using Plana.Composition.Abstractions;
-using Plana.Composition.Abstractions.Attributes;
+namespace Plana.Composition.Abstractions.Exceptions;
 
-namespace Plana.Hosting.Abstractions;
-
-public interface IHostingContainer
-{
-    IReadOnlyCollection<(IPlanaPlugin, PlanaPluginAttribute)> Items { get; }
-
-    Task ResolveAsync(CancellationToken ct);
-}
+public class InvalidFormatException(string message) : Exception(message);

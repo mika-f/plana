@@ -5,7 +5,7 @@
 
 using System.Reflection;
 
-using Plana.Composition.Abstractions.Algorithm;
+using Plana.Composition.Abstractions;
 using Plana.Composition.Abstractions.Attributes;
 using Plana.Hosting.Abstractions;
 using Plana.Logging.Abstractions;
@@ -14,9 +14,9 @@ namespace Plana.Hosting;
 
 public class HostingContainer(DirectoryInfo root, ILogger? logger) : IHostingContainer
 {
-    private readonly List<(IObfuscatorAlgorithm, ObfuscatorAlgorithmAttribute)> _items = new();
+    private readonly List<(IPlanaPlugin, PlanaPluginAttribute)> _items = new();
 
-    public IReadOnlyCollection<(IObfuscatorAlgorithm, ObfuscatorAlgorithmAttribute)> Items => _items.AsReadOnly();
+    public IReadOnlyCollection<(IPlanaPlugin, PlanaPluginAttribute)> Items => _items.AsReadOnly();
 
     public Task ResolveAsync(CancellationToken ct)
     {
@@ -46,13 +46,9 @@ public class HostingContainer(DirectoryInfo root, ILogger? logger) : IHostingCon
 
                 logger?.LogInfo($"plugin loaded: {library.Name}");
             }
-            catch (NotSupportedException e)
-            {
-                logger?.LogError($"failed to load plugin: {e.Message}");
-            }
             catch (Exception e)
             {
-                logger?.LogError($"failed to load plugin: {library.Name}");
+                logger?.LogError($"failed to load plugin: Name={library.Name}, Reason={e.Message}");
             }
         }
 
@@ -70,18 +66,18 @@ public class HostingContainer(DirectoryInfo root, ILogger? logger) : IHostingCon
         return Task.CompletedTask;
     }
 
-    private IEnumerable<(IObfuscatorAlgorithm Instance, ObfuscatorAlgorithmAttribute Attribute)> GetImplementations(Assembly assembly)
+    private IEnumerable<(IPlanaPlugin Instance, PlanaPluginAttribute Attribute)> GetImplementations(Assembly assembly)
     {
         var count = 0;
 
         foreach (var t in assembly.GetExportedTypes())
-            if (typeof(IObfuscatorAlgorithm).IsAssignableFrom(t))
+            if (typeof(IPlanaPlugin).IsAssignableFrom(t))
             {
-                var attr = t.GetCustomAttribute<ObfuscatorAlgorithmAttribute>();
+                var attr = t.GetCustomAttribute<PlanaPluginAttribute>();
                 if (attr == null)
                     continue;
 
-                if (Activator.CreateInstance(t) is not IObfuscatorAlgorithm instance)
+                if (Activator.CreateInstance(t) is not IPlanaPlugin instance)
                     continue;
 
                 logger?.LogDebug($"activated: Type={t.FullName}, Id={attr.Id}");
@@ -92,6 +88,6 @@ public class HostingContainer(DirectoryInfo root, ILogger? logger) : IHostingCon
             }
 
         if (count == 0)
-            throw new NotSupportedException($"can't find any type which implements {nameof(IObfuscatorAlgorithm)} in {assembly.GetName().Name} from {assembly.Location}");
+            throw new NotSupportedException($"can't find any type which implements {nameof(IPlanaPlugin)} in {assembly.GetName().Name} from {assembly.Location}");
     }
 }

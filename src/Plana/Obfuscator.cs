@@ -5,36 +5,39 @@
 
 using Microsoft.CodeAnalysis;
 
-using Plana.Composition.Abstractions.Algorithm;
+using Plana.Composition.Abstractions;
+using Plana.Composition.Abstractions.Enum;
 using Plana.Logging.Abstractions;
 using Plana.Workspace.Abstractions;
 
 namespace Plana;
 
-public class Obfuscator(IWorkspace workspace, List<IObfuscatorAlgorithm> algorithms, ILogger? logger)
+public class Obfuscator(IWorkspace workspace, List<IPlanaPlugin> instances, ILogger? logger)
 {
     public async Task<Dictionary<string, string>> ObfuscateAsync(CancellationToken ct)
     {
-        logger?.LogInfo($"obfuscate workspace with {algorithms.Count} algorithm(s), this may take a few minutes......");
+        logger?.LogInfo($"obfuscate workspace with {instances.Count} instances(s), this may take a few minutes......");
 
         await workspace.ActivateWorkspaceAsync(ct);
 
         var projects = await workspace.GetProjectsAsync(ct);
+        var solution = new PlanaSolution(projects);
+        var context = new PlanaPluginRunContext(solution, RunKind.Obfuscate, ct);
 
         try
         {
-            foreach (var algorithm in algorithms)
+            foreach (var instance in instances)
             {
-                logger?.LogInfo($"applying {algorithm.Name}......");
+                logger?.LogInfo($"applying {instance.Name}......");
 
-                await algorithm.ObfuscateAsync(projects, ct);
+                await instance.RunAsync(context);
             }
 
-            logger?.LogInfo("all algorithms are applied");
+            logger?.LogInfo("all instances are applied");
         }
         catch (Exception e)
         {
-            logger?.LogError("an error occurred, rollback all algorithms");
+            logger?.LogError("an error occurred, rollback all instances");
             logger?.LogDebug(e.Message);
         }
 

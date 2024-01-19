@@ -3,13 +3,15 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
-namespace Plana.Composition.Abstractions.Algorithm;
+namespace Plana.Composition.Abstractions;
 
-public class ObfuscatorAlgorithmOption<T>(string name, string description, Func<T> getDefaultValue) : IObfuscatorAlgorithmOption<T>
+public interface IPlanaPlugin
 {
-    public string Name { get; } = name;
+    IReadOnlyCollection<IPlanaPluginOption> Options { get; }
 
-    public string Description { get; } = description;
+    string Name { get; }
 
-    public Func<T> GetDefaultValue { get; } = getDefaultValue;
+    void BindParameters(IPlanaPluginParameterBinder binder);
+
+    Task RunAsync(IPlanaPluginRunContext context);
 }

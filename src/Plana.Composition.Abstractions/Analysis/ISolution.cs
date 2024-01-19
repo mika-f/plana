@@ -3,15 +3,11 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
-namespace Plana.Composition.Abstractions.Algorithm;
+namespace Plana.Composition.Abstractions.Analysis;
 
-public interface IObfuscatorAlgorithmOption
+public interface ISolution
 {
-    string Name { get; }
+    IReadOnlyCollection<IProject> Projects { get; }
 
-    string Description { get; }
-
-    Func<bool> GetDefaultValue => () => false;
-
-    Type ValueType => typeof(bool);
+    ISourceMap SourceMap { get; }
 }

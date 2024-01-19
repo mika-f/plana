@@ -3,11 +3,11 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
-namespace Plana.Composition.Abstractions.Algorithm;
+namespace Plana.Composition.Abstractions;
 
-public interface IObfuscatorParameterBinder
+public interface IPlanaPluginParameterBinder
 {
-    bool GetValue(IObfuscatorAlgorithmOption option);
+    bool GetValue(IPlanaPluginOption option);
 
-    T GetValue<T>(IObfuscatorAlgorithmOption<T> option);
+    T GetValue<T>(IPlanaPluginOption<T> option);
 }

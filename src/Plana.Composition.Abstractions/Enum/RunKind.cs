@@ -3,11 +3,9 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
-namespace Plana.Composition.Abstractions.Algorithm;
+namespace Plana.Composition.Abstractions.Enum;
 
-public interface IObfuscatorAlgorithmOption<out T> : IObfuscatorAlgorithmOption
+public enum RunKind
 {
-    new Func<T> GetDefaultValue { get; }
-
-    new Type ValueType => typeof(T);
+    Obfuscate
 }

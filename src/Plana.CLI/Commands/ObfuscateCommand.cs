@@ -11,7 +11,8 @@ using System.Text;
 using Plana.CLI.Bindings;
 using Plana.CLI.Commands.Abstractions;
 using Plana.CLI.Extensions;
-using Plana.Composition.Abstractions.Algorithm;
+using Plana.Composition.Abstractions;
+using Plana.Composition.Abstractions.Exceptions;
 using Plana.Hosting.Abstractions;
 using Plana.Logging.Abstractions;
 using Plana.Workspace.Abstractions;
@@ -95,37 +96,51 @@ public class ObfuscateCommand : ISubCommand
         }
         catch (Exception e)
         {
-            logger?.LogDebug($"an error occurred: {e.Message}");
+            logger.LogDebug($"an error occurred: {e.Message}");
         }
     }
 
-    private async Task<List<IObfuscatorAlgorithm>> ParseExtraArguments(InvocationContext context, IHostingContainer container, ILogger logger)
+    private async Task<List<IPlanaPlugin>> ParseExtraArguments(InvocationContext context, IHostingContainer container, ILogger logger)
     {
         var command = new Command("obfuscate");
         command.AddOptions(_workspace, _dryRun, _write, _output, GlobalCommandLineOptions.LogLevel, GlobalCommandLineOptions.Plugins);
 
-        var enablers = new Dictionary<Option<bool>, IObfuscatorAlgorithm>();
-        var options = new Dictionary<IObfuscatorAlgorithm, Dictionary<IObfuscatorAlgorithmOption, Option>>();
+        var enablers = new Dictionary<Option<bool>, IPlanaPlugin>();
+        var options = new Dictionary<IPlanaPlugin, Dictionary<IPlanaPluginOption, Option>>();
 
         foreach (var (obfuscator, attr) in container.Items)
         {
             var enabler = new Option<bool>($"--{attr.Id}", () => false, $"use {attr.Id}");
-            enablers.Add(enabler, obfuscator);
-            command.AddOptions(enabler);
 
-            var dict = new Dictionary<IObfuscatorAlgorithmOption, Option>();
-
-            foreach (var opt in obfuscator.Options)
+            try
             {
-                var option = opt.ToOption();
-                if (option == null)
-                    continue;
+                var temporary = new List<Option> { enabler };
 
-                dict.Add(opt, option);
-                command.AddOptions(option);
+                var dict = new Dictionary<IPlanaPluginOption, Option>();
+
+                foreach (var opt in obfuscator.Options)
+                {
+                    var option = opt.ToOptions();
+                    if (option == null)
+                        continue;
+
+                    dict.Add(opt, option);
+                    temporary.Add(option);
+                }
+
+                options.Add(obfuscator, dict);
+
+                // success
+                enablers.Add(enabler, obfuscator);
+                command.AddOptions(temporary.ToArray());
             }
+            catch (InvalidFormatException e)
+            {
+                // remove
+                enablers.Remove(enabler);
 
-            options.Add(obfuscator, dict);
+                logger.LogError($"invalid name '{e.Message}' in {attr.GetType().Assembly.FullName}");
+            }
         }
 
         if (context.ParseResult.GetValueForOption(GlobalCommandLineOptions.RetrieveArgs))
@@ -194,7 +209,7 @@ public class ObfuscateCommand : ISubCommand
             throw new InvalidOperationException();
         }
 
-        var items = new List<IObfuscatorAlgorithm>();
+        var items = new List<IPlanaPlugin>();
         foreach (var (option, instance) in enablers)
         {
             var enabled = ret.GetValueForOption(option);

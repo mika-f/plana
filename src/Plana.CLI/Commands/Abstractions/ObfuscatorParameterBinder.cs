@@ -6,13 +6,13 @@
 using System.CommandLine;
 using System.CommandLine.Parsing;
 
-using Plana.Composition.Abstractions.Algorithm;
+using Plana.Composition.Abstractions;
 
 namespace Plana.CLI.Commands.Abstractions;
 
-internal class ObfuscatorParameterBinder(ParseResult context, Dictionary<IObfuscatorAlgorithmOption, Option> dict) : IObfuscatorParameterBinder
+internal class ObfuscatorParameterBinder(ParseResult context, Dictionary<IPlanaPluginOption, Option> dict) : IPlanaPluginParameterBinder
 {
-    public bool GetValue(IObfuscatorAlgorithmOption option)
+    public bool GetValue(IPlanaPluginOption option)
     {
         if (dict.TryGetValue(option, out var val))
         {
@@ -21,22 +21,22 @@ internal class ObfuscatorParameterBinder(ParseResult context, Dictionary<IObfusc
                 return b;
         }
 
-        return option.GetDefaultValue();
+        return option.DefaultValue;
     }
 
-    public T GetValue<T>(IObfuscatorAlgorithmOption<T> option)
+    public T GetValue<T>(IPlanaPluginOption<T> option)
     {
         if (dict.TryGetValue(option, out var val))
         {
             var isImplicit = context.FindResultFor(val)?.IsImplicit ?? true;
             if (isImplicit)
-                return option.GetDefaultValue();
+                return option.DefaultValue;
 
             var ret = context.GetValueForOption(val);
             if (ret is T t)
                 return t;
         }
 
-        return option.GetDefaultValue();
+        return option.DefaultValue;
     }
 }

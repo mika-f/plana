@@ -3,14 +3,10 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
-using Plana.Composition.Abstractions;
-using Plana.Composition.Abstractions.Attributes;
+namespace Plana.Composition.Abstractions.Attributes;
 
-namespace Plana.Hosting.Abstractions;
-
-public interface IHostingContainer
+[AttributeUsage(AttributeTargets.Class)]
+public class PlanaPluginAttribute(string id) : Attribute
 {
-    IReadOnlyCollection<(IPlanaPlugin, PlanaPluginAttribute)> Items { get; }
-
-    Task ResolveAsync(CancellationToken ct);
+    public string Id { get; } = id;
 }

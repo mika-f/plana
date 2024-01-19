@@ -7,33 +7,31 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-using Plana.Composition.Abstractions.Algorithm;
-using Plana.Composition.Abstractions.Analysis;
+using Plana.Composition.Abstractions;
 using Plana.Composition.Abstractions.Attributes;
 
 namespace Plana.Composition.DisableConsoleOutput;
 
-[ObfuscatorAlgorithm("disable-console-output")]
-public class DisableConsoleOutputPlugin : IObfuscatorAlgorithm
+[PlanaPlugin("disable-console-output")]
+public class DisableConsoleOutputPlugin : IPlanaPlugin2
 {
-    public IReadOnlyCollection<IObfuscatorAlgorithmOption> Options => new List<IObfuscatorAlgorithmOption>();
+    public IReadOnlyCollection<IPlanaPluginOption> Options => new List<IPlanaPluginOption>();
 
     public string Name => "Disable Console Output";
 
-    public void BindParameters(IObfuscatorParameterBinder binder)
+    public void BindParameters(IPlanaPluginParameterBinder binder)
     {
         // Nothing to do
     }
 
-    public async Task ObfuscateAsync(List<IProject> projects, CancellationToken ct)
+    public async Task ObfuscateAsync(IPlanaPluginRunContext context)
     {
-        foreach (var document in projects.SelectMany(w => w.Documents))
+        foreach (var document in context.Solution.Projects.SelectMany(w => w.Documents))
         {
             var log = document.SemanticModel.Compilation.GetTypeByMetadataName("UnityEngine.Debug")!;
-            var oldNode = await document.SyntaxTree.GetRootAsync(ct);
+            var oldNode = await document.SyntaxTree.GetRootAsync(context.CancellationToken);
 
             // one class one document
-
             foreach (var @class in oldNode.DescendantNodes().OfType<ClassDeclarationSyntax>())
             {
                 var invocations = @class.DescendantNodes()
@@ -48,7 +46,7 @@ public class DisableConsoleOutputPlugin : IObfuscatorAlgorithm
                     var newNode = (CSharpSyntaxNode)rewriter.Visit(oldNode);
                     var newTree = CSharpSyntaxTree.Create(newNode, document.SyntaxTree.Options, document.SyntaxTree.FilePath, document.SyntaxTree.Encoding);
 
-                    await document.WriteSyntaxTreeAsync(newTree, ct);
+                    await document.WriteSyntaxTreeAsync(newTree, context.CancellationToken);
                 }
             }
         }

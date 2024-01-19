@@ -3,14 +3,13 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
-using Plana.Composition.Abstractions;
-using Plana.Composition.Abstractions.Attributes;
+using Plana.Composition.Abstractions.Analysis;
 
-namespace Plana.Hosting.Abstractions;
+namespace Plana;
 
-public interface IHostingContainer
+internal class PlanaSolution(List<IProject> projects) : ISolution
 {
-    IReadOnlyCollection<(IPlanaPlugin, PlanaPluginAttribute)> Items { get; }
+    public IReadOnlyCollection<IProject> Projects { get; } = projects.AsReadOnly();
 
-    Task ResolveAsync(CancellationToken ct);
+    public ISourceMap SourceMap { get; }
 }

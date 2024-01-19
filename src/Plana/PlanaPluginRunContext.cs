@@ -3,17 +3,17 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
+using Plana.Composition.Abstractions;
 using Plana.Composition.Abstractions.Analysis;
+using Plana.Composition.Abstractions.Enum;
 
-namespace Plana.Composition.Abstractions.Algorithm;
+namespace Plana;
 
-public interface IObfuscatorAlgorithm
+internal class PlanaPluginRunContext(ISolution solution, RunKind kind, CancellationToken ct) : IPlanaPluginRunContext
 {
-    IReadOnlyCollection<IObfuscatorAlgorithmOption> Options { get; }
+    public ISolution Solution { get; } = solution;
 
-    string Name { get; }
+    public RunKind Kind { get; } = kind;
 
-    void BindParameters(IObfuscatorParameterBinder binder);
-
-    Task ObfuscateAsync(List<IProject> projects, CancellationToken ct);
+    public CancellationToken CancellationToken { get; } = ct;
 }

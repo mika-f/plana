@@ -3,11 +3,16 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
-namespace Plana.Composition.Abstractions.Algorithm;
+using Plana.Composition.Abstractions.Analysis;
+using Plana.Composition.Abstractions.Enum;
 
-public class ObfuscatorAlgorithmOption(string name, string description) : IObfuscatorAlgorithmOption
+namespace Plana.Composition.Abstractions;
+
+public interface IPlanaPluginRunContext
 {
-    public string Name { get; } = name;
+    ISolution Solution { get; }
 
-    public string Description { get; } = description;
+    RunKind Kind { get; }
+
+    CancellationToken CancellationToken { get; }
 }

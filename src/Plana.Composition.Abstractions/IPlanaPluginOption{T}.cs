@@ -3,14 +3,11 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
-using Plana.Composition.Abstractions;
-using Plana.Composition.Abstractions.Attributes;
+namespace Plana.Composition.Abstractions;
 
-namespace Plana.Hosting.Abstractions;
-
-public interface IHostingContainer
+public interface IPlanaPluginOption<out T> : IPlanaPluginOption
 {
-    IReadOnlyCollection<(IPlanaPlugin, PlanaPluginAttribute)> Items { get; }
+    new T DefaultValue { get; }
 
-    Task ResolveAsync(CancellationToken ct);
+    new Type ValueType => typeof(T);
 }

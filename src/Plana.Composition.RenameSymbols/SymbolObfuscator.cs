@@ -6,23 +6,22 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
-using Plana.Composition.Abstractions.Algorithm;
-using Plana.Composition.Abstractions.Analysis;
+using Plana.Composition.Abstractions;
 using Plana.Composition.Abstractions.Attributes;
 
 namespace Plana.Composition.RenameSymbols;
 
-[ObfuscatorAlgorithm("rename-symbols")]
-public class SymbolObfuscator : IObfuscatorAlgorithm
+[PlanaPlugin("rename-symbols")]
+public class SymbolObfuscator : IPlanaPlugin2
 {
-    private static readonly ObfuscatorAlgorithmOption<bool> Namespace = new("--rename-namespaces", "rename namespaces", () => false);
-    private static readonly ObfuscatorAlgorithmOption<bool> ClassName = new("--rename-classes", "rename classes", () => false);
-    private static readonly ObfuscatorAlgorithmOption<bool> Properties = new("--rename-properties", "rename properties", () => false);
-    private static readonly ObfuscatorAlgorithmOption<bool> Fields = new("--rename-fields", "rename fields", () => false);
-    private static readonly ObfuscatorAlgorithmOption<bool> Methods = new("--rename-methods", "rename methods without referencing by SendCustomEvent", () => false);
-    private static readonly ObfuscatorAlgorithmOption<bool> WithSendCustomEvent = new("--with-send-custom-event", "rename all methods", () => false);
-    private static readonly ObfuscatorAlgorithmOption<bool> Variables = new("--rename-variables", "rename local variables", () => false);
-    private static readonly ObfuscatorAlgorithmOption<bool> KeepNameOnInspector = new("--enum-attributes", "add UnityEngine.InspectorName to enum members", () => false);
+    private static readonly PlanaPluginOption Namespace = new("rename-namespaces", "Rename Namespaces", "rename namespaces, not supports file-scoped namespaces", false);
+    private static readonly PlanaPluginOption ClassName = new("rename-classes", "Rename Classes", "rename classes", false);
+    private static readonly PlanaPluginOption Properties = new("rename-properties", "Rename Properties", "rename properties", false);
+    private static readonly PlanaPluginOption Fields = new("rename-fields", "rename fields", false);
+    private static readonly PlanaPluginOption Methods = new("rename-methods", "rename methods", false);
+    private static readonly PlanaPluginOption WithSendCustomEvent = new("with-send-custom-event", "rename all methods", false);
+    private static readonly PlanaPluginOption Variables = new("rename-variables", "rename local variables", false);
+    private static readonly PlanaPluginOption KeepNameOnInspector = new("enum-attributes", "add UnityEngine.InspectorName to enum members, without already specified", false);
 
     private readonly Dictionary<ISymbol, string> _dict = [];
 
@@ -32,14 +31,14 @@ public class SymbolObfuscator : IObfuscatorAlgorithm
     private bool _isEnableNamespaceRenaming;
     private bool _isEnablePropertiesRenaming;
     private bool _isEnableVariablesRenaming;
-    private bool _withSendCustomEvent;
     private bool _keepNameOnInspector;
+    private bool _withSendCustomEvent;
 
-    public IReadOnlyCollection<IObfuscatorAlgorithmOption> Options => new List<IObfuscatorAlgorithmOption> { Namespace, ClassName, Properties, Fields, Methods, WithSendCustomEvent, Variables, KeepNameOnInspector }.AsReadOnly();
+    public IReadOnlyCollection<IPlanaPluginOption> Options => new List<IPlanaPluginOption> { Namespace, ClassName, Properties, Fields, Methods, WithSendCustomEvent, Variables, KeepNameOnInspector }.AsReadOnly();
 
     public string Name => "Rename Symbols";
 
-    public void BindParameters(IObfuscatorParameterBinder binder)
+    public void BindParameters(IPlanaPluginParameterBinder binder)
     {
         _isEnableNamespaceRenaming = binder.GetValue(Namespace);
         _isEnableClassNameRenaming = binder.GetValue(ClassName);
@@ -51,9 +50,9 @@ public class SymbolObfuscator : IObfuscatorAlgorithm
         _keepNameOnInspector = binder.GetValue(KeepNameOnInspector);
     }
 
-    public async Task ObfuscateAsync(List<IProject> projects, CancellationToken ct)
+    public async Task ObfuscateAsync(IPlanaPluginRunContext context)
     {
-        foreach (var document in projects.SelectMany(w => w.Documents))
+        foreach (var document in context.Solution.Projects.SelectMany(w => w.Documents))
         {
             var walker = new CSharpSymbolsWalker(
                 document,
@@ -67,19 +66,19 @@ public class SymbolObfuscator : IObfuscatorAlgorithm
                 _dict
             );
 
-            var oldNode = await document.SyntaxTree.GetRootAsync(ct);
+            var oldNode = await document.SyntaxTree.GetRootAsync(context.CancellationToken);
             walker.Visit(oldNode);
         }
 
-        foreach (var document in projects.SelectMany(w => w.Documents))
+        foreach (var document in context.Solution.Projects.SelectMany(w => w.Documents))
         {
             var rewriter = new CSharpSymbolsRewriter(document, _keepNameOnInspector, _dict);
 
-            var oldNode = await document.SyntaxTree.GetRootAsync(ct);
+            var oldNode = await document.SyntaxTree.GetRootAsync(context.CancellationToken);
             var newNode = (CSharpSyntaxNode)rewriter.Visit(oldNode);
             var newTree = CSharpSyntaxTree.Create(newNode, document.SyntaxTree.Options, document.SyntaxTree.FilePath, document.SyntaxTree.Encoding);
 
-            await document.WriteSyntaxTreeAsync(newTree, ct);
+            await document.WriteSyntaxTreeAsync(newTree, context.CancellationToken);
         }
     }
 }
