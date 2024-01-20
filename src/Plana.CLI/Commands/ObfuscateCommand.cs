@@ -10,6 +10,7 @@ using System.Text;
 
 using Plana.CLI.Bindings;
 using Plana.CLI.Commands.Abstractions;
+using Plana.CLI.Exceptions;
 using Plana.CLI.Extensions;
 using Plana.Composition.Abstractions;
 using Plana.Composition.Abstractions.Exceptions;
@@ -94,6 +95,10 @@ public class ObfuscateCommand : ISubCommand
 
             throw new InvalidOperationException("no output provider specified");
         }
+        catch (ControlledGlobalExitException)
+        {
+            // ignored
+        }
         catch (Exception e)
         {
             logger.LogDebug($"an error occurred: {e.Message}");
@@ -148,7 +153,7 @@ public class ObfuscateCommand : ISubCommand
             foreach (var o in command.Options)
                 Console.WriteLine($"Name=--{o.Name}, Type={o.ValueType.FullName}, Required={o.IsRequired}, Description={o.Description}");
 
-            throw new ArgumentException();
+            throw new ControlledGlobalExitException();
         }
 
         IEnumerable<string> AsArgs(IReadOnlyList<Token> tokens)
