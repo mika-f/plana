@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="pwsh -Command Copy-Item $(TargetDir)*.dll $(SolutionDir)/Plana.Integrations.Unity/Assets/NatsunekoLaboratory/Plana/Plugins" Condition="'$(Configuration)' == 'Release'"/>
-    <Exec Command="pwsh -Command Copy-Item $(TargetDir)*.json $(SolutionDir)/Plana.Integrations.Unity/Assets/NatsunekoLaboratory/Plana/Plugins" Condition="'$(Configuration)' == 'Release'"/>
+    <Exec Command="pwsh -Command Copy-Item $(TargetDir)*.dll $(SolutionDir)/Plana.Integrations.Unity/Assets/NatsunekoLaboratory/Plana/Plugins" Condition="'$(Configuration)' == 'Release'" />
+    <Exec Command="pwsh -Command Copy-Item $(TargetDir)*.json $(SolutionDir)/Plana.Integrations.Unity/Assets/NatsunekoLaboratory/Plana/Plugins" Condition="'$(Configuration)' == 'Release'" />
   </Target>
 </Project>
