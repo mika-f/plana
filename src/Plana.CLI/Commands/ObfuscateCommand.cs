@@ -86,7 +86,7 @@ public class ObfuscateCommand : ISubCommand
                     if (!Directory.Exists(dir))
                         Directory.CreateDirectory(dir);
 
-                    logger.LogInfo($"write file: {path}");
+                    logger.LogInfo($"write file: {to}");
                     await File.WriteAllTextAsync(to, content, ct);
                 }
 
