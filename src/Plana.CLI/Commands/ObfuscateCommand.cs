@@ -112,10 +112,12 @@ public class ObfuscateCommand : ISubCommand
 
         var enablers = new Dictionary<Option<bool>, IPlanaPlugin>();
         var options = new Dictionary<IPlanaPlugin, Dictionary<IPlanaPluginOption, Option>>();
+        var allPluginOptions = new List<IPlanaPluginOption>();
 
         foreach (var (obfuscator, attr) in container.Items)
         {
-            var enabler = new Option<bool>($"--{attr.Id}", () => false, $"use {attr.Id}");
+            var enabler = new Option<bool>($"--{attr.Id}", () => false, $"enable {attr.Id} plugin");
+            allPluginOptions.Add(new PlanaPluginOption(attr.Id, $"enable {attr.Id} plugin", false));
 
             try
             {
@@ -131,6 +133,7 @@ public class ObfuscateCommand : ISubCommand
 
                     dict.Add(opt, option);
                     temporary.Add(option);
+                    allPluginOptions.Add(opt);
                 }
 
                 options.Add(obfuscator, dict);
@@ -150,8 +153,8 @@ public class ObfuscateCommand : ISubCommand
 
         if (context.ParseResult.GetValueForOption(GlobalCommandLineOptions.RetrieveArgs))
         {
-            foreach (var o in command.Options)
-                Console.WriteLine($"Name=--{o.Name}, Type={o.ValueType.FullName}, Required={o.IsRequired}, Description={o.Description}");
+            foreach (var o in allPluginOptions)
+                Console.WriteLine($"Id={o.Name}, Name={o.FriendlyName}, Type={o.ValueType.FullName}, Required={false}, Description={o.Description}");
 
             throw new ControlledGlobalExitException();
         }
