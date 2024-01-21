@@ -35,6 +35,7 @@ jobs:
 
       - name: Publish Coverage
         uses: irongut/CodeCoverageSummary@v1.3.0
+        if: matrix.os == 'ubuntu-latest'
         with:
           filename: coverage/**/coverage.cobertura.xml
           badge: true
