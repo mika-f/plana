@@ -196,20 +196,7 @@ namespace NatsunekoLaboratory.Plana
 
         private async void OnClickScanPlugins(IAsyncCallbackHandler handler)
         {
-            try
-            {
-                var workspace = GetProjectScopeWorkspace(Workspace);
-                var obfuscator = new ObfuscateCommand(workspace, PluginsDir, IsDryRun);
-                var o = await obfuscator.ExtractPropertiesAsync();
-                var plugins = obfuscator.ChunkByPlugins(o);
-                InflatePluginsSection(plugins, new Dictionary<string, bool>());
-
-                handler.Next();
-            }
-            catch (Exception e)
-            {
-                handler.Abort();
-            }
+            OnClickLoadPreferences(handler);
         }
 
         private async void OnClickObfuscate(IAsyncCallbackHandler handler)
