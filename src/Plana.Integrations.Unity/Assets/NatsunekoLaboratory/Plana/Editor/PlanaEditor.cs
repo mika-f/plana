@@ -280,7 +280,7 @@ namespace NatsunekoLaboratory.Plana
                         case Type s when s == typeof(bool):
                             var b = defaults.GetValueOrDefault(item.Id, false);
 
-                            collection.Add(new Checkbox { Text = item.FriendlyName, Value = b }.Binding(item.Id, _extras, new ObjectToBooleanConverter()));
+                            collection.Add(new Checkbox { Text = item.FriendlyName, Value = b }.Binding(item.Id, _extras, new ObjectToBooleanConverter()).WithTooltip(item.Description));
                             _extras.Add(item.Id, b);
                             break;
 
