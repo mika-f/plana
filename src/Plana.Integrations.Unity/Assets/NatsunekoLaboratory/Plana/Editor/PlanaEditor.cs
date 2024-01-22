@@ -263,7 +263,7 @@ namespace NatsunekoLaboratory.Plana
             }
         }
 
-        private void InflatePluginsSection(Dictionary<string, List<(string Arg, string Description, Type Type)>> plugins, Dictionary<string, bool> defaults)
+        private void InflatePluginsSection(Dictionary<string, List<(string Id, string FriendlyName, string Description, Type Type)>> plugins, Dictionary<string, bool> defaults)
         {
             Items.Clear();
             _extras.Clear();
@@ -277,7 +277,7 @@ namespace NatsunekoLaboratory.Plana
                 var items = plugin.Value;
                 var section = new BorderedSection { Title = ToTitleCase(ti, t) };
                 var enabler = items[0];
-                var group = new ToggleGroup { Text = $"Enable {ToTitleCase(ti, enabler.Arg)}", Value = defaults.GetValueOrDefault(enabler.Arg, false) }.Binding(enabler.Arg, _extras, new ObjectToBooleanConverter());
+                var group = new ToggleGroup { Text = $"Enable {ToTitleCase(ti, enabler.FriendlyName)}", Value = defaults.GetValueOrDefault(enabler.Id, false) }.Binding(enabler.Id, _extras, new ObjectToBooleanConverter());
 
                 group.ReflectToState();
                 section.Container.Add(group);
@@ -285,27 +285,22 @@ namespace NatsunekoLaboratory.Plana
                 var collection = new ObservableCollection<VisualElement>();
                 group.Container.Add(new ItemsControl().Binding(collection));
 
-                _extras.Add(enabler.Arg, defaults.GetValueOrDefault(enabler.Arg, false));
+                _extras.Add(enabler.Id, defaults.GetValueOrDefault(enabler.Id, false));
 
                 foreach (var item in items.Skip(1))
-                {
-                    var arg = item.Arg;
-                    var type = item.Type;
-
-                    switch (type)
+                    switch (item.Type)
                     {
                         case Type s when s == typeof(bool):
-                            var b = defaults.GetValueOrDefault(arg, false);
+                            var b = defaults.GetValueOrDefault(item.Id, false);
 
-                            collection.Add(new Checkbox { Text = ToTitleCase(ti, arg), Value = b }.Binding(arg, _extras, new ObjectToBooleanConverter()));
-                            _extras.Add(arg, b);
+                            collection.Add(new Checkbox { Text = item.FriendlyName, Value = b }.Binding(item.Id, _extras, new ObjectToBooleanConverter()));
+                            _extras.Add(item.Id, b);
                             break;
 
                         default:
-                            Debug.LogWarning($"unsupported type found: {type.FullName}");
+                            Debug.LogWarning($"unsupported type found: {item.Type.FullName}");
                             break;
                     }
-                }
 
                 Items.Add(section);
             }
@@ -313,7 +308,7 @@ namespace NatsunekoLaboratory.Plana
 
         private string ToTitleCase(TextInfo ti, string text)
         {
-            return ti.ToTitleCase(text).Substring("--".Length).Replace("-", " ");
+            return ti.ToTitleCase(text).Replace("-", " ");
         }
 
         private FileInfo GetProjectScopeWorkspace(FileInfo fi)

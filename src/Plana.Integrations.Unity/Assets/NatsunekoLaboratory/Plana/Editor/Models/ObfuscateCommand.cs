@@ -44,9 +44,9 @@ namespace NatsunekoLaboratory.Plana.Models
             _extras = extras ?? new Dictionary<string, object>();
         }
 
-        public async Task<Dictionary<string, (Type Type, string Descripton)>> ExtractPropertiesAsync()
+        public async Task<Dictionary<string, (string FriendlyName, Type Type, string Descripton)>> ExtractPropertiesAsync()
         {
-            var dict = new Dictionary<string, (Type Type, string Descripton)>();
+            var dict = new Dictionary<string, (string FriendlyName, Type Type, string Descripton)>();
             var arguments = BuildArgs();
             arguments.Add("--retrieve-args");
 
@@ -58,12 +58,16 @@ namespace NatsunekoLaboratory.Plana.Models
                 while ((line = await sr.ReadLineAsync()) != null)
                 {
                     var segments = line.Split(',').Select(w => w.Trim()).ToArray();
-                    var name = segments[0];
-                    var type = segments[1];
-                    var description = segments[3];
+                    var id = segments[0];
+                    var name = segments[1];
+                    var type = segments[2];
+                    var isRequired = segments[3];
+                    var description = string.Join(" ", segments.Skip(4));
 
-                    if (name.StartsWith("Name=") && type.StartsWith("Type=") && description.StartsWith("Description="))
+
+                    if (id.StartsWith("Id=") && name.StartsWith("Name=") && type.StartsWith("Type=") && description.StartsWith("Description="))
                     {
+                        var i = id.Substring("Id=".Length);
                         var n = name.Substring("Name=".Length);
                         var t = Type.GetType(type.Substring("Type=".Length));
                         var d = description.Substring("Description=".Length);
@@ -72,7 +76,7 @@ namespace NatsunekoLaboratory.Plana.Models
                             continue;
 
                         if (t != null)
-                            dict.Add(n, (t, d));
+                            dict.Add(i, (n, t, d));
                     }
                 }
             }
@@ -80,27 +84,28 @@ namespace NatsunekoLaboratory.Plana.Models
             return dict;
         }
 
-        public Dictionary<string, List<(string Arg, string Description, Type Type)>> ChunkByPlugins(Dictionary<string, (Type Type, string Description)> properties)
+        public Dictionary<string, List<(string Id, string FriendlyName, string Description, Type Type)>> ChunkByPlugins(Dictionary<string, (string FriendlyName, Type Type, string Description)> properties)
         {
-            var dict = new Dictionary<string, List<(string Arg, string Description, Type Type)>>();
+            var dict = new Dictionary<string, List<(string Id, string FriendlyName, string Description, Type Type)>>();
             var cur = "";
 
             foreach (var property in properties)
             {
                 var arg = property.Key;
                 var type = property.Value.Type;
+                var friendlyName = property.Value.FriendlyName;
                 var description = property.Value.Description;
 
-                if ($"use {arg.Substring("--".Length)}" == description)
+                if ($"enable {arg} plugin" == description)
                     cur = arg;
 
                 if (string.IsNullOrWhiteSpace(cur))
                     continue; // unknown
 
                 if (dict.ContainsKey(cur))
-                    dict[cur].Add((arg, description, type));
+                    dict[cur].Add((arg, friendlyName, description, type));
                 else
-                    dict[cur] = new List<(string Arg, string Description, Type Type)> { (arg, description, type) };
+                    dict[cur] = new List<(string Id, string FriendlyName, string Description, Type Type)> { (arg, friendlyName, description, type) };
             }
 
             return dict;
@@ -161,17 +166,17 @@ namespace NatsunekoLaboratory.Plana.Models
                     if (v is bool b)
                     {
                         if (b)
-                            args.Add(k);
+                            args.Add($"--{k}");
                         continue;
                     }
 
                     if (v is FileSystemInfo f)
                     {
-                        args.AddRange(new[] { k, $"\"{f.FullName}\"" });
+                        args.AddRange(new[] { $"--{k}", $"\"{f.FullName}\"" });
                         continue;
                     }
 
-                    args.AddRange(new[] { k, v.ToString() });
+                    args.AddRange(new[] { $"--{k}", v.ToString() });
                 }
 
             return args;
