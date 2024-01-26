@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 
+using Plana.Desktop.Extensions;
+
 namespace Plana.Desktop
 {
     public static class MauiProgram
@@ -18,10 +20,11 @@ namespace Plana.Desktop
 
 #if DEBUG
     		builder.Services.AddBlazorWebViewDeveloperTools();
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
-            return builder.Build();
+
+            return builder.Build().StartServices();
         }
     }
 }

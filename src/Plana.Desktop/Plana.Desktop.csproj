@@ -55,10 +55,22 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Remove="tailwind.config.js" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <MauiAsset Include="tailwind.config.js" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Services\Abstractions\" />
     </ItemGroup>
 
 </Project>

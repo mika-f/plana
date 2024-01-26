@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@inject IJSRuntime JsRuntime
 
 <div class="page">
     <div class="sidebar">
@@ -15,3 +16,33 @@
         </article>
     </main>
 </div>
+
+<script>
+    window.onApplicationInitialize = ({ configuration, ...rest }) => {
+        if (configuration === "DEBUG") {
+            const head = document.getElementsByTagName("head")[0];
+            const { content } = rest;
+
+            const config = document.createElement("script");
+            config.innerText = content;
+            head.appendChild(config);
+
+            const script = document.createElement("script");
+            script.src = "https://cdn.tailwindcss.com";
+
+            head.appendChild(script);
+        }
+    }
+</script>
+
+@code
+{
+    protected override async Task OnInitializedAsync()
+    {
+#if DEBUG
+        var path = new StreamReader(await FileSystem.Current.OpenAppPackageFileAsync("tailwind.config.js"));
+        var content = await path.ReadToEndAsync();
+        await JsRuntime.InvokeVoidAsync("onApplicationInitialize", new { configuration = "DEBUG", tailwind = content.Replace("module.exports", "tailwind.config") });
+#endif
+    }
+}
