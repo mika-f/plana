@@ -1,0 +1,15 @@
+name: "Install .NET with dependencies"
+description: ""
+runs:
+  using: composite
+  steps:
+    - name: Setup .NET tools
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: "8.0.x"
+
+    - name: Restore NuGet dependencies
+      shell: bash
+      run: |
+        dotnet workload restore ./src/Plana.sln
+        dotnet restore ./src/Plana.sln

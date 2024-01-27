@@ -16,14 +16,8 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup .NET tools
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "8.0.x"
-
       - name: Restore NuGet dependencies
-        run: |
-          dotnet restore ./src/Plana.sln
+        uses: ./.github/composite/nodejs
 
       - name: Build
         run: |
