@@ -2,6 +2,8 @@ name: Build with .NET
 
 on:
   push:
+    branches:
+      - main
   pull_request:
   workflow_dispatch:
 
