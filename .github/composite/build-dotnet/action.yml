@@ -1,0 +1,9 @@
+name: "Build .NET"
+description: ""
+runs:
+  using: composite
+  steps:
+    - name: Restore NuGet dependencies
+      shell: bash
+      run: |
+        dotnet build ./src/Plana.sln --framework

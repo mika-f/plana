@@ -20,5 +20,4 @@ jobs:
         uses: ./.github/composite/setup-dotnet
 
       - name: Build
-        run: |
-          dotnet build ./src/Plana.sln --no-restore --configuration=Release
+        uses: ./.github/composite/build-dotnet
