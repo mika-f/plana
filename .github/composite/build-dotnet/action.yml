@@ -1,9 +1,13 @@
 name: "Build .NET"
 description: ""
+inputs:
+  os:
+    description: "build platform OS"
+    required: true
 runs:
   using: composite
   steps:
     - name: Restore NuGet dependencies
       shell: bash
       run: |
-        dotnet build ./src/Plana.sln --framework
+        dotnet build ./src/Plana.sln --configuration=Release

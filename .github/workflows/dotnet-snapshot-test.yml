@@ -18,6 +18,10 @@ jobs:
 
       - name: Restore NuGet dependencies
         uses: ./.github/composite/setup-dotnet
+        with:
+          os: ${{ matrix.os }}
 
       - name: Build
         uses: ./.github/composite/build-dotnet
+        with:
+          os: ${{ matrix.os }}
