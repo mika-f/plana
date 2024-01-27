@@ -1,3 +1,19 @@
 ﻿@tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+*, :after, :before {
+    box-sizing: border-box;
+    border: 0 solid #e5e7eb;
+}
+
+body {
+    display: grid;
+    min-height: 100vh;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    grid-template-rows: auto 1fr auto;
+    background-color: rgb(38 38 38);
+    color: rgb(212 212 212);
+    margin: 0;
+    line-height: inherit;
+}
