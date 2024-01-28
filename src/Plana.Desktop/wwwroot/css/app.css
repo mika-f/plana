@@ -7,13 +7,12 @@
     border: 0 solid #e5e7eb;
 }
 
+* {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+}
+
 body {
-    display: grid;
-    min-height: 100vh;
-    grid-template-columns: repeat(1, minmax(0, 1fr));
-    grid-template-rows: auto 1fr auto;
-    background-color: rgb(38 38 38);
-    color: rgb(212 212 212);
     margin: 0;
     line-height: inherit;
 }
