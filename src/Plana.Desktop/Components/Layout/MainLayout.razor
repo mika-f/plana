@@ -20,17 +20,21 @@
 <script>
     window.onApplicationInitialize = ({ configuration, ...rest }) => {
         if (configuration === "DEBUG") {
-            const head = document.getElementsByTagName("head")[0];
+            const head = document.head;
             const { content } = rest;
-
-            const config = document.createElement("script");
-            config.innerText = content;
-            head.appendChild(config);
 
             const script = document.createElement("script");
             script.src = "https://cdn.tailwindcss.com";
+            script.onload = () => {
+                // workaround for TailwindCSS CDN execution
+                head.appendChild(document.createElement("script"));
+            };
 
             head.appendChild(script);
+
+            const config = document.createElement("script");
+            config.innerHTML = `const tailwind = window.tailwind || {};${content}`;
+            head.appendChild(config);
         }
     }
 </script>
@@ -42,7 +46,7 @@
 #if DEBUG
         var path = new StreamReader(await FileSystem.Current.OpenAppPackageFileAsync("tailwind.config.js"));
         var content = await path.ReadToEndAsync();
-        await JsRuntime.InvokeVoidAsync("onApplicationInitialize", new { configuration = "DEBUG", tailwind = content.Replace("module.exports", "tailwind.config") });
+        await JsRuntime.InvokeVoidAsync("onApplicationInitialize", new { configuration = "DEBUG", content = content.Replace("module.exports", "tailwind.config") });
 #endif
     }
 }
