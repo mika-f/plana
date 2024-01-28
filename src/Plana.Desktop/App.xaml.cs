@@ -18,7 +18,9 @@
             // set default window size for MAUI
             // ref: https://github.com/dotnet/maui/issues/7592
             window.Width = 1280;
+            window.MinimumWidth = 640;
             window.Height = 720;
+            window.MinimumHeight = 360;
 
             return window;
         }
