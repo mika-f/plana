@@ -74,4 +74,11 @@
       <Folder Include="Services\Abstractions\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Plana.Hosting\Plana.Hosting.csproj" />
+      <ProjectReference Include="..\Plana.Logging\Plana.Logging.csproj" />
+      <ProjectReference Include="..\Plana.Workspace\Plana.Workspace.csproj" />
+      <ProjectReference Include="..\Plana\Plana.csproj" />
+    </ItemGroup>
+
 </Project>

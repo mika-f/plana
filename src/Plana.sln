@@ -35,7 +35,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plana.Composition.Extension
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integrations", "Integrations", "{42D28563-325C-4980-B675-B842D6FD904F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plana.Desktop", "Plana.Desktop\Plana.Desktop.csproj", "{59CB28AE-0F24-4BA7-9243-3DB68105BB5C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plana.Desktop", "Plana.Desktop\Plana.Desktop.csproj", "{59CB28AE-0F24-4BA7-9243-3DB68105BB5C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
