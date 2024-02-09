@@ -2,6 +2,10 @@
   - changed-files:
       - any-glob-to-any-file: "src/Plana.CLI/**/*"
 
+"Area: Desktop":
+  - changed-files:
+      - any-glob-to-any-file: "src/Plana.Desktop/**/*"
+
 "Area: Plugin/Disable Console Output":
   - changed-files:
       - any-glob-to-any-file: "src/Plana.Composition.DisableConsoleOutput/**/*"

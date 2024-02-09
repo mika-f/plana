@@ -1,0 +1,26 @@
+name: "Install .NET with dependencies"
+description: ""
+inputs:
+  os:
+    description: "build platform OS"
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Exclude Plana.Desktop on Linux
+      if: contains('${{ inputs.os }}', 'ubuntu')
+      shell: bash
+      run: |
+        sed -i '/^Project.*59CB28AE-0F24-4BA7-9243-3DB68105BB5C/{n;d}' ./src/Plana.sln
+        sed -i '/59CB28AE-0F24-4BA7-9243-3DB68105BB5C/d'               ./src/Plana.sln
+
+    - name: Setup .NET tools
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: "8.0.x"
+
+    - name: Restore NuGet dependencies
+      shell: bash
+      run: |
+        dotnet workload restore ./src/Plana.sln
+        dotnet restore ./src/Plana.sln

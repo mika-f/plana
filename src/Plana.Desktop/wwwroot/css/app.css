@@ -1,0 +1,18 @@
+﻿@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*, :after, :before {
+    box-sizing: border-box;
+    border: 0 solid #e5e7eb;
+}
+
+* {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+}
+
+body {
+    margin: 0;
+    line-height: inherit;
+}
