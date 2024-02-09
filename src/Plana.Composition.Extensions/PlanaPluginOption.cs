@@ -5,9 +5,10 @@
 
 using System.Text.RegularExpressions;
 
+using Plana.Composition.Abstractions;
 using Plana.Composition.Abstractions.Exceptions;
 
-namespace Plana.Composition.Abstractions;
+namespace Plana.Composition.Extensions;
 
 public class PlanaPluginOption : IPlanaPluginOption
 {

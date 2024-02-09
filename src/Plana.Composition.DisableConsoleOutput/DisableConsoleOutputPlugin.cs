@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Plana.Composition.Abstractions;
 using Plana.Composition.Abstractions.Attributes;
+using Plana.Composition.Extensions;
 
 namespace Plana.Composition.DisableConsoleOutput;
 

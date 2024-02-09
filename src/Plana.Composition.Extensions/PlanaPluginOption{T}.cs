@@ -3,7 +3,9 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
-namespace Plana.Composition.Abstractions;
+using Plana.Composition.Abstractions;
+
+namespace Plana.Composition.Extensions;
 
 public class PlanaPluginOption<T> : IPlanaPluginOption<T>
 {

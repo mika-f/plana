@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 using Plana.Composition.Abstractions;
 using Plana.Composition.Abstractions.Attributes;
+using Plana.Composition.Extensions;
 
 namespace Plana.Composition.RenameSymbols;
 
