@@ -11,79 +11,12 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Plana.Composition.Abstractions.Analysis;
 using Plana.Composition.Extensions;
+using Plana.Composition.Extensions.Unity;
 
 namespace Plana.Composition.RenameSymbols;
 
 internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, bool isRenameClasses, bool isRenameProperties, bool isRenameFields, bool isRenameMethods, bool isRenameMethodsWithEvents, bool isRenameVariables, Dictionary<ISymbol, string> dict) : CSharpSyntaxWalker
 {
-    private static readonly List<string> Messages =
-    [
-        "Awake",
-        "FixedUpdate",
-        "LateUpdate",
-        "OnAnimatorIK",
-        "OnAnimatorMove",
-        "OnApplicationFocus",
-        "OnApplicationPause",
-        "OnApplicationQuit",
-        "OnAudioFilterRead",
-        "OnBecameInvisible",
-        "OnBecameVisible",
-        "OnCollisionEnter",
-        "OnCollisionEnter2D",
-        "OnCollisionExit",
-        "OnCollisionExit2D",
-        "OnCollisionStay",
-        "OnCollisionStay2D",
-        "OnConnectedToServer",
-        "OnControllerColliderHit",
-        "OnDestroy",
-        "OnDisable",
-        "OnDisconnectedFromServer",
-        "OnDrawGizmos",
-        "OnDrawGizmosSelected",
-        "OnEnable",
-        "OnFailedToConnect",
-        "OnFailedToConnectToMasterServer",
-        "OnGUI",
-        "OnJoinBreak",
-        "OnJoinBreak2D",
-        "OnMasterServerEvent",
-        "OnMouseDown",
-        "OnMouseDrag",
-        "OnMouseEnter",
-        "OnMouseExit",
-        "OnMouseOver",
-        "OnMouseUp",
-        "OnMouseUpAsButton",
-        "OnNetworkInstantiate",
-        "OnParticleCollision",
-        "OnParticleSystemStopped",
-        "OnParticleTrigger",
-        "OnParticleUpdateJobScheduled",
-        "OnPlayerConnected",
-        "OnPlayerDisconnected",
-        "OnPostRender",
-        "OnPreCull",
-        "OnPreRender",
-        "OnRenderImage",
-        "OnRenderObject",
-        "OnSerializeNetworkView",
-        "OnTransformChildrenChanged",
-        "OnTransformParentChanged",
-        "OnTriggerEnter",
-        "OnTriggerEnter2D",
-        "OnTriggerExit",
-        "OnTriggerExit2D",
-        "OnTriggerStay",
-        "OnTriggerStay2D",
-        "OnValidate",
-        "OnWillRenderObject",
-        "Reset",
-        "Start",
-        "Update"
-    ];
-
     private static AnnotationComment NetworkingAnnotation => new("networking");
 
     public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
@@ -139,9 +72,11 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
         if (isRenameMethods && !node.HasAnnotationComment())
         {
             var isNetworking = node.HasAnnotationComment(NetworkingAnnotation);
-            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
-            if (symbol != null && !Messages.Contains(symbol.Name))
+            if (!node.IsUnityMessagingMethod(document.SemanticModel))
+            {
+                var symbol = document.SemanticModel.GetDeclaredSymbol(node)!;
                 SetIdentifier(symbol, isNetworking ? "M" : "_");
+            }
         }
 
         base.VisitMethodDeclaration(node);
