@@ -3,6 +3,8 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -21,7 +23,7 @@ internal class CSharpSymbolWalker(IDocument document, List<ISymbol> symbols) : C
         {
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
 
-            if (symbol != null)
+            if (AllowSymbolShuffle(symbol))
                 symbols.Add(symbol);
         }
 
@@ -34,7 +36,7 @@ internal class CSharpSymbolWalker(IDocument document, List<ISymbol> symbols) : C
         {
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
 
-            if (symbol != null)
+            if (AllowSymbolShuffle(symbol))
                 symbols.Add(symbol);
         }
 
@@ -47,7 +49,7 @@ internal class CSharpSymbolWalker(IDocument document, List<ISymbol> symbols) : C
         {
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
 
-            if (symbol != null)
+            if (AllowSymbolShuffle(symbol))
                 symbols.Add(symbol);
         }
 
@@ -60,7 +62,7 @@ internal class CSharpSymbolWalker(IDocument document, List<ISymbol> symbols) : C
         {
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
 
-            if (symbol != null)
+            if (AllowSymbolShuffle(symbol))
                 symbols.Add(symbol);
         }
 
@@ -73,7 +75,7 @@ internal class CSharpSymbolWalker(IDocument document, List<ISymbol> symbols) : C
         {
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
 
-            if (symbol != null)
+            if (AllowSymbolShuffle(symbol))
                 symbols.Add(symbol);
         }
 
@@ -86,10 +88,17 @@ internal class CSharpSymbolWalker(IDocument document, List<ISymbol> symbols) : C
         {
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
 
-            if (symbol != null)
+            if (AllowSymbolShuffle(symbol))
                 symbols.Add(symbol);
         }
 
         base.VisitVariableDeclarator(node);
+    }
+
+    private static bool AllowSymbolShuffle([NotNullWhen(true)] ISymbol? symbol)
+    {
+        if (symbol == null || symbol.IsOverride)
+            return false;
+        return true;
     }
 }
