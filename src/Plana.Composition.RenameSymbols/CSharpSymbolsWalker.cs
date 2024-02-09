@@ -149,8 +149,7 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
 
     public override void VisitParameter(ParameterSyntax node)
     {
-        var declaration = node.Parent?.Parent;
-        var hasAnnotationComment = declaration != null && node.HasAnnotationComment();
+        var hasAnnotationComment = node.Parent?.Parent is CSharpSyntaxNode declaration && declaration.HasAnnotationComment();
         if (isRenameVariables && !hasAnnotationComment)
         {
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
@@ -175,8 +174,7 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
 
     public override void VisitVariableDeclarator(VariableDeclaratorSyntax node)
     {
-        var declaration = node.Parent?.Parent;
-        var hasAnnotationComment = declaration != null && node.HasAnnotationComment();
+        var hasAnnotationComment = node.Parent?.Parent is CSharpSyntaxNode declaration && declaration.HasAnnotationComment();
         if ((isRenameFields || isRenameVariables) && !hasAnnotationComment)
         {
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
