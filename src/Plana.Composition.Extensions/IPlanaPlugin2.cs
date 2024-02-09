@@ -3,9 +3,10 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
+using Plana.Composition.Abstractions;
 using Plana.Composition.Abstractions.Enum;
 
-namespace Plana.Composition.Abstractions;
+namespace Plana.Composition.Extensions;
 
 public interface IPlanaPlugin2 : IPlanaPlugin
 {

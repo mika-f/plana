@@ -14,6 +14,7 @@ using Plana.CLI.Exceptions;
 using Plana.CLI.Extensions;
 using Plana.Composition.Abstractions;
 using Plana.Composition.Abstractions.Exceptions;
+using Plana.Composition.Extensions;
 using Plana.Hosting.Abstractions;
 using Plana.Logging.Abstractions;
 using Plana.Workspace.Abstractions;
