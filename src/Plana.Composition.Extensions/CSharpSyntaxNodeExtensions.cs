@@ -24,4 +24,10 @@ public static class CSharpSyntaxNodeExtensions
 
         return false;
     }
+
+    public static TNode? FirstAncestor<TNode>(this CSharpSyntaxNode node, Func<TNode, bool>? predicate = null, bool ascendOutOfTrivia = true) where TNode : CSharpSyntaxNode
+    {
+        var f = node.FirstAncestorOrSelf(predicate, ascendOutOfTrivia);
+        return f == node ? null : f;
+    }
 }
