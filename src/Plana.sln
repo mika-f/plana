@@ -33,7 +33,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plana.Composition.ShuffleDe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plana.Composition.DisableConsoleOutput", "Plana.Composition.DisableConsoleOutput\Plana.Composition.DisableConsoleOutput.csproj", "{A4B9BA00-31BD-4E76-BECF-D70F480B654E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plana.Composition.Extensions", "Plana.Composition.Extensions\Plana.Composition.Extensions.csproj", "{444EE07B-824A-4B8C-AD6E-174139999461}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plana.Composition.Extensions", "Plana.Composition.Extensions\Plana.Composition.Extensions.csproj", "{444EE07B-824A-4B8C-AD6E-174139999461}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plana.Composition.ShuffleSymbols", "Plana.Composition.ShuffleSymbols\Plana.Composition.ShuffleSymbols.csproj", "{AC4806FD-053C-418A-AB3C-41691670354C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plana.Composition.Extensions.Unity", "Plana.Composition.Extensions.Unity\Plana.Composition.Extensions.Unity.csproj", "{D710FE24-7C5B-47A0-A4BF-B536B8FC4712}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -93,6 +97,14 @@ Global
 		{444EE07B-824A-4B8C-AD6E-174139999461}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{444EE07B-824A-4B8C-AD6E-174139999461}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{444EE07B-824A-4B8C-AD6E-174139999461}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC4806FD-053C-418A-AB3C-41691670354C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC4806FD-053C-418A-AB3C-41691670354C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC4806FD-053C-418A-AB3C-41691670354C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC4806FD-053C-418A-AB3C-41691670354C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D710FE24-7C5B-47A0-A4BF-B536B8FC4712}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D710FE24-7C5B-47A0-A4BF-B536B8FC4712}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D710FE24-7C5B-47A0-A4BF-B536B8FC4712}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D710FE24-7C5B-47A0-A4BF-B536B8FC4712}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -107,6 +119,8 @@ Global
 		{168C3DA6-6D67-4032-A5A6-00A2BA12EAE9} = {777490D7-C220-46FF-96CC-90FAE50D1884}
 		{A4B9BA00-31BD-4E76-BECF-D70F480B654E} = {777490D7-C220-46FF-96CC-90FAE50D1884}
 		{444EE07B-824A-4B8C-AD6E-174139999461} = {777490D7-C220-46FF-96CC-90FAE50D1884}
+		{AC4806FD-053C-418A-AB3C-41691670354C} = {777490D7-C220-46FF-96CC-90FAE50D1884}
+		{D710FE24-7C5B-47A0-A4BF-B536B8FC4712} = {777490D7-C220-46FF-96CC-90FAE50D1884}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {129FBC52-9058-4F4A-88B3-A23978C16A72}

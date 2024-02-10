@@ -9,13 +9,18 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Plana.Composition.Abstractions\Plana.Composition.Abstractions.csproj" />
+    <ProjectReference Include="..\Plana.Composition.Extensions.Unity\Plana.Composition.Extensions.Unity.csproj" />
     <ProjectReference Include="..\Plana.Composition.Extensions\Plana.Composition.Extensions.csproj" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <BuildOnCI>$(CI)</BuildOnCI>
+  </PropertyGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="pwsh -Command New-Item -Force -ItemType Directory '$(SolutionDir)/Plana.CLI/bin/$(Configuration)/$(TargetFramework)/plugins/'" />
-    <Exec Command="pwsh -Command Copy-Item '$(TargetDir)$(ProjectName).dll' '$(SolutionDir)/Plana.CLI/bin/$(Configuration)/$(TargetFramework)/plugins/$(ProjectName).dll'" />
-    <Exec Command="pwsh -Command Copy-Item '$(TargetDir)$(ProjectName).dll' '$(SolutionDir)/Plana.Integrations.Unity/Assets/NatsunekoLaboratory/Plana/Plugins/externals/$(ProjectName).dll'" Condition="'$(Configuration)' == 'Release'" />
+    <Exec Command="pwsh -Command New-Item -Force -ItemType Directory '$(SolutionDir)/Plana.CLI/bin/$(Configuration)/$(TargetFramework)/plugins/'" Condition="'$(BuildOnCI)' == ''" />
+    <Exec Command="pwsh -Command Copy-Item '$(TargetDir)$(ProjectName).dll' '$(SolutionDir)/Plana.CLI/bin/$(Configuration)/$(TargetFramework)/plugins/$(ProjectName).dll'" Condition="'$(BuildOnCI)' == ''" />
+    <Exec Command="pwsh -Command Copy-Item '$(TargetDir)$(ProjectName).dll' '$(SolutionDir)/Plana.Integrations.Unity/Assets/NatsunekoLaboratory/Plana/Plugins/externals/$(ProjectName).dll'" Condition="'$(Configuration)' == 'Release' And '$(BuildOnCI)' == ''" />
   </Target>
 
 </Project>

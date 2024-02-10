@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Plana.Composition.Abstractions\Plana.Composition.Abstractions.csproj" />
-    <ProjectReference Include="..\Plana.Composition.Extensions\Plana.Composition.Extensions.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
