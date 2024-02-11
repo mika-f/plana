@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Plana.Composition.Abstractions\Plana.Composition.Abstractions.csproj" />
+    <ProjectReference Include="..\Plana.Composition.Extensions\Plana.Composition.Extensions.csproj" />
+    <ProjectReference Include="..\Plana.Testing.Logging\Plana.Testing.Logging.csproj" />
+    <ProjectReference Include="..\Plana.Workspace.Abstractions\Plana.Workspace.Abstractions.csproj" />
+    <ProjectReference Include="..\Plana.Workspace\Plana.Workspace.csproj" />
+    <ProjectReference Include="..\Plana\Plana.csproj" />
+  </ItemGroup>
+
+</Project>

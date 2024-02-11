@@ -25,7 +25,14 @@ public class ProjectWorkspace(FileInfo csproj, ILogger? logger) : IWorkspace
     {
         logger?.LogDebug("loading workspace as Visual Studio C# Project with MSBuild......");
 
-        MSBuildLocator.RegisterDefaults();
+        try
+        {
+            MSBuildLocator.RegisterDefaults();
+        }
+        catch (InvalidOperationException)
+        {
+            // ignored
+        }
 
         _workspace = MSBuildWorkspace.Create();
 
