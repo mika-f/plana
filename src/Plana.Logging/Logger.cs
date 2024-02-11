@@ -22,31 +22,36 @@ public class Logger(LogLevel level) : ILogger
     public void LogDebug(string message)
     {
         if (level.IsDebugEnabled())
-            Console.WriteLine(Chalk.BrightWhite + $"[DEBUG] {message}");
+            Console.WriteLine(Chalk.BrightWhite + $"[{GetDateTime()}] [DEBUG] {message}");
     }
 
     public void LogInfo(string message)
     {
         if (level.IsInfoEnabled())
-            Console.WriteLine(Chalk.BrightCyan + $"[INFO]  {message}");
+            Console.WriteLine(Chalk.BrightCyan + $"[{GetDateTime()}] [INFO]  {message}");
     }
 
     public void LogWarning(string message)
     {
         if (level.IsWarnEnabled())
-            Console.WriteLine(Chalk.BrightYellow + $"[WARN]  {message}");
+            Console.WriteLine(Chalk.BrightYellow + $"[{GetDateTime()}] [WARN]  {message}");
     }
 
     public void LogError(string message)
     {
         if (level.IsErrorEnabled())
-            Console.WriteLine(Chalk.BrightRed + $"[ERROR] {message}");
+            Console.WriteLine(Chalk.BrightRed + $"[{GetDateTime()}] [ERROR] {message}");
     }
 
     public void LogFatal(string message)
     {
         if (level.IsFatalEnabled())
-            Console.WriteLine(Chalk.BgBrightRed.BrightWhite + $"[FATAL] {message}");
+            Console.WriteLine(Chalk.BgBrightRed.BrightWhite + $"[{GetDateTime()}] [FATAL] {message}");
+    }
+
+    private string GetDateTime()
+    {
+        return DateTime.Now.ToString("yyyy/MM/dd hh:mm:ss");
     }
 
     [Conditional("DEBUG")]
