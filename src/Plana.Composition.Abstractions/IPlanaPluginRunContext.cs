@@ -14,5 +14,9 @@ public interface IPlanaPluginRunContext
 
     RunKind Kind { get; }
 
+    IPlanaRandom Random { get; }
+
+    IPlanaSecureRandom SecureRandom { get; }
+
     CancellationToken CancellationToken { get; }
 }

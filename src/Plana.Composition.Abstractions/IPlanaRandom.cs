@@ -3,13 +3,13 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
-using Plana.Composition.Abstractions.Analysis;
+namespace Plana.Composition.Abstractions;
 
-namespace Plana;
-
-public class PlanaSolution(List<IProject> projects) : ISolution
+public interface IPlanaRandom
 {
-    public IReadOnlyCollection<IProject> Projects { get; } = projects.AsReadOnly();
+    int GetInt32();
 
-    public ISourceMap SourceMap { get; }
+    int GetInt32(int min, int max);
+
+    void Shuffle<T>(Span<T> array);
 }

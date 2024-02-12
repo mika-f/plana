@@ -3,13 +3,9 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
-using Plana.Composition.Abstractions.Analysis;
+namespace Plana.Testing;
 
-namespace Plana;
-
-public class PlanaSolution(List<IProject> projects) : ISolution
+public interface ITestableObject<in T>
 {
-    public IReadOnlyCollection<IProject> Projects { get; } = projects.AsReadOnly();
-
-    public ISourceMap SourceMap { get; }
+    Task ToMatchInlineSnapshot(T snapshot);
 }

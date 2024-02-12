@@ -7,15 +7,17 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+using Plana.Composition.Abstractions;
+
 namespace Plana.Composition.ShuffleDeclarations;
 
-internal class CSharpDeclarationRewriter(Random random) : CSharpSyntaxRewriter
+internal class CSharpDeclarationRewriter(IPlanaSecureRandom random) : CSharpSyntaxRewriter
 {
     public override SyntaxNode? VisitClassDeclaration(ClassDeclarationSyntax node)
     {
-        var members = node.Members.ToArray();
+        var members = new Span<MemberDeclarationSyntax>([.. node.Members]);
         random.Shuffle(members);
 
-        return node.WithMembers(SyntaxFactory.List(members));
+        return node.WithMembers(SyntaxFactory.List(members.ToArray()));
     }
 }

@@ -7,17 +7,17 @@ using Plana.Composition.Abstractions;
 using Plana.Composition.Abstractions.Analysis;
 using Plana.Composition.Abstractions.Enum;
 
-namespace Plana;
+namespace Plana.Testing;
 
-internal class PlanaPluginRunContext(ISolution solution, RunKind kind, IPlanaRandom random, IPlanaSecureRandom sr, CancellationToken ct) : IPlanaPluginRunContext
+internal class TestPlanaContext : IPlanaPluginRunContext
 {
-    public ISolution Solution { get; } = solution;
+    public ISolution Solution { get; init; }
 
-    public RunKind Kind { get; } = kind;
+    public RunKind Kind { get; init; }
 
-    public IPlanaRandom Random { get; } = random;
+    public IPlanaRandom Random { get; init; }
 
-    public IPlanaSecureRandom SecureRandom { get; } = sr;
+    public IPlanaSecureRandom SecureRandom { get; init; }
 
-    public CancellationToken CancellationToken { get; } = ct;
+    public CancellationToken CancellationToken { get; init; }
 }

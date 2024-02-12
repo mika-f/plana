@@ -25,11 +25,9 @@ public class ShuffleMemberDeclarations : IPlanaPlugin2
 
     public async Task ObfuscateAsync(IPlanaPluginRunContext context)
     {
-        var random = new Random();
-
         foreach (var document in context.Solution.Projects.SelectMany(w => w.Documents))
         {
-            var rewriter = new CSharpDeclarationRewriter(random);
+            var rewriter = new CSharpDeclarationRewriter(context.SecureRandom);
             var oldNode = await document.SyntaxTree.GetRootAsync(context.CancellationToken);
             var newNode = (CSharpSyntaxNode)rewriter.Visit(oldNode);
             var newTree = CSharpSyntaxTree.Create(newNode, document.SyntaxTree.Options, document.SyntaxTree.FilePath, document.SyntaxTree.Encoding);

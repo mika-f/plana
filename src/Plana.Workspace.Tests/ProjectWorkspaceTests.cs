@@ -19,7 +19,7 @@ namespace Plana.Workspace.Tests
             Assert.Single(projects);
 
             var project = projects[0];
-            Assert.Equal(3, project.Documents.Count);
+            Assert.Equal(5, project.Documents.Count);
         }
     }
 }

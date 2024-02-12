@@ -3,13 +3,18 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
-using Plana.Composition.Abstractions.Analysis;
+using Xunit;
 
-namespace Plana;
+namespace Plana.Testing;
 
-public class PlanaSolution(List<IProject> projects) : ISolution
+public class InlineSource(string path, string source) : ITestableObject<string>
 {
-    public IReadOnlyCollection<IProject> Projects { get; } = projects.AsReadOnly();
+    public Task ToMatchInlineSnapshot(string snapshot)
+    {
+        Assert.Equal(snapshot, source);
 
-    public ISourceMap SourceMap { get; }
+        return Task.CompletedTask;
+    }
+
+    public string Source => source;
 }
