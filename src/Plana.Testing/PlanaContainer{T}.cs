@@ -37,7 +37,7 @@ public class PlanaContainer<T> where T : IPlanaPlugin, new()
     }
 
     [MemberNotNull(nameof(Workspace), nameof(Sources), nameof(_root))]
-    public async Task RunAsync(string path = "../../../../Plana.sln")
+    public async Task RunAsync(string path = "../../../../Plana.sln", int seed = 150)
     {
         var logger = new Logger();
         var source = new CancellationTokenSource();
@@ -58,8 +58,8 @@ public class PlanaContainer<T> where T : IPlanaPlugin, new()
         {
             Solution = solution,
             Kind = RunKind.Obfuscate,
-            Random = new PlanaRandom(150),
-            SecureRandom = new PlanaRandom(150),
+            Random = new PlanaRandom(seed),
+            SecureRandom = new PlanaRandom(seed),
             CancellationToken = source.Token
         };
 
