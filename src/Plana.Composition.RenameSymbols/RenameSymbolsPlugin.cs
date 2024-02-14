@@ -13,7 +13,7 @@ using Plana.Composition.Extensions;
 namespace Plana.Composition.RenameSymbols;
 
 [PlanaPlugin("rename-symbols")]
-public class SymbolObfuscator : IPlanaPlugin2
+public class RenameSymbolsPlugin : IPlanaPlugin2
 {
     private static readonly PlanaPluginOption Namespace = new("rename-namespaces", "Rename Namespaces", "rename namespaces, not supports file-scoped namespaces", false);
     private static readonly PlanaPluginOption ClassName = new("rename-classes", "Rename Classes", "rename classes", false);
