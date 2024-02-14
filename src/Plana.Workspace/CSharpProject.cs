@@ -23,24 +23,33 @@ public class CSharpProject(Project project, ILogger? logger) : IProject
 
     public async Task InflateDocumentsAsync(CancellationToken ct)
     {
+        var path = new Uri(Path.GetDirectoryName(project.FilePath)!);
+
         foreach (var document in project.Documents)
         {
             ct.ThrowIfCancellationRequested();
 
-            var sm = await document.GetSemanticModelAsync(ct);
-            var tree = await document.GetSyntaxTreeAsync(ct);
-
-            if (tree is CSharpSyntaxTree cs && sm != null)
+            if (document.FilePath != null && path.IsBaseOf(new Uri(document.FilePath)))
             {
-                var instance = new CSharpDocument(document, cs) { SemanticModel = sm };
-                _documents.Add(instance);
+                var sm = await document.GetSemanticModelAsync(ct);
+                var tree = await document.GetSyntaxTreeAsync(ct);
+
+                if (tree is CSharpSyntaxTree cs && sm != null)
+                {
+                    var instance = new CSharpDocument(document, cs) { SemanticModel = sm };
+                    _documents.Add(instance);
+                }
+                else
+                {
+                    if (sm == null)
+                        logger?.LogWarning("failed to get SemanticModel for semantic analysis");
+                    if (tree is not CSharpSyntaxTree)
+                        logger?.LogWarning("failed to cast to CSharpSyntaxTree, languages other than C# are not currently supported");
+                }
             }
             else
             {
-                if (sm == null)
-                    logger?.LogWarning("failed to get SemanticModel for semantic analysis");
-                if (tree is not CSharpSyntaxTree)
-                    logger?.LogWarning("failed to cast to CSharpSyntaxTree, languages other than C# are not currently supported");
+                logger?.LogWarning($"the file {document.FilePath} will ignored because located outside of project");
             }
         }
     }

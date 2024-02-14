@@ -48,7 +48,8 @@ public class Obfuscator(IWorkspace workspace, List<IPlanaPlugin> instances, ILog
 
         var dict = new Dictionary<string, string>();
 
-        foreach (var document in context.Solution.Projects.SelectMany(w => w.Documents))
+        var documents = context.Solution.Projects.SelectMany(w => w.Documents);
+        foreach (var document in documents)
         {
             var node = await document.SyntaxTree.GetRootAsync(ct);
             var source = node.NormalizeWhitespace().ToFullString();
