@@ -70,7 +70,7 @@ public class PlanaContainer<T> where T : IPlanaPlugin, new()
 
     public async Task<InlineSource> GetSourceByPathAsync(string path)
     {
-        var actual = Path.Combine(_root!, path);
+        var actual = Path.GetFullPath(Path.Combine(_root!, path));
         if (Sources!.TryGetValue(actual, out var val))
         {
             var original = await GetOriginalSourceByPathAsync(actual);

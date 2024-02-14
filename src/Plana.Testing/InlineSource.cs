@@ -3,30 +3,71 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
+using Microsoft.CodeAnalysis.CSharp;
+
 using Xunit;
 
 namespace Plana.Testing;
 
 public class InlineSource(string path, string? output, string? input) : ITestableObject<string>
 {
+    private CSharpSyntaxNode? _i;
+    private CSharpSyntaxNode? _o;
+
+    public Task ToMatchInlineSnapshot(string snapshot)
+    {
+        if (output == null)
+            Assert.Fail("output and/or input is null");
+
+        _o = SyntaxFactory.ParseCompilationUnit(output);
+        var s = SyntaxFactory.ParseCompilationUnit(snapshot);
+
+        Assert.NotEqual(s.ToNormalizedFullString(), _o.ToNormalizedFullString());
+
+        return Task.CompletedTask;
+    }
+
     public Task HasDiffs()
     {
-        Assert.NotEqual(output, input);
+        if (output == null || input == null)
+            Assert.Fail("output and/or input is null");
+
+        _o = SyntaxFactory.ParseCompilationUnit(output);
+        _i = SyntaxFactory.ParseCompilationUnit(input);
+
+        Assert.NotEqual(_i.ToNormalizedFullString(), _o.ToNormalizedFullString());
 
         return Task.CompletedTask;
     }
 
     public Task NoDiffs()
     {
-        Assert.Equal(output, input);
+        if (output == null || input == null)
+            Assert.Fail("output and/or input is null");
+
+        _o = SyntaxFactory.ParseCompilationUnit(output);
+        _i = SyntaxFactory.ParseCompilationUnit(input);
+
+        Assert.Equal(_i.ToNormalizedFullString(), _o.ToNormalizedFullString());
 
         return Task.CompletedTask;
     }
 
-    public Task ToMatchInlineSnapshot(string snapshot)
+    public async Task<T> GetSyntax<T>() where T : CSharpSyntaxNode
     {
-        Assert.Equal(snapshot, output);
+        return await GetSyntax<T>(_ => true);
+    }
 
-        return Task.CompletedTask;
+    public Task<T> GetSyntax<T>(Func<T, bool> predicate) where T : CSharpSyntaxNode
+    {
+        if (output == null)
+            Assert.Fail("output and/or input is null");
+
+        _o ??= SyntaxFactory.ParseCompilationUnit(output);
+
+        var ret = _o.DescendantNodes().OfType<T>().FirstOrDefault(predicate);
+        Assert.NotNull(ret);
+
+        return Task.FromResult(ret);
     }
 }

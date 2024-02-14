@@ -3,18 +3,18 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
-using System.Security.Cryptography;
-
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+using Plana.Composition.Abstractions;
 using Plana.Composition.Abstractions.Analysis;
 using Plana.Composition.Extensions;
 
 namespace Plana.Composition.RenameSymbols;
 
-internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, bool isRenameClasses, bool isRenameProperties, bool isRenameFields, bool isRenameMethods, bool isRenameMethodsWithEvents, bool isRenameVariables, Dictionary<ISymbol, string> dict) : CSharpSyntaxWalker
+internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random, bool isRenameNamespaces, bool isRenameClasses, bool isRenameProperties, bool isRenameFields, bool isRenameMethods, bool isRenameMethodsWithEvents, bool isRenameVariables, Dictionary<ISymbol, string> dict)
+    : CSharpSyntaxWalker
 {
     private static readonly List<string> Messages =
     [
@@ -96,6 +96,18 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
         }
 
         base.VisitNamespaceDeclaration(node);
+    }
+
+    public override void VisitFileScopedNamespaceDeclaration(FileScopedNamespaceDeclarationSyntax node)
+    {
+        if (isRenameNamespaces && !node.HasAnnotationComment())
+        {
+            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
+            if (symbol != null)
+                SetIdentifier(symbol);
+        }
+
+        base.VisitFileScopedNamespaceDeclaration(node);
     }
 
     public override void VisitClassDeclaration(ClassDeclarationSyntax node)
@@ -196,12 +208,7 @@ internal class CSharpSymbolsWalker(IDocument document, bool isRenameNamespaces, 
         if (dict.ContainsKey(symbol))
             return;
 
-        var hex = "abcedf0123456789".ToCharArray();
-        var identifier = $"{prefix}0x{RandomNumberGenerator.GetString(hex, 8)}";
-
-        while (dict.ContainsValue(identifier))
-            identifier = $"{prefix}0x{RandomNumberGenerator.GetString(hex, 0)}";
-
+        var identifier = $"{prefix}0x{random.GetGlobalUniqueAlphaNumericalString(8)}";
         dict.Add(symbol, identifier);
     }
 }

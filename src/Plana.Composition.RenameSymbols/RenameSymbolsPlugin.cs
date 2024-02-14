@@ -57,6 +57,7 @@ public class RenameSymbolsPlugin : IPlanaPlugin2
         {
             var walker = new CSharpSymbolsWalker(
                 document,
+                context.SecureRandom,
                 _isEnableNamespaceRenaming,
                 _isEnableClassNameRenaming,
                 _isEnablePropertiesRenaming,

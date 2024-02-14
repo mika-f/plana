@@ -3,19 +3,15 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
-namespace Plana.Composition.Abstractions;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 
-public interface IPlanaRandom
+namespace Plana.Testing;
+
+internal static class CSharpSyntaxNodeExtensions
 {
-    int GetInt32();
-
-    int GetInt32(int min, int max);
-
-    string GetString(char[] chars, int length);
-
-    string GetAlphaNumericalString(int length);
-
-    string GetGlobalUniqueAlphaNumericalString(int length);
-
-    void Shuffle<T>(Span<T> array);
+    public static string ToNormalizedFullString(this CSharpSyntaxNode node)
+    {
+        return node.NormalizeWhitespace().ToFullString();
+    }
 }
