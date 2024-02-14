@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Plana.Composition.Extensions\Plana.Composition.Extensions.csproj" />
+    <ProjectReference Include="..\Plana.Testing\Plana.Testing.csproj" />
   </ItemGroup>
 
 </Project>
