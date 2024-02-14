@@ -5,6 +5,8 @@
 
 using System.Diagnostics.CodeAnalysis;
 
+using Microsoft.CodeAnalysis;
+
 using Plana.Composition.Abstractions;
 using Plana.Composition.Abstractions.Enum;
 using Plana.Testing.Logging;
@@ -66,13 +68,30 @@ public class PlanaContainer<T> where T : IPlanaPlugin, new()
         Sources = await obfuscator.ObfuscateAsync(context, source.Token);
     }
 
-    public Task<InlineSource> GetSourceByPathAsync(string path)
+    public async Task<InlineSource> GetSourceByPathAsync(string path)
     {
         var actual = Path.Combine(_root!, path);
         if (Sources!.TryGetValue(actual, out var val))
-            return Task.FromResult(new InlineSource(path, val));
+        {
+            var original = await GetOriginalSourceByPathAsync(actual);
+            return new InlineSource(path, val, original);
+        }
 
-        return Task.FromResult(new InlineSource(path, ""));
+        return new InlineSource(path, null, null);
     }
 
+    public async Task<InlineSymbol> GetSymbolByPathAsync(string path)
+    {
+        throw new NotImplementedException();
+    }
+
+    private async Task<string?> GetOriginalSourceByPathAsync(string path)
+    {
+        var projects = await Workspace!.GetProjectsAsync(CancellationToken.None);
+        var solution = new PlanaSolution(projects);
+        var document = solution.Projects.SelectMany(w => w.Documents).FirstOrDefault(w => w.Path == path)!;
+        var node = await document.OriginalSyntaxTree.GetRootAsync();
+
+        return node.NormalizeWhitespace().ToFullString();
+    }
 }

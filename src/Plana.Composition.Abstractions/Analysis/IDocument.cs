@@ -20,5 +20,7 @@ public interface IDocument
 
     CSharpSyntaxTree SyntaxTree { get; }
 
+    CSharpSyntaxTree OriginalSyntaxTree { get; }
+
     Task WriteSyntaxTreeAsync(SyntaxTree tree, CancellationToken ct);
 }

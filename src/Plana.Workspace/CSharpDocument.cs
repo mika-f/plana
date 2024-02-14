@@ -10,7 +10,7 @@ using Plana.Composition.Abstractions.Analysis;
 
 namespace Plana.Workspace;
 
-public class CSharpDocument(Document document) : IDocument
+public class CSharpDocument(Document document, CSharpSyntaxTree tree) : IDocument
 {
     public Guid Id => document.Id.Id;
 
@@ -20,7 +20,9 @@ public class CSharpDocument(Document document) : IDocument
 
     public SemanticModel SemanticModel { get; internal set; } = null!;
 
-    public CSharpSyntaxTree SyntaxTree { get; internal set; } = null!;
+    public CSharpSyntaxTree SyntaxTree { get; internal set; } = tree;
+
+    public CSharpSyntaxTree OriginalSyntaxTree { get; } = tree;
 
     public async Task WriteSyntaxTreeAsync(SyntaxTree tree, CancellationToken ct)
     {

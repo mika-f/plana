@@ -7,14 +7,26 @@ using Xunit;
 
 namespace Plana.Testing;
 
-public class InlineSource(string path, string source) : ITestableObject<string>
+public class InlineSource(string path, string? output, string? input) : ITestableObject<string>
 {
-    public Task ToMatchInlineSnapshot(string snapshot)
+    public Task HasDiffs()
     {
-        Assert.Equal(snapshot, source);
+        Assert.NotEqual(output, input);
 
         return Task.CompletedTask;
     }
 
-    public string Source => source;
+    public Task NoDiffs()
+    {
+        Assert.Equal(output, input);
+
+        return Task.CompletedTask;
+    }
+
+    public Task ToMatchInlineSnapshot(string snapshot)
+    {
+        Assert.Equal(snapshot, output);
+
+        return Task.CompletedTask;
+    }
 }

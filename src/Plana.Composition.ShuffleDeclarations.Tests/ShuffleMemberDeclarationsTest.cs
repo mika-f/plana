@@ -3,8 +3,6 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
-using System.Diagnostics;
-
 using Plana.Testing;
 
 namespace Plana.Composition.ShuffleDeclarations.Tests;
@@ -19,8 +17,7 @@ public class ShuffleMemberDeclarationsTest
 
         var source = await container.GetSourceByPathAsync("PlanaRandom.cs");
 
-        Debug.WriteLine(source.Source);
-
+        await source.HasDiffs();
         await source.ToMatchInlineSnapshot(@"
 // ------------------------------------------------------------------------------------------
 //  Copyright (c) Natsuneko. All rights reserved.

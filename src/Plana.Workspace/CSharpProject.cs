@@ -32,7 +32,7 @@ public class CSharpProject(Project project, ILogger? logger) : IProject
 
             if (tree is CSharpSyntaxTree cs && sm != null)
             {
-                var instance = new CSharpDocument(document) { SemanticModel = sm, SyntaxTree = cs };
+                var instance = new CSharpDocument(document, cs) { SemanticModel = sm };
                 _documents.Add(instance);
             }
             else
