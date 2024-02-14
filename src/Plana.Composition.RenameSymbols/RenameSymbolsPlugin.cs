@@ -24,7 +24,7 @@ public class RenameSymbolsPlugin : IPlanaPlugin2
     private static readonly PlanaPluginOption Variables = new("rename-variables", "rename local variables", false);
     private static readonly PlanaPluginOption KeepNameOnInspector = new("enum-attributes", "add UnityEngine.InspectorName to enum members, without already specified", false);
 
-    private readonly Dictionary<ISymbol, string> _dict = [];
+    private readonly Dictionary<ISymbol, string> _dict = new(MeaningEqualitySymbolComparator.Default);
 
     private bool _isEnableClassNameRenaming;
     private bool _isEnableFieldsRenaming;

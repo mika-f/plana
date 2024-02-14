@@ -12,15 +12,23 @@ namespace Plana.Composition.RenameSymbols.Tests;
 public class RenameSymbolsPluginTest
 {
     [Fact]
-    public async Task RenameNamespacesWithNesting()
+    public async Task RenameNamespaces()
     {
         var container = new PlanaContainer<RenameSymbolsPlugin>("rename-namespaces");
         await container.RunAsync();
 
-        var root = await container.GetSourceByPathAsync("Plana/PlanaRandom.cs"); // Plana
+        var root = await container.GetSourceByPathAsync("Plana/PlanaRandom.cs"); // Plana (Plana.dll)
+        var nest = await container.GetSourceByPathAsync("Plana.Composition.Abstractions/IPlanaSecureRandom.cs"); // Plana.Composition.Abstractions (Plana.Composition.Abstractions.dll)
 
-        var a = await root.GetSyntax<FileScopedNamespaceDeclarationSyntax>();
-        Assert.Equal("_0xa79a150d", a.Name.ToFullString()); // Plana -> _0xc3feae14
+        // Plana -> _0xc3feae14
+        var rootDecl = await root.GetSyntax<FileScopedNamespaceDeclarationSyntax>();
+        Assert.Equal("_0xb73384b5", rootDecl.Name.ToFullString());
 
+        // Plana.Composition.Abstractions -> _0xb73384b5._0x23636295._0x895054f0
+        var abstractionsDecl = await nest.GetSyntax<FileScopedNamespaceDeclarationSyntax>();
+        Assert.Equal("_0xb73384b5._0x23636295._0x895054f0", abstractionsDecl.Name.ToFullString());
+
+        var usingToAbstractions = await root.GetSyntax<UsingDirectiveSyntax>();
+        Assert.Equal("_0xb73384b5._0x23636295._0x895054f0", usingToAbstractions.Name!.ToFullString());
     }
 }
