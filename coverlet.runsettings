@@ -6,7 +6,7 @@
         <Configuration>
           <Exclude>[Plana.*.Tests]*,[Plana.Testing]*,[Plana.Testing.*]*</Exclude>
           <ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>
-          <Include>[Plana.*]*</Include>
+          <Include>[Plana]*,[Plana.*]*</Include>
         </Configuration>
       </DataCollector>
     </DataCollectors>

@@ -42,12 +42,14 @@ jobs:
         run: |
           dotnet test ./src/Plana.sln --no-restore --collect="XPlat Code Coverage" --settings coverlet.runsettings --results-directory=./coverage
 
-      - name: Merge Coverage Reports
+      - name: ReportGenerator
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.2.1
         if: always() && matrix.os == 'ubuntu-latest'
-        shell: bash
-        run: |
-          dotnet tool install --global dotnet-reportgenerator-globaltool --version 5.2.1
-          $HOME/.dotnet/tools/reportgenerator -reports:./coverage/**/coverage.cobertura.xml -targetdir:./coverage -reporttypes:Cobertura -sourcedirs:./src
+        with:
+          reports: ./coverage/**/coverage.cobertura.xml
+          targetdir: ./coverage
+          reporttypes: Cobertura
+          sourcedirs: ./src
 
       - name: Publish Coverage
         uses: irongut/CodeCoverageSummary@v1.3.0
