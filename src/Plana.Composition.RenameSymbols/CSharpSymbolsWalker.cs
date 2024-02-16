@@ -3,8 +3,6 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
-using System.Text;
-
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -88,90 +86,6 @@ internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random
 
     private static AnnotationComment NetworkingAnnotation => new("networking");
 
-    private string SetNamespaceIdentifier(INamespaceSymbol symbol)
-    {
-        if (dict.TryGetValue(symbol, out var val))
-            return val;
-
-        if (symbol.ContainingNamespace.IsGlobalNamespace)
-        {
-            // root namespace
-            var original = symbol.OriginalDefinition;
-            if (original.Equals(symbol, SymbolEqualityComparer.Default))
-            {
-                var identifier = $"_0x{random.GetGlobalUniqueAlphaNumericalString(8)}";
-                dict.Add(original, identifier);
-
-                return identifier;
-            }
-        }
-        else
-        {
-            var stack = new Stack<INamespaceSymbol>();
-            var current = symbol;
-
-            while (true)
-            {
-                if (current.IsGlobalNamespace)
-                    break;
-
-                stack.Push(current);
-                current = current.ContainingNamespace;
-            }
-
-            var sb = new StringBuilder();
-
-            while (stack.Count > 0)
-            {
-                var s = stack.Pop();
-                if (dict.TryGetValue(s.OriginalDefinition, out var parts))
-                {
-                    if (sb.Length > 0)
-                        sb.Append(".");
-
-                    sb.Append(parts);
-                }
-                else
-                {
-                    var identifier = $"_0x{random.GetGlobalUniqueAlphaNumericalString(8)}";
-
-                    if (sb.Length > 0)
-                        sb.Append(".");
-                    sb.Append(identifier);
-
-                    dict.Add(s.OriginalDefinition, identifier);
-                }
-            }
-
-            return sb.ToString();
-        }
-
-        throw new InvalidOperationException();
-    }
-
-    public override void VisitFileScopedNamespaceDeclaration(FileScopedNamespaceDeclarationSyntax node)
-    {
-        if (isRenameNamespaces && !node.HasAnnotationComment())
-        {
-            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
-            if (symbol != null)
-                SetNamespaceIdentifier(symbol);
-        }
-
-        base.VisitFileScopedNamespaceDeclaration(node);
-    }
-
-    public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
-    {
-        if (isRenameNamespaces && !node.HasAnnotationComment())
-        {
-            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
-            if (symbol != null)
-                SetNamespaceIdentifier(symbol);
-        }
-
-        base.VisitNamespaceDeclaration(node);
-    }
 
     public override void VisitClassDeclaration(ClassDeclarationSyntax node)
     {
@@ -241,7 +155,7 @@ internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random
         {
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
             if (symbol != null)
-                SetIdentifier(symbol);
+                SetPropertyIdentifier(symbol);
         }
 
         base.VisitPropertyDeclaration(node);
@@ -274,4 +188,109 @@ internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random
         var identifier = $"{prefix}0x{random.GetGlobalUniqueAlphaNumericalString(8)}";
         dict.Add(symbol, identifier);
     }
+
+    private string SetPropertyIdentifier(IPropertySymbol symbol)
+    {
+        if (dict.TryGetValue(symbol.OriginalDefinition, out var val))
+            return val;
+
+        var original = symbol.OriginalDefinition;
+        var @interface = symbol.GetInterfaceSymbol();
+        if (@interface is IPropertySymbol s)
+        {
+            var infer = dict.GetValueOrDefault(s) ?? dict.GetValueOrDefault(s.OriginalDefinition);
+            if (string.IsNullOrWhiteSpace(infer))
+                infer = SetPropertyIdentifier(s);
+
+            dict.Add(symbol, infer);
+
+            return infer;
+        }
+
+        if (original.Equals(symbol, SymbolEqualityComparer.Default))
+        {
+            var identifier = $"_0x{random.GetGlobalUniqueAlphaNumericalString(8)}";
+            dict.Add(original, identifier);
+
+            return identifier;
+        }
+
+        throw new InvalidOperationException();
+    }
+
+    #region namespace
+
+    public override void VisitFileScopedNamespaceDeclaration(FileScopedNamespaceDeclarationSyntax node)
+    {
+        if (isRenameNamespaces && !node.HasAnnotationComment())
+        {
+            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
+            if (symbol != null)
+                SetNamespaceIdentifier(symbol);
+        }
+
+        base.VisitFileScopedNamespaceDeclaration(node);
+    }
+
+    public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
+    {
+        if (isRenameNamespaces && !node.HasAnnotationComment())
+        {
+            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
+            if (symbol != null)
+                SetNamespaceIdentifier(symbol);
+        }
+
+        base.VisitNamespaceDeclaration(node);
+    }
+
+    private void SetNamespaceIdentifier(INamespaceSymbol symbol)
+    {
+        if (dict.ContainsKey(symbol))
+            return;
+
+        if (symbol.ContainingNamespace.IsGlobalNamespace)
+        {
+            // root namespace
+            var original = symbol.OriginalDefinition;
+            if (original.Equals(symbol, SymbolEqualityComparer.Default))
+            {
+                var identifier = $"_0x{random.GetGlobalUniqueAlphaNumericalString(8)}";
+                dict.Add(original, identifier);
+
+                return;
+            }
+        }
+        else
+        {
+            var stack = new Stack<INamespaceSymbol>();
+            var current = symbol;
+
+            while (true)
+            {
+                if (current.IsGlobalNamespace)
+                    break;
+
+                stack.Push(current);
+                current = current.ContainingNamespace;
+            }
+
+
+            while (stack.Count > 0)
+            {
+                var s = stack.Pop();
+                if (dict.ContainsKey(s.OriginalDefinition))
+                    continue;
+
+                var identifier = $"_0x{random.GetGlobalUniqueAlphaNumericalString(8)}";
+                dict.Add(s.OriginalDefinition, identifier);
+            }
+
+            return;
+        }
+
+        throw new InvalidOperationException();
+    }
+
+    #endregion
 }

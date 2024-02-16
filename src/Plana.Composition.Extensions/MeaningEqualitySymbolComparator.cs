@@ -9,6 +9,31 @@ namespace Plana.Composition.Extensions;
 
 public class MeaningEqualitySymbolComparator : IEqualityComparer<ISymbol>
 {
+    private static readonly SymbolDisplayFormat SymbolDisplayFormat = new(
+        /* globalNamespaceStyle: */
+        SymbolDisplayGlobalNamespaceStyle.OmittedAsContaining,
+        /* typeQualificationStyle: */
+        SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+        /* genericsOptions: */
+        SymbolDisplayGenericsOptions.IncludeTypeParameters | SymbolDisplayGenericsOptions.IncludeVariance,
+        /* memberOptions: */
+        SymbolDisplayMemberOptions.IncludeParameters | SymbolDisplayMemberOptions.IncludeContainingType | SymbolDisplayMemberOptions.IncludeType | SymbolDisplayMemberOptions.IncludeRef | SymbolDisplayMemberOptions.IncludeExplicitInterface,
+        /* delegateStyle: */
+        default,
+        /* extensionMethodStyle: */
+        default,
+        /* parameterOptions: */
+        SymbolDisplayParameterOptions.IncludeOptionalBrackets | SymbolDisplayParameterOptions.IncludeDefaultValue | SymbolDisplayParameterOptions.IncludeExtensionThis | SymbolDisplayParameterOptions.IncludeType | SymbolDisplayParameterOptions.IncludeName,
+        /* propertyStyle: */
+        SymbolDisplayPropertyStyle.ShowReadWriteDescriptor,
+        /* localOptions: */
+        SymbolDisplayLocalOptions.IncludeType,
+        /* kindOptions: */
+        SymbolDisplayKindOptions.IncludeMemberKeyword,
+        /* miscellaneousOptions: */
+        SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers | SymbolDisplayMiscellaneousOptions.IncludeNullableReferenceTypeModifier
+    );
+
     public static MeaningEqualitySymbolComparator Default => new();
 
     public bool Equals(ISymbol x, ISymbol y)
@@ -17,7 +42,10 @@ public class MeaningEqualitySymbolComparator : IEqualityComparer<ISymbol>
             switch (x)
             {
                 case INamespaceSymbol:
-                    return x.ToDisplayString() == y.ToDisplayString();
+                    return x.ToDisplayString(SymbolDisplayFormat) == y.ToDisplayString(SymbolDisplayFormat);
+
+                case IPropertySymbol:
+                    return x.ToDisplayString(SymbolDisplayFormat) == y.ToDisplayString(SymbolDisplayFormat);
             }
 
         return SymbolEqualityComparer.Default.Equals(x, y);
@@ -28,7 +56,10 @@ public class MeaningEqualitySymbolComparator : IEqualityComparer<ISymbol>
         switch (obj)
         {
             case INamespaceSymbol:
-                return obj.ToDisplayString().GetHashCode();
+                return obj.ToDisplayString(SymbolDisplayFormat).GetHashCode();
+
+            case IPropertySymbol:
+                return obj.ToDisplayString(SymbolDisplayFormat).GetHashCode();
         }
 
         return SymbolEqualityComparer.Default.GetHashCode(obj);
