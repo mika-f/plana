@@ -58,14 +58,36 @@ public class InlineSource(string path, string? output, string? input) : ITestabl
         return await GetSyntax<T>(_ => true);
     }
 
-    public Task<T> GetSyntax<T>(Func<T, bool> predicate) where T : CSharpSyntaxNode
+    public async Task<T> GetSyntax<T>(Func<T, bool> predicate) where T : CSharpSyntaxNode
+    {
+        var ret = (await GetSyntaxOf<T>()).SingleOrDefault(predicate);
+        Assert.NotNull(ret);
+
+        return ret;
+    }
+
+    public async Task<T> GetFirstSyntax<T>() where T : CSharpSyntaxNode
+    {
+        return await GetFirstSyntax<T>(_ => true);
+    }
+
+
+    public async Task<T> GetFirstSyntax<T>(Func<T, bool> predicate) where T : CSharpSyntaxNode
+    {
+        var ret = (await GetSyntaxOf<T>()).FirstOrDefault(predicate);
+        Assert.NotNull(ret);
+
+        return ret;
+    }
+
+    private Task<List<T>> GetSyntaxOf<T>() where T : CSharpSyntaxNode
     {
         if (output == null)
             Assert.Fail("output and/or input is null");
 
         _o ??= SyntaxFactory.ParseCompilationUnit(output);
 
-        var ret = _o.DescendantNodes().OfType<T>().FirstOrDefault(predicate);
+        var ret = _o.DescendantNodes().OfType<T>().ToList();
         Assert.NotNull(ret);
 
         return Task.FromResult(ret);
