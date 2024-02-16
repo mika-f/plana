@@ -37,4 +37,25 @@ public class PlanaPluginOptionTest
         Assert.Throws<InvalidFormatException>(() => PlanaPluginOption.ValidateName("@X"));
         Assert.Throws<InvalidFormatException>(() => PlanaPluginOption.ValidateName("こんにちは"));
     }
+
+    [Fact]
+    public void FriendlyNameIsSameValueWithNameNotPassedInConstructor()
+    {
+        var instance = new PlanaPluginOption("name", "description", false);
+        Assert.Equal(instance.Name, instance.FriendlyName);
+    }
+
+    [Fact]
+    public void FriendlyNameIsNotSameValueWithNamePassedInConstructor()
+    {
+        var instance = new PlanaPluginOption("name", "friendly name", "description", false);
+        Assert.Equal("friendly name", instance.FriendlyName);
+    }
+
+    [Fact]
+    public void HasDescription()
+    {
+        var instance = new PlanaPluginOption("name", "description", false);
+        Assert.Equal("description", instance.Description);
+    }
 }
