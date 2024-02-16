@@ -38,6 +38,20 @@ public class PlanaContainer<T> where T : IPlanaPlugin, new()
         _dict = dict;
     }
 
+    public Task<T> InstantiateWithBind()
+    {
+        var instance = new T();
+        instance.BindParameters(new TestParameterBinder(_dict));
+
+        return Task.FromResult(instance);
+    }
+
+    public Task<T> Instantiate()
+    {
+        var instance = new T();
+        return Task.FromResult(instance);
+    }
+
     [MemberNotNull(nameof(Workspace), nameof(Sources), nameof(_root))]
     public async Task RunAsync(string path = "../../../../Plana.sln", int seed = 150)
     {
@@ -47,8 +61,7 @@ public class PlanaContainer<T> where T : IPlanaPlugin, new()
         Workspace = path.EndsWith(".sln") ? new SolutionWorkspace(new FileInfo(path), logger) : new ProjectWorkspace(new FileInfo(path), logger);
         _root = Path.GetDirectoryName(Path.GetFullPath(path))!;
 
-        var instance = new T();
-        instance.BindParameters(new TestParameterBinder(_dict));
+        var instance = await InstantiateWithBind();
 
         await Workspace.ActivateWorkspaceAsync(source.Token);
 

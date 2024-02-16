@@ -10,6 +10,17 @@ namespace Plana.Composition.ShuffleDeclarations.Tests;
 public class ShuffleMemberDeclarationsTest
 {
     [Fact]
+    public async Task CanInstantiate()
+    {
+        var container = new PlanaContainer<ShuffleMemberDeclarations>();
+        var instance = await container.InstantiateWithBind();
+
+        Assert.NotNull(instance);
+        Assert.Equal("Shuffle Declarations", instance.Name);
+        Assert.Empty(instance.Options);
+    }
+
+    [Fact]
     public async Task ShuffleWithRandom()
     {
         var container = new PlanaContainer<ShuffleMemberDeclarations>();
