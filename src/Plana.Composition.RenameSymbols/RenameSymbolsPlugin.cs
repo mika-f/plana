@@ -3,6 +3,8 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
+using System.Runtime.CompilerServices;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
@@ -10,10 +12,12 @@ using Plana.Composition.Abstractions;
 using Plana.Composition.Abstractions.Attributes;
 using Plana.Composition.Extensions;
 
+[assembly: InternalsVisibleTo("Plana.Composition.RenameSymbols.Tests")]
+
 namespace Plana.Composition.RenameSymbols;
 
 [PlanaPlugin("rename-symbols")]
-public class SymbolObfuscator : IPlanaPlugin2
+public class RenameSymbolsPlugin : IPlanaPlugin2
 {
     private static readonly PlanaPluginOption Namespace = new("rename-namespaces", "Rename Namespaces", "rename namespaces, not supports file-scoped namespaces", false);
     private static readonly PlanaPluginOption ClassName = new("rename-classes", "Rename Classes", "rename classes", false);
@@ -24,16 +28,16 @@ public class SymbolObfuscator : IPlanaPlugin2
     private static readonly PlanaPluginOption Variables = new("rename-variables", "rename local variables", false);
     private static readonly PlanaPluginOption KeepNameOnInspector = new("enum-attributes", "add UnityEngine.InspectorName to enum members, without already specified", false);
 
-    private readonly Dictionary<ISymbol, string> _dict = [];
+    private readonly Dictionary<ISymbol, string> _dict = new(MeaningEqualitySymbolComparator.Default);
 
-    private bool _isEnableClassNameRenaming;
-    private bool _isEnableFieldsRenaming;
-    private bool _isEnableMethodsRenaming;
-    private bool _isEnableNamespaceRenaming;
-    private bool _isEnablePropertiesRenaming;
-    private bool _isEnableVariablesRenaming;
-    private bool _keepNameOnInspector;
-    private bool _withSendCustomEvent;
+    internal bool IsEnableClassNameRenaming;
+    internal bool IsEnableFieldsRenaming;
+    internal bool IsEnableMethodsRenaming;
+    internal bool IsEnableNamespaceRenaming;
+    internal bool IsEnablePropertiesRenaming;
+    internal bool IsEnableVariablesRenaming;
+    internal bool KeepOriginalNameInInspector;
+    internal bool KeepOriginalNameWithSendCustomEvent;
 
     public IReadOnlyCollection<IPlanaPluginOption> Options => new List<IPlanaPluginOption> { Namespace, ClassName, Properties, Fields, Methods, WithSendCustomEvent, Variables, KeepNameOnInspector }.AsReadOnly();
 
@@ -41,14 +45,14 @@ public class SymbolObfuscator : IPlanaPlugin2
 
     public void BindParameters(IPlanaPluginParameterBinder binder)
     {
-        _isEnableNamespaceRenaming = binder.GetValue(Namespace);
-        _isEnableClassNameRenaming = binder.GetValue(ClassName);
-        _isEnablePropertiesRenaming = binder.GetValue(Properties);
-        _isEnableFieldsRenaming = binder.GetValue(Fields);
-        _isEnableMethodsRenaming = binder.GetValue(Methods);
-        _withSendCustomEvent = binder.GetValue(WithSendCustomEvent);
-        _isEnableVariablesRenaming = binder.GetValue(Variables);
-        _keepNameOnInspector = binder.GetValue(KeepNameOnInspector);
+        IsEnableNamespaceRenaming = binder.GetValue(Namespace);
+        IsEnableClassNameRenaming = binder.GetValue(ClassName);
+        IsEnablePropertiesRenaming = binder.GetValue(Properties);
+        IsEnableFieldsRenaming = binder.GetValue(Fields);
+        IsEnableMethodsRenaming = binder.GetValue(Methods);
+        KeepOriginalNameWithSendCustomEvent = binder.GetValue(WithSendCustomEvent);
+        IsEnableVariablesRenaming = binder.GetValue(Variables);
+        KeepOriginalNameInInspector = binder.GetValue(KeepNameOnInspector);
     }
 
     public async Task ObfuscateAsync(IPlanaPluginRunContext context)
@@ -57,13 +61,14 @@ public class SymbolObfuscator : IPlanaPlugin2
         {
             var walker = new CSharpSymbolsWalker(
                 document,
-                _isEnableNamespaceRenaming,
-                _isEnableClassNameRenaming,
-                _isEnablePropertiesRenaming,
-                _isEnableFieldsRenaming,
-                _isEnableMethodsRenaming,
-                _withSendCustomEvent,
-                _isEnableVariablesRenaming,
+                context.SecureRandom,
+                IsEnableNamespaceRenaming,
+                IsEnableClassNameRenaming,
+                IsEnablePropertiesRenaming,
+                IsEnableFieldsRenaming,
+                IsEnableMethodsRenaming,
+                KeepOriginalNameWithSendCustomEvent,
+                IsEnableVariablesRenaming,
                 _dict
             );
 
@@ -73,7 +78,7 @@ public class SymbolObfuscator : IPlanaPlugin2
 
         foreach (var document in context.Solution.Projects.SelectMany(w => w.Documents))
         {
-            var rewriter = new CSharpSymbolsRewriter(document, _keepNameOnInspector, _dict);
+            var rewriter = new CSharpSymbolsRewriter(document, KeepOriginalNameInInspector, _dict);
 
             var oldNode = await document.SyntaxTree.GetRootAsync(context.CancellationToken);
             var newNode = (CSharpSyntaxNode)rewriter.Visit(oldNode);

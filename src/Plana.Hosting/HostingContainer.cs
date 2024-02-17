@@ -48,7 +48,7 @@ public class HostingContainer(DirectoryInfo root, ILogger? logger) : IHostingCon
             }
             catch (Exception e)
             {
-                logger?.LogError($"failed to load plugin: Name={library.Name}, Reason={e.Message}");
+                logger?.LogWarning($"failed to load plugin: Name={library.Name}, Reason={e.Message}");
             }
         }
 

@@ -12,7 +12,7 @@ namespace Plana.Composition.Extensions;
 
 public class PlanaPluginOption : IPlanaPluginOption
 {
-    private static readonly Regex NameValidator = new("^[^-][a-z0-9_-]+$", RegexOptions.Compiled);
+    private static readonly Regex NameValidator = new("^[a-zA-Z0-9][a-zA-Z0-9_-]+$", RegexOptions.Compiled);
 
     public PlanaPluginOption(string name, string description, bool defaultValue) : this(name, name, description, defaultValue) { }
 

@@ -9,11 +9,15 @@ using Plana.Composition.Abstractions.Enum;
 
 namespace Plana;
 
-internal class PlanaPluginRunContext(ISolution solution, RunKind kind, CancellationToken ct) : IPlanaPluginRunContext
+internal class PlanaPluginRunContext(ISolution solution, RunKind kind, IPlanaRandom random, IPlanaSecureRandom sr, CancellationToken ct) : IPlanaPluginRunContext
 {
     public ISolution Solution { get; } = solution;
 
     public RunKind Kind { get; } = kind;
+
+    public IPlanaRandom Random { get; } = random;
+
+    public IPlanaSecureRandom SecureRandom { get; } = sr;
 
     public CancellationToken CancellationToken { get; } = ct;
 }

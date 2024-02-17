@@ -7,7 +7,7 @@ using Plana.Composition.Abstractions.Analysis;
 
 namespace Plana;
 
-internal class PlanaSolution(List<IProject> projects) : ISolution
+public class PlanaSolution(List<IProject> projects) : ISolution
 {
     public IReadOnlyCollection<IProject> Projects { get; } = projects.AsReadOnly();
 

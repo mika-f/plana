@@ -2,12 +2,32 @@
   "profiles": {
     "Plana.CLI - Retrieve Args": {
       "commandName": "Project",
-      "commandLineArgs": "obfuscate --workspace ./Plana.Integrations.Unity/AudioLink.csproj --output \"../dist\" --log-level verbose --plugins ./Plana.CLI/bin/Debug/net8.0/plugins --rename-symbols --retrieve-args",
+      "commandLineArgs": "obfuscate --workspace ./Plana.sln --output \"../dist\" --log-level verbose --plugins ./Plana.CLI/bin/Debug/net8.0/plugins --rename-symbols --retrieve-args",
       "workingDirectory": "../"
     },
     "Plana.CLI - Obfuscate": {
       "commandName": "Project",
-      "commandLineArgs": "obfuscate --workspace ./Plana.Integrations.Unity/AudioLink.csproj --output \"../dist\" --log-level verbose --plugins ./Plana.CLI/bin/Debug/net8.0/plugins --rename-symbols --shuffle-declarations --disable-console-output --enum-attributes",
+      "commandLineArgs": "obfuscate --workspace ./Plana.sln --output \"../dist\" --log-level verbose --plugins ./Plana.CLI/bin/Debug/net8.0/plugins --rename-symbols --rename-namespaces --rename-properties --rename-fields --rename-methods --rename-variables",
+      "workingDirectory": "../"
+    },
+    "Plana.CLI - Obfuscate (--rename-namespaces)": {
+      "commandName": "Project",
+      "commandLineArgs": "obfuscate --workspace ./Plana.sln --output \"../dist\" --log-level verbose --plugins ./Plana.CLI/bin/Debug/net8.0/plugins --rename-symbols --rename-namespaces",
+      "workingDirectory": "../"
+    },
+    "Plana.CLI - Obfuscate (--rename-properties)": {
+      "commandName": "Project",
+      "commandLineArgs": "obfuscate --workspace ./Plana.sln --output \"../dist\" --log-level verbose --plugins ./Plana.CLI/bin/Debug/net8.0/plugins --rename-symbols --rename-properties",
+      "workingDirectory": "../"
+    },
+    "Plana.CLI - Obfuscate (--rename-fields)": {
+      "commandName": "Project",
+      "commandLineArgs": "obfuscate --workspace ./Plana.sln --output \"../dist\" --log-level verbose --plugins ./Plana.CLI/bin/Debug/net8.0/plugins --rename-symbols --rename-fields",
+      "workingDirectory": "../"
+    },
+    "Plana.CLI - Obfuscate (--rename-methods)": {
+      "commandName": "Project",
+      "commandLineArgs": "obfuscate --workspace ./Plana.sln --output \"../dist\" --log-level verbose --plugins ./Plana.CLI/bin/Debug/net8.0/plugins --rename-methods",
       "workingDirectory": "../"
     }
   }

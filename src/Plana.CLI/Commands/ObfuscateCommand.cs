@@ -115,10 +115,10 @@ public class ObfuscateCommand : ISubCommand
         var options = new Dictionary<IPlanaPlugin, Dictionary<IPlanaPluginOption, Option>>();
         var allPluginOptions = new List<IPlanaPluginOption>();
 
-        foreach (var (obfuscator, attr) in container.Items)
+        foreach (var (plugin, attr) in container.Items)
         {
-            var enabler = new Option<bool>($"--{attr.Id}", () => false, $"enable {attr.Id} plugin");
-            allPluginOptions.Add(new PlanaPluginOption(attr.Id, $"enable {attr.Id} plugin", false));
+            var enabler = new Option<bool>($"--{attr.Id}", () => false, $"enable {plugin.Name} plugin");
+            allPluginOptions.Add(new PlanaPluginOption(attr.Id, $"enable {plugin.Name} plugin", false));
 
             try
             {
@@ -126,7 +126,7 @@ public class ObfuscateCommand : ISubCommand
 
                 var dict = new Dictionary<IPlanaPluginOption, Option>();
 
-                foreach (var opt in obfuscator.Options)
+                foreach (var opt in plugin.Options)
                 {
                     var option = opt.ToOptions();
                     if (option == null)
@@ -137,10 +137,10 @@ public class ObfuscateCommand : ISubCommand
                     allPluginOptions.Add(opt);
                 }
 
-                options.Add(obfuscator, dict);
+                options.Add(plugin, dict);
 
                 // success
-                enablers.Add(enabler, obfuscator);
+                enablers.Add(enabler, plugin);
                 command.AddOptions(temporary.ToArray());
             }
             catch (InvalidFormatException e)
@@ -211,7 +211,7 @@ public class ObfuscateCommand : ISubCommand
         if (ret.UnmatchedTokens.Count > 0)
         {
             foreach (var token in ret.UnmatchedTokens)
-                logger?.LogError($"unrecognized command or argument {token}");
+                logger?.LogFatal($"unrecognized command or argument {token}");
 
             await command.InvokeAsync("--help");
 

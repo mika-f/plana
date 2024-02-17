@@ -25,7 +25,14 @@ public class SolutionWorkspace(FileInfo sln, ILogger? logger) : IWorkspace
     {
         logger?.LogDebug("loading workspace as Visual Studio Solution with MSBuild......");
 
-        MSBuildLocator.RegisterDefaults();
+        try
+        {
+            MSBuildLocator.RegisterDefaults();
+        }
+        catch (InvalidOperationException)
+        {
+            // ignored
+        }
 
         _workspace = MSBuildWorkspace.Create();
         _solution = await _workspace.OpenSolutionAsync(sln.FullName, null, ct);
