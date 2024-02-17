@@ -14,6 +14,8 @@ public class InlineSource(string path, string? output, string? input) : ITestabl
     private CSharpSyntaxNode? _i;
     private CSharpSyntaxNode? _o;
 
+    public string Source => output;
+
     public Task ToMatchInlineSnapshot(string snapshot)
     {
         if (output == null)
@@ -22,7 +24,7 @@ public class InlineSource(string path, string? output, string? input) : ITestabl
         _o = SyntaxFactory.ParseCompilationUnit(output);
         var s = SyntaxFactory.ParseCompilationUnit(snapshot);
 
-        Assert.NotEqual(s.ToNormalizedFullString(), _o.ToNormalizedFullString());
+        Assert.Equal(s.ToNormalizedFullString(), _o.ToNormalizedFullString());
 
         return Task.CompletedTask;
     }

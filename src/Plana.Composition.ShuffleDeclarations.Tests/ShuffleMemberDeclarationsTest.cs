@@ -29,6 +29,7 @@ public class ShuffleMemberDeclarationsTest
         var source = await container.GetSourceByPathAsync("PlanaRandom.cs");
 
         await source.HasDiffs();
+
         await source.ToMatchInlineSnapshot(@"
 // ------------------------------------------------------------------------------------------
 //  Copyright (c) Natsuneko. All rights reserved.
@@ -39,9 +40,10 @@ using Plana.Composition.Abstractions;
 namespace Plana;
 public class PlanaRandom : IPlanaSecureRandom
 {
-    public int GetInt32()
+    public string GetString(char[] chars, int length)
     {
-        return _random.Next();
+        var str = Enumerable.Repeat(chars, length).Select(s => s[_random.Next(s.Length)]).ToArray();
+        return new string (str);
     }
 
     public PlanaRandom(int seed)
@@ -49,22 +51,42 @@ public class PlanaRandom : IPlanaSecureRandom
         _random = new Random(seed);
     }
 
+    public string GetAlphaNumericalString(int length)
+    {
+        return GetString(""abcedf0123456789"".ToCharArray(), length);
+    }
+
+    private readonly Random _random;
+    private readonly List<string> _items = [];
+    public void Shuffle<T>(Span<T> array)
+    {
+        _random.Shuffle(array);
+    }
+
+    public string GetGlobalUniqueAlphaNumericalString(int length)
+    {
+        var identifier = GetAlphaNumericalString(length);
+        while (_items.Contains(identifier))
+            identifier = GetAlphaNumericalString(length);
+        _items.Add(identifier);
+        return identifier;
+    }
+
     public int GetInt32(int min, int max)
     {
         return _random.Next(min, max);
+    }
+
+    public int GetInt32()
+    {
+        return _random.Next();
     }
 
     public PlanaRandom()
     {
         _random = new Random();
     }
-
-    public void Shuffle<T>(Span<T> array)
-    {
-        _random.Shuffle(array);
-    }
-
-    private readonly Random _random;
-}".Trim());
+}
+".Trim());
     }
 }
