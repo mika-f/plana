@@ -8,10 +8,10 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace Plana.Testing;
 
-public static class CSharpSyntaxNodeExtensions
+internal static class CSharpSyntaxTreeExtensions
 {
-    public static string ToNormalizedFullString(this CSharpSyntaxNode node)
+    public static string ToNormalizedFullString(this CSharpSyntaxTree tree)
     {
-        return node.NormalizeWhitespace().ToFullString();
+        return tree.GetCompilationUnitRoot().NormalizeWhitespace().ToFullString();
     }
 }
