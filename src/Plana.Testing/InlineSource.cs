@@ -6,6 +6,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 
 using Plana.Composition.Abstractions.Analysis;
+using Plana.Composition.Extensions;
 
 using Xunit;
 
