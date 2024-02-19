@@ -8,8 +8,6 @@ using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 using System.Text;
 
-using Microsoft.CodeAnalysis;
-
 using Plana.CLI.Bindings;
 using Plana.CLI.Commands.Abstractions;
 using Plana.CLI.Exceptions;
@@ -58,7 +56,7 @@ public class ObfuscateCommand : ISubCommand
                     var source = await document.SyntaxTree.GetRootAsync(ct);
 
                     Console.WriteLine(document.Path);
-                    Console.WriteLine(source.NormalizeWhitespace().ToFullString());
+                    Console.WriteLine(source.ToNormalizedFullString());
                     Console.WriteLine();
                 }
 
@@ -74,7 +72,7 @@ public class ObfuscateCommand : ISubCommand
 
                     var source = await document.SyntaxTree.GetRootAsync(ct);
                     logger.LogInfo($"write file in-place: {document.Path}");
-                    await File.WriteAllTextAsync(document.Path, source.NormalizeWhitespace().ToFullString(), ct);
+                    await File.WriteAllTextAsync(document.Path, source.ToNormalizedFullString(), ct);
                 }
 
                 return;
@@ -99,7 +97,7 @@ public class ObfuscateCommand : ISubCommand
                     logger.LogInfo($"write file: {to}");
 
                     var source = await document.SyntaxTree.GetRootAsync(ct);
-                    await File.WriteAllTextAsync(to, source.NormalizeWhitespace().ToFullString(), ct);
+                    await File.WriteAllTextAsync(to, source.ToNormalizedFullString(), ct);
                 }
 
                 return;

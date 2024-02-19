@@ -6,9 +6,9 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
-namespace Plana.Testing;
+namespace Plana.Composition.Extensions;
 
-internal static class CSharpSyntaxTreeExtensions
+public static class CSharpSyntaxTreeExtensions
 {
     public static string ToNormalizedFullString(this CSharpSyntaxTree tree)
     {
