@@ -11,7 +11,7 @@ public interface IWorkspace
 {
     string Path { get; }
 
-    Task ActivateWorkspaceAsync(CancellationToken ct);
+    Task<IReadOnlyCollection<IProject>> GetProjectsAsync(CancellationToken ct);
 
-    Task<List<IProject>> GetProjectsAsync(CancellationToken ct);
+    Task<ISolution> ToSolutionAsync(CancellationToken ct);
 }

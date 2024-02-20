@@ -17,21 +17,18 @@ public class Obfuscator(IWorkspace workspace, List<IPlanaPlugin> instances, ILog
     {
         logger?.LogInfo($"obfuscate workspace with {instances.Count} instances(s), this may take a few minutes......");
 
-        await workspace.ActivateWorkspaceAsync(ct);
-
-        var projects = await workspace.GetProjectsAsync(ct);
-        var solution = new PlanaSolution(projects);
-        var context = new PlanaPluginRunContext(solution, RunKind.Obfuscate, new PlanaRandom(), new PlanaSecureRandom(), ct);
-
-        return await ObfuscateAsync(context, ct);
+        return await RunAsync(RunKind.Obfuscate, new PlanaRandom(), new PlanaSecureRandom(), ct);
     }
 
-    public async Task<IReadOnlyCollection<IDocument>> ObfuscateAsync(IPlanaPluginRunContext context, CancellationToken ct)
+    public async Task<IReadOnlyCollection<IDocument>> RunAsync(RunKind kind, IPlanaRandom r, IPlanaSecureRandom sr, CancellationToken ct)
     {
         try
         {
             foreach (var instance in instances)
             {
+                var solution = await workspace.ToSolutionAsync(ct);
+                var context = new PlanaPluginRunContext(solution, kind, r, sr, ct);
+
                 logger?.LogInfo($"applying {instance.Name}......");
 
                 await instance.RunAsync(context);
@@ -45,6 +42,7 @@ public class Obfuscator(IWorkspace workspace, List<IPlanaPlugin> instances, ILog
             logger?.LogDebug(e.Message);
         }
 
-        return context.Solution.Projects.SelectMany(w => w.Documents).ToList();
+        var projects = await workspace.GetProjectsAsync(ct);
+        return projects.SelectMany(w => w.Documents).ToList();
     }
 }

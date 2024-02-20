@@ -4,8 +4,6 @@
 // ------------------------------------------------------------------------------------------
 
 using Microsoft.Build.Locator;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.MSBuild;
 
 using Plana.Composition.Abstractions.Analysis;
@@ -14,14 +12,20 @@ using Plana.Workspace.Abstractions;
 
 namespace Plana.Workspace;
 
-public class ProjectWorkspace(FileInfo csproj, ILogger? logger) : IWorkspace
+public class ProjectWorkspace : IWorkspace
 {
-    private Project _project = null!;
-    private MSBuildWorkspace _workspace = null!;
+    private readonly ILogger? _logger;
+    private readonly PlanaWorkspaceContext _context;
 
-    public string Path => csproj.FullName;
+    public string Path => _context.FullName;
 
-    public async Task ActivateWorkspaceAsync(CancellationToken ct)
+    private ProjectWorkspace(PlanaWorkspaceContext context, ILogger? logger)
+    {
+        _context = context;
+        _logger = logger;
+    }
+
+    public static async Task<ProjectWorkspace> CreateWorkspaceAsync(FileInfo csproj, ILogger? logger, CancellationToken ct)
     {
         logger?.LogDebug("loading workspace as Visual Studio C# Project with MSBuild......");
 
@@ -34,24 +38,21 @@ public class ProjectWorkspace(FileInfo csproj, ILogger? logger) : IWorkspace
             // ignored
         }
 
-        _workspace = MSBuildWorkspace.Create();
+        var workspace = MSBuildWorkspace.Create();
+        var project = await workspace.OpenProjectAsync(csproj.FullName, null, ct);
+        var context = new PlanaWorkspaceContext(workspace, project, logger);
 
-        var project = await _workspace.OpenProjectAsync(csproj.FullName, null, ct);
-        var options = (CSharpParseOptions?)project.ParseOptions;
-
-        _project = options == null ? project : project.WithParseOptions(options.WithPreprocessorSymbols("UDONSHARP", "COMPILER_UDONSHARP"));
+        return new ProjectWorkspace(context, logger);
     }
 
-    public async Task<List<IProject>> GetProjectsAsync(CancellationToken ct)
+    public async Task<IReadOnlyCollection<IProject>> GetProjectsAsync(CancellationToken ct)
     {
-        var projects = new List<CSharpProject> { new(_project, logger) };
-        foreach (var project in projects)
-        {
-            ct.ThrowIfCancellationRequested();
+        return await _context.GetProjectsAsync(ct);
+    }
 
-            await project.InflateDocumentsAsync(ct);
-        }
-
-        return projects.Cast<IProject>().ToList();
+    public async Task<ISolution> ToSolutionAsync(CancellationToken ct)
+    {
+        var projects = await GetProjectsAsync(ct);
+        return new PlanaSolution([.. projects]);
     }
 }
