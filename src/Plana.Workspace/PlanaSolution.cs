@@ -5,7 +5,7 @@
 
 using Plana.Composition.Abstractions.Analysis;
 
-namespace Plana;
+namespace Plana.Workspace;
 
 public class PlanaSolution(List<IProject> projects) : ISolution
 {

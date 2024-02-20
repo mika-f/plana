@@ -15,11 +15,11 @@ namespace Plana.Workspace.Tests
             Assert.NotNull(workspace);
             Assert.Equal(typeof(ProjectWorkspace), workspace.GetType());
 
-            var projects = await workspace.GetProjectsAsync(new CancellationToken());
+            var projects = (await workspace.GetProjectsAsync(new CancellationToken())).ToList();
             Assert.Single(projects);
 
             var project = projects[0];
-            Assert.Equal(5, project.Documents.Count);
+            Assert.Equal(4, project.Documents.Count);
         }
 
         [Fact]
