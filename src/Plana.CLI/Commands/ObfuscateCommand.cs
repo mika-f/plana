@@ -53,12 +53,14 @@ public class ObfuscateCommand : ISubCommand
             var isDryRun = context.ParseResult.GetValueForOption(_dryRun);
             if (isDryRun)
             {
-                foreach (var (path, content) in ret)
+                foreach (var document in ret)
                 {
                     ct.ThrowIfCancellationRequested();
 
-                    Console.WriteLine(path);
-                    Console.WriteLine(content);
+                    var source = await document.SyntaxTree.GetRootAsync(ct);
+
+                    Console.WriteLine(document.Path);
+                    Console.WriteLine(source.ToNormalizedFullString());
                     Console.WriteLine();
                 }
 
@@ -68,10 +70,13 @@ public class ObfuscateCommand : ISubCommand
             var write = context.ParseResult.GetValueForOption(_write);
             if (write)
             {
-                foreach (var (path, content) in ret)
+                foreach (var document in ret)
                 {
-                    logger.LogInfo($"write file in-place: {path}");
-                    await File.WriteAllTextAsync(path, content, ct);
+                    ct.ThrowIfCancellationRequested();
+
+                    var source = await document.SyntaxTree.GetRootAsync(ct);
+                    logger.LogInfo($"write file in-place: {document.Path}");
+                    await File.WriteAllTextAsync(document.Path, source.ToNormalizedFullString(), ct);
                 }
 
                 return;
@@ -82,9 +87,11 @@ public class ObfuscateCommand : ISubCommand
             {
                 var root = Path.GetDirectoryName(workspace.Path)!;
 
-                foreach (var (path, content) in ret)
+                foreach (var document in ret)
                 {
-                    var rel = Path.GetRelativePath(root, path);
+                    ct.ThrowIfCancellationRequested();
+
+                    var rel = Path.GetRelativePath(root, document.Path);
                     var to = Path.Combine(output.FullName, rel);
                     var dir = Path.GetDirectoryName(to)!;
 
@@ -92,7 +99,9 @@ public class ObfuscateCommand : ISubCommand
                         Directory.CreateDirectory(dir);
 
                     logger.LogInfo($"write file: {to}");
-                    await File.WriteAllTextAsync(to, content, ct);
+
+                    var source = await document.SyntaxTree.GetRootAsync(ct);
+                    await File.WriteAllTextAsync(to, source.ToNormalizedFullString(), ct);
                 }
 
                 return;

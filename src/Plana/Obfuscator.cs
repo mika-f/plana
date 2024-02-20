@@ -3,9 +3,8 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
-using Microsoft.CodeAnalysis;
-
 using Plana.Composition.Abstractions;
+using Plana.Composition.Abstractions.Analysis;
 using Plana.Composition.Abstractions.Enum;
 using Plana.Logging.Abstractions;
 using Plana.Workspace.Abstractions;
@@ -14,7 +13,7 @@ namespace Plana;
 
 public class Obfuscator(IWorkspace workspace, List<IPlanaPlugin> instances, ILogger? logger)
 {
-    public async Task<Dictionary<string, string>> ObfuscateAsync(CancellationToken ct)
+    public async Task<IReadOnlyCollection<IDocument>> ObfuscateAsync(CancellationToken ct)
     {
         logger?.LogInfo($"obfuscate workspace with {instances.Count} instances(s), this may take a few minutes......");
 
