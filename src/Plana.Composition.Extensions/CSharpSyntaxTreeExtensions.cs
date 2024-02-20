@@ -3,15 +3,15 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
-using Plana.Composition.Abstractions.Analysis;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 
-namespace Plana.Workspace.Abstractions;
+namespace Plana.Composition.Extensions;
 
-public interface IWorkspace
+public static class CSharpSyntaxTreeExtensions
 {
-    string Path { get; }
-
-    Task<IReadOnlyCollection<IProject>> GetProjectsAsync(CancellationToken ct);
-
-    Task<ISolution> ToSolutionAsync(CancellationToken ct);
+    public static string ToNormalizedFullString(this CSharpSyntaxTree tree)
+    {
+        return tree.GetCompilationUnitRoot().NormalizeWhitespace().ToFullString();
+    }
 }

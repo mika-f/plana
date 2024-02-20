@@ -22,5 +22,5 @@ public interface IDocument
 
     CSharpSyntaxTree OriginalSyntaxTree { get; }
 
-    Task WriteSyntaxTreeAsync(SyntaxTree tree, CancellationToken ct);
+    Task ApplyChangesAsync(SyntaxNode node, CancellationToken ct);
 }

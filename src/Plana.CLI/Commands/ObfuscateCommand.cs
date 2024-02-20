@@ -17,6 +17,7 @@ using Plana.Composition.Abstractions.Exceptions;
 using Plana.Composition.Extensions;
 using Plana.Hosting.Abstractions;
 using Plana.Logging.Abstractions;
+using Plana.Workspace;
 using Plana.Workspace.Abstractions;
 
 namespace Plana.CLI.Commands;
@@ -32,13 +33,16 @@ public class ObfuscateCommand : ISubCommand
     {
         Command.TreatUnmatchedTokensAsErrors = false;
         Command.AddOptions(_workspace, _dryRun, _write, _output);
-        Command.SetHandlerEx(OnHandleCommand, new LoggerBinder(), new WorkspaceBinder(_workspace), new HostingContainerBinder());
+        Command.SetHandlerEx(OnHandleCommand, new LoggerBinder(), new HostingContainerBinder());
     }
 
     public Command Command { get; } = new("obfuscate", "obfuscate workspace");
 
-    private async Task OnHandleCommand(InvocationContext context, ILogger logger, IWorkspace workspace, IHostingContainer container, CancellationToken ct)
+    private async Task OnHandleCommand(InvocationContext context, ILogger logger, IHostingContainer container, CancellationToken ct)
     {
+        var path = context.ParseResult.GetValueForOption(_workspace)!;
+        IWorkspace workspace = path.Extension == ".sln" ? await SolutionWorkspace.CreateWorkspaceAsync(path, logger, ct) : await ProjectWorkspace.CreateWorkspaceAsync(path, logger, ct);
+
         try
         {
             await container.ResolveAsync(ct);
@@ -49,12 +53,14 @@ public class ObfuscateCommand : ISubCommand
             var isDryRun = context.ParseResult.GetValueForOption(_dryRun);
             if (isDryRun)
             {
-                foreach (var (path, content) in ret)
+                foreach (var document in ret)
                 {
                     ct.ThrowIfCancellationRequested();
 
-                    Console.WriteLine(path);
-                    Console.WriteLine(content);
+                    var source = await document.SyntaxTree.GetRootAsync(ct);
+
+                    Console.WriteLine(document.Path);
+                    Console.WriteLine(source.ToNormalizedFullString());
                     Console.WriteLine();
                 }
 
@@ -64,10 +70,13 @@ public class ObfuscateCommand : ISubCommand
             var write = context.ParseResult.GetValueForOption(_write);
             if (write)
             {
-                foreach (var (path, content) in ret)
+                foreach (var document in ret)
                 {
-                    logger.LogInfo($"write file in-place: {path}");
-                    await File.WriteAllTextAsync(path, content, ct);
+                    ct.ThrowIfCancellationRequested();
+
+                    var source = await document.SyntaxTree.GetRootAsync(ct);
+                    logger.LogInfo($"write file in-place: {document.Path}");
+                    await File.WriteAllTextAsync(document.Path, source.ToNormalizedFullString(), ct);
                 }
 
                 return;
@@ -78,9 +87,11 @@ public class ObfuscateCommand : ISubCommand
             {
                 var root = Path.GetDirectoryName(workspace.Path)!;
 
-                foreach (var (path, content) in ret)
+                foreach (var document in ret)
                 {
-                    var rel = Path.GetRelativePath(root, path);
+                    ct.ThrowIfCancellationRequested();
+
+                    var rel = Path.GetRelativePath(root, document.Path);
                     var to = Path.Combine(output.FullName, rel);
                     var dir = Path.GetDirectoryName(to)!;
 
@@ -88,7 +99,9 @@ public class ObfuscateCommand : ISubCommand
                         Directory.CreateDirectory(dir);
 
                     logger.LogInfo($"write file: {to}");
-                    await File.WriteAllTextAsync(to, content, ct);
+
+                    var source = await document.SyntaxTree.GetRootAsync(ct);
+                    await File.WriteAllTextAsync(to, source.ToNormalizedFullString(), ct);
                 }
 
                 return;

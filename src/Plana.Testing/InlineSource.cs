@@ -5,52 +5,43 @@
 
 using Microsoft.CodeAnalysis.CSharp;
 
+using Plana.Composition.Abstractions.Analysis;
+using Plana.Composition.Extensions;
+
 using Xunit;
 
 namespace Plana.Testing;
 
-public class InlineSource(string path, string? output, string? input) : ITestableObject<string>
+public class InlineSource(IDocument? document) : ITestableObject<string>
 {
-    private CSharpSyntaxNode? _i;
-    private CSharpSyntaxNode? _o;
-
-    public string Source => output;
-
     public Task ToMatchInlineSnapshot(string snapshot)
     {
-        if (output == null)
+        if (document == null)
             Assert.Fail("output and/or input is null");
 
-        _o = SyntaxFactory.ParseCompilationUnit(output);
         var s = SyntaxFactory.ParseCompilationUnit(snapshot);
 
-        Assert.Equal(s.ToNormalizedFullString(), _o.ToNormalizedFullString());
+        Assert.Equal(s.ToNormalizedFullString(), document.SyntaxTree.ToNormalizedFullString());
 
         return Task.CompletedTask;
     }
 
     public Task HasDiffs()
     {
-        if (output == null || input == null)
+        if (document == null)
             Assert.Fail("output and/or input is null");
 
-        _o = SyntaxFactory.ParseCompilationUnit(output);
-        _i = SyntaxFactory.ParseCompilationUnit(input);
-
-        Assert.NotEqual(_i.ToNormalizedFullString(), _o.ToNormalizedFullString());
+        Assert.NotEqual(document.OriginalSyntaxTree.ToNormalizedFullString(), document.SyntaxTree.ToNormalizedFullString());
 
         return Task.CompletedTask;
     }
 
     public Task NoDiffs()
     {
-        if (output == null || input == null)
+        if (document == null)
             Assert.Fail("output and/or input is null");
 
-        _o = SyntaxFactory.ParseCompilationUnit(output);
-        _i = SyntaxFactory.ParseCompilationUnit(input);
-
-        Assert.Equal(_i.ToNormalizedFullString(), _o.ToNormalizedFullString());
+        Assert.Equal(document.OriginalSyntaxTree.ToNormalizedFullString(), document.SyntaxTree.ToNormalizedFullString());
 
         return Task.CompletedTask;
     }
@@ -84,12 +75,10 @@ public class InlineSource(string path, string? output, string? input) : ITestabl
 
     private Task<List<T>> GetSyntaxOf<T>() where T : CSharpSyntaxNode
     {
-        if (output == null)
+        if (document == null)
             Assert.Fail("output and/or input is null");
 
-        _o ??= SyntaxFactory.ParseCompilationUnit(output);
-
-        var ret = _o.DescendantNodes().OfType<T>().ToList();
+        var ret = document.SyntaxTree.GetCompilationUnitRoot().DescendantNodes().OfType<T>().ToList();
         Assert.NotNull(ret);
 
         return Task.FromResult(ret);
