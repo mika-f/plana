@@ -11,5 +11,5 @@ public class PlanaSolution(List<IProject> projects) : ISolution
 {
     public IReadOnlyCollection<IProject> Projects { get; } = projects.AsReadOnly();
 
-    public ISourceMap SourceMap { get; }
+    public ISourceMap SourceMap { get; } = null!;
 }

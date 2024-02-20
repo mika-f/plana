@@ -88,7 +88,7 @@ public class RenameSymbolsPluginTest
 
             var a = s1.Type.Equals(typeof(IPlanaPluginRunContext).ToSymbol(sm), SymbolEqualityComparer.Default);
 
-// accessed property is IPlanaSolution
+            // accessed property is IPlanaSolution
             var ccc = sm.GetSymbolInfo(syntax.Name);
             if (ccc.Symbol is not IPropertySymbol s2)
                 return false;

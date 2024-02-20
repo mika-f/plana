@@ -36,8 +36,11 @@ public class MeaningEqualitySymbolComparator : IEqualityComparer<ISymbol>
 
     public static MeaningEqualitySymbolComparator Default => new();
 
-    public bool Equals(ISymbol x, ISymbol y)
+    public bool Equals(ISymbol? x, ISymbol? y)
     {
+        if (x == null || y == null)
+            return false;
+
         if (x.GetType() == y.GetType())
             switch (x)
             {

@@ -28,10 +28,9 @@ public static class ISymbolExtensions
 
                                          return (null, null);
                                      })
-                                     .Where(w => w.Implementation != null)
-                                     .Cast<(ISymbol Implementation, ISymbol Interface)>();
+                                     .Where(w => w.Implementation != null);
 
-        return implementations.FirstOrDefault(w => w.Implementation.Equals(symbol, SymbolEqualityComparer.Default)).Interface;
+        return implementations.FirstOrDefault(w => w.Implementation?.Equals(symbol, SymbolEqualityComparer.Default) == true).Interface;
     }
 
     // Licensed to the .NET Foundation under one or more agreements.
