@@ -45,9 +45,8 @@ public class DisableConsoleOutputPlugin : IPlanaPlugin2
                 {
                     var rewriter = new CSharpSyntaxProcessor(document, invocations);
                     var newNode = (CSharpSyntaxNode)rewriter.Visit(oldNode);
-                    var newTree = CSharpSyntaxTree.Create(newNode, document.SyntaxTree.Options, document.SyntaxTree.FilePath, document.SyntaxTree.Encoding);
 
-                    await document.WriteSyntaxTreeAsync(newTree, context.CancellationToken);
+                    await document.ApplyChangesAsync(newNode, context.CancellationToken);
                 }
             }
         }

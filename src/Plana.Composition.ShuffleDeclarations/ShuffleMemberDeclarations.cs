@@ -30,9 +30,8 @@ public class ShuffleMemberDeclarations : IPlanaPlugin2
             var rewriter = new CSharpDeclarationRewriter(context.SecureRandom);
             var oldNode = await document.SyntaxTree.GetRootAsync(context.CancellationToken);
             var newNode = (CSharpSyntaxNode)rewriter.Visit(oldNode);
-            var newTree = CSharpSyntaxTree.Create(newNode, document.SyntaxTree.Options, document.SyntaxTree.FilePath, document.SyntaxTree.Encoding);
 
-            await document.WriteSyntaxTreeAsync(newTree, context.CancellationToken);
+            await document.ApplyChangesAsync(newNode, context.CancellationToken);
         }
     }
 }

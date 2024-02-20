@@ -58,27 +58,15 @@ public class PlanaContainer<T> where T : IPlanaPlugin, new()
         var logger = new Logger();
         var source = new CancellationTokenSource();
 
-        Workspace = path.EndsWith(".sln") ? new SolutionWorkspace(new FileInfo(path), logger) : new ProjectWorkspace(new FileInfo(path), logger);
+        Workspace = path.EndsWith(".sln") ? await SolutionWorkspace.CreateWorkspaceAsync(new FileInfo(path), logger, CancellationToken.None) : await ProjectWorkspace.CreateWorkspaceAsync(new FileInfo(path), logger, CancellationToken.None);
+
         _root = Path.GetDirectoryName(Path.GetFullPath(path))!;
 
         var instance = await InstantiateWithBind();
-
-        await Workspace.ActivateWorkspaceAsync(source.Token);
-
-        var projects = await Workspace.GetProjectsAsync(source.Token);
-        var solution = new PlanaSolution(projects);
-
         var obfuscator = new Obfuscator(Workspace, [instance], logger);
-        var context = new TestPlanaContext
-        {
-            Solution = solution,
-            Kind = RunKind.Obfuscate,
-            Random = new PlanaRandom(seed),
-            SecureRandom = new PlanaRandom(seed),
-            CancellationToken = source.Token
-        };
+        var random = new PlanaRandom(seed);
 
-        Sources = await obfuscator.ObfuscateAsync(context, source.Token);
+        Sources = await obfuscator.RunAsync(RunKind.Obfuscate, random, random, CancellationToken.None);
     }
 
     public async Task<InlineSource> GetSourceByPathAsync(string path)

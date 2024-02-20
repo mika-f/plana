@@ -17,6 +17,7 @@ using Plana.Composition.Abstractions.Exceptions;
 using Plana.Composition.Extensions;
 using Plana.Hosting.Abstractions;
 using Plana.Logging.Abstractions;
+using Plana.Workspace;
 using Plana.Workspace.Abstractions;
 
 namespace Plana.CLI.Commands;
@@ -32,13 +33,16 @@ public class ObfuscateCommand : ISubCommand
     {
         Command.TreatUnmatchedTokensAsErrors = false;
         Command.AddOptions(_workspace, _dryRun, _write, _output);
-        Command.SetHandlerEx(OnHandleCommand, new LoggerBinder(), new WorkspaceBinder(_workspace), new HostingContainerBinder());
+        Command.SetHandlerEx(OnHandleCommand, new LoggerBinder(), new HostingContainerBinder());
     }
 
     public Command Command { get; } = new("obfuscate", "obfuscate workspace");
 
-    private async Task OnHandleCommand(InvocationContext context, ILogger logger, IWorkspace workspace, IHostingContainer container, CancellationToken ct)
+    private async Task OnHandleCommand(InvocationContext context, ILogger logger, IHostingContainer container, CancellationToken ct)
     {
+        var path = context.ParseResult.GetValueForOption(_workspace)!;
+        IWorkspace workspace = path.Extension == ".sln" ? await SolutionWorkspace.CreateWorkspaceAsync(path, logger, ct) : await ProjectWorkspace.CreateWorkspaceAsync(path, logger, ct);
+
         try
         {
             await container.ResolveAsync(ct);

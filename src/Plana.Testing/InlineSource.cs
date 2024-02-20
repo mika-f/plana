@@ -3,6 +3,9 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
+using System.Diagnostics;
+
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
 using Xunit;
@@ -34,10 +37,7 @@ public class InlineSource(string path, string? output, string? input) : ITestabl
         if (output == null || input == null)
             Assert.Fail("output and/or input is null");
 
-        _o = SyntaxFactory.ParseCompilationUnit(output);
-        _i = SyntaxFactory.ParseCompilationUnit(input);
-
-        Assert.NotEqual(_i.ToNormalizedFullString(), _o.ToNormalizedFullString());
+        Assert.NotEqual(document.OriginalSyntaxTree.ToNormalizedFullString(), document.SyntaxTree.ToNormalizedFullString());
 
         return Task.CompletedTask;
     }
@@ -68,6 +68,14 @@ public class InlineSource(string path, string? output, string? input) : ITestabl
         return ret;
     }
 
+    public async Task<T> GetSyntax<T>(Func<T, SemanticModel, bool> predicate) where T : CSharpSyntaxNode
+    {
+        var ret = (await GetSyntaxOf<T>()).SingleOrDefault(w => predicate(w, document!.SemanticModel));
+        Assert.NotNull(ret);
+
+        return ret;
+    }
+
     public async Task<T> GetFirstSyntax<T>() where T : CSharpSyntaxNode
     {
         return await GetFirstSyntax<T>(_ => true);
@@ -77,6 +85,14 @@ public class InlineSource(string path, string? output, string? input) : ITestabl
     public async Task<T> GetFirstSyntax<T>(Func<T, bool> predicate) where T : CSharpSyntaxNode
     {
         var ret = (await GetSyntaxOf<T>()).FirstOrDefault(predicate);
+        Assert.NotNull(ret);
+
+        return ret;
+    }
+
+    public async Task<T> GetFirstSyntax<T>(Func<T, SemanticModel, bool> predicate) where T : CSharpSyntaxNode
+    {
+        var ret = (await GetSyntaxOf<T>()).FirstOrDefault(w => predicate(w, document!.SemanticModel));
         Assert.NotNull(ret);
 
         return ret;
