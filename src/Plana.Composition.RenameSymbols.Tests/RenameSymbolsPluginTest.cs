@@ -11,6 +11,7 @@ using Plana.Composition.Abstractions;
 using Plana.Composition.Abstractions.Analysis;
 using Plana.Composition.Extensions;
 using Plana.Testing;
+using Plana.Workspace;
 
 namespace Plana.Composition.RenameSymbols.Tests;
 
@@ -103,7 +104,38 @@ public class RenameSymbolsPluginTest
     }
 
     [Fact]
-    public async Task RenameMethods()
+    public async Task RenameMethods_OriginalDefinitionMethods()
+    {
+        var container = new PlanaContainer<RenameSymbolsPlugin>("rename-methods");
+        await container.RunAsync();
+
+        var originalDefinition = await container.GetSourceByPathAsync("Plana.Workspace/SolutionWorkspace.cs");
+        var reference = await container.GetSourceByPathAsync("Plana.CLI/Commands/ObfuscateCommand.cs");
+
+        // SolutionWorkspace.CreateWorkspaceAsync -> _0xb93c4da5
+        const string createWorkspaceAsyncIdentifier = "_0xb93c4da5";
+
+        var def = await originalDefinition.GetFirstSyntax<MethodDeclarationSyntax>(w => w.HasModifier(SyntaxKind.StaticKeyword));
+        Assert.Equal(createWorkspaceAsyncIdentifier, def.Identifier.ToString());
+
+        var r = await reference.GetFirstSyntax<InvocationExpressionSyntax>((w, sm) =>
+        {
+            var expression = w.Expression;
+            if (expression is not MemberAccessExpressionSyntax access)
+                return false;
+
+            var receiver = access.Expression;
+            var si1 = sm.GetSymbolInfo(receiver);
+            if (si1.Symbol is not ITypeSymbol t)
+                return false;
+
+            return t.Equals(typeof(SolutionWorkspace).ToSymbol(sm), SymbolEqualityComparer.Default);
+        });
+        Assert.Equal($"SolutionWorkspace.{createWorkspaceAsyncIdentifier}", r.Expression.ToFullString());
+    }
+
+    [Fact]
+    public async Task RenameMethods_InterfaceMethods()
     {
         var container = new PlanaContainer<RenameSymbolsPlugin>("rename-methods");
         await container.RunAsync();
