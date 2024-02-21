@@ -101,4 +101,47 @@ public class RenameSymbolsPluginTest
         var solutionRef = await reference.GetFirstSyntax<MemberAccessExpressionSyntax>(IsAccessToContextSolution);
         Assert.Equal(identifier, solutionRef.Name.ToString());
     }
+
+    [Fact]
+    public async Task RenameMethods()
+    {
+        var container = new PlanaContainer<RenameSymbolsPlugin>("rename-methods");
+        await container.RunAsync();
+
+        var rootAbstraction = await container.GetSourceByPathAsync("Plana.Composition.Abstractions/IPlanaPlugin.cs");
+        var inheritAbstraction = await container.GetSourceByPathAsync("Plana.Composition.Extensions/IPlanaPlugin2.cs");
+        var implementation = await container.GetSourceByPathAsync("Plana.Composition.RenameSymbols/RenameSymbolsPlugin.cs");
+        var reference = await container.GetSourceByPathAsync("Plana/Obfuscator.cs");
+
+        // IPlanaPlugin.RunAsync -> _0x409e98f6
+        const string runAsyncIdentifier = "_0x409e98f6";
+
+        bool IsMethodsHasRunAsyncSignature(MethodDeclarationSyntax w, SemanticModel sm)
+        {
+            var identifier = w.ParameterList.Parameters[0].Type;
+            if (identifier == null)
+                return false;
+
+            var si = sm.GetSymbolInfo(identifier);
+            if (si.Symbol is not INamedTypeSymbol param)
+                return false;
+
+            return param.Equals(typeof(IPlanaPluginRunContext).ToSymbol(sm), SymbolEqualityComparer.Default);
+        }
+
+        var rootAbstractionDecl = await rootAbstraction.GetFirstSyntax<MethodDeclarationSyntax>(IsMethodsHasRunAsyncSignature);
+        Assert.Equal(runAsyncIdentifier, rootAbstractionDecl.Identifier.ToString());
+
+        var inheritAbstractionDecl = await inheritAbstraction.GetFirstSyntax<MethodDeclarationSyntax>(IsMethodsHasRunAsyncSignature);
+        Assert.Equal(runAsyncIdentifier, inheritAbstractionDecl.Identifier.ToString());
+
+        // IPlanaPlugin2.ObfuscateAsync -> _0x22b9568d
+        const string obfuscateAsyncIdentifier = "_0x22b9568d";
+
+        var inheritAbstractionDecl2 = (await inheritAbstraction.GetSyntaxList<MethodDeclarationSyntax>(IsMethodsHasRunAsyncSignature))[1];
+        Assert.Equal(obfuscateAsyncIdentifier, inheritAbstractionDecl2.Identifier.ToString());
+
+        var implementationDecl = await implementation.GetFirstSyntax<MethodDeclarationSyntax>(IsMethodsHasRunAsyncSignature);
+        Assert.Equal(obfuscateAsyncIdentifier, implementationDecl.Identifier.ToString());
+    }
 }

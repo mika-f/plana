@@ -68,6 +68,14 @@ public class InlineSource(IDocument? document) : ITestableObject<string>
         return ret;
     }
 
+    public async Task<List<T>> GetSyntaxList<T>(Func<T, SemanticModel, bool> predicate) where T : CSharpSyntaxNode
+    {
+        var ret = (await GetSyntaxOf<T>()).Where(w => predicate(w, document!.SemanticModel));
+        Assert.NotNull(ret);
+
+        return ret.ToList();
+    }
+
     public async Task<T> GetFirstSyntax<T>() where T : CSharpSyntaxNode
     {
         return await GetFirstSyntax<T>(_ => true);
