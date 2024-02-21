@@ -27,7 +27,7 @@
     },
     "Plana.CLI - Obfuscate (--rename-methods)": {
       "commandName": "Project",
-      "commandLineArgs": "obfuscate --workspace ./Plana.sln --output \"../dist\" --log-level verbose --plugins ./Plana.CLI/bin/Debug/net8.0/plugins --rename-methods",
+      "commandLineArgs": "obfuscate --workspace ./Plana.sln --output \"../dist\" --log-level verbose --plugins ./Plana.CLI/bin/Debug/net8.0/plugins --rename-symbols --rename-methods",
       "workingDirectory": "../"
     }
   }
