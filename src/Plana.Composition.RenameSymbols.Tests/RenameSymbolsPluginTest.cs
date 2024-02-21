@@ -135,6 +135,26 @@ public class RenameSymbolsPluginTest
         var inheritAbstractionDecl = await inheritAbstraction.GetFirstSyntax<MethodDeclarationSyntax>(IsMethodsHasRunAsyncSignature);
         Assert.Equal(runAsyncIdentifier, inheritAbstractionDecl.Identifier.ToString());
 
+        var referenceDecl = await reference.GetFirstSyntax<InvocationExpressionSyntax>((w, sm) =>
+        {
+            var expression = w.Expression;
+            if (expression is not MemberAccessExpressionSyntax access)
+                return false;
+
+            var receiver = access.Expression;
+            var si1 = sm.GetSymbolInfo(receiver);
+            if (si1.Symbol is not ILocalSymbol local1)
+                return false;
+
+            var param = w.ArgumentList.Arguments[0];
+            var si2 = sm.GetSymbolInfo(param.Expression);
+            if (si2.Symbol is not ILocalSymbol local2)
+                return false;
+
+            return local1.Type.Equals(typeof(IPlanaPlugin).ToSymbol(sm), SymbolEqualityComparer.Default) && local2.Type.Interfaces[0].Equals(typeof(IPlanaPluginRunContext).ToSymbol(sm), SymbolEqualityComparer.Default);
+        });
+        Assert.Equal(runAsyncIdentifier, ((MemberAccessExpressionSyntax)referenceDecl.Expression).Name.Identifier.ToString());
+
         // IPlanaPlugin2.ObfuscateAsync -> _0x22b9568d
         const string obfuscateAsyncIdentifier = "_0x22b9568d";
 
