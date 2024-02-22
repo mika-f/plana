@@ -25,14 +25,20 @@ public class Obfuscator(IWorkspace workspace, List<IPlanaPlugin> instances, ILog
         try
         {
             foreach (var instance in instances)
-            {
-                var solution = await workspace.ToSolutionAsync(ct);
-                var context = new PlanaPluginRunContext(solution, kind, r, sr, ct);
+                try
+                {
+                    var solution = await workspace.ToSolutionAsync(ct);
+                    var context = new PlanaPluginRunContext(solution, kind, r, sr, ct);
 
-                logger?.LogInfo($"applying {instance.Name}......");
+                    logger?.LogInfo($"applying {instance.Name}......");
 
-                await instance.RunAsync(context);
-            }
+                    await instance.RunAsync(context);
+                    await workspace.CommitAsync(context.CancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    await workspace.RollbackAsync(ct);
+                }
 
             logger?.LogInfo("all instances are applied");
         }

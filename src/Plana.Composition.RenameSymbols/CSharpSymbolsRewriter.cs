@@ -125,8 +125,14 @@ internal class CSharpSymbolsRewriter(IDocument document, bool keepNameOnInspecto
         {
             var si = document.SemanticModel.GetSymbolInfo(node);
             var symbol = si.Symbol;
-            if (symbol != null && dict.TryGetValue(symbol, out var value))
-                return identifier.WithIdentifier(SyntaxFactory.Identifier(value));
+            if (symbol != null)
+            {
+                if (dict.TryGetValue(symbol, out var value1))
+                    return identifier.WithIdentifier(SyntaxFactory.Identifier(value1));
+
+                if (dict.TryGetValue(symbol.OriginalDefinition, out var value2))
+                    return identifier.WithIdentifier(SyntaxFactory.Identifier(value2));
+            }
         }
 
         return newNode;

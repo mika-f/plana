@@ -49,6 +49,9 @@ public class MeaningEqualitySymbolComparator : IEqualityComparer<ISymbol>
 
                 case IPropertySymbol:
                     return x.ToDisplayString(SymbolDisplayFormat) == y.ToDisplayString(SymbolDisplayFormat);
+
+                case IMethodSymbol:
+                    return x.ToDisplayString(SymbolDisplayFormat) == y.ToDisplayString(SymbolDisplayFormat);
             }
 
         return SymbolEqualityComparer.Default.Equals(x, y);
@@ -62,6 +65,9 @@ public class MeaningEqualitySymbolComparator : IEqualityComparer<ISymbol>
                 return obj.ToDisplayString(SymbolDisplayFormat).GetHashCode();
 
             case IPropertySymbol:
+                return obj.ToDisplayString(SymbolDisplayFormat).GetHashCode();
+
+            case IMethodSymbol:
                 return obj.ToDisplayString(SymbolDisplayFormat).GetHashCode();
         }
 

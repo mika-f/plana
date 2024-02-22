@@ -112,8 +112,8 @@ public class RenameSymbolsPluginTest
         var originalDefinition = await container.GetSourceByPathAsync("Plana.Workspace/SolutionWorkspace.cs");
         var reference = await container.GetSourceByPathAsync("Plana.CLI/Commands/ObfuscateCommand.cs");
 
-        // SolutionWorkspace.CreateWorkspaceAsync -> _0xb93c4da5
-        const string createWorkspaceAsyncIdentifier = "_0xb93c4da5";
+        // SolutionWorkspace.CreateWorkspaceAsync -> _0xc686c7a5
+        const string createWorkspaceAsyncIdentifier = "_0xc686c7a5";
 
         var def = await originalDefinition.GetFirstSyntax<MethodDeclarationSyntax>(w => w.HasModifier(SyntaxKind.StaticKeyword));
         Assert.Equal(createWorkspaceAsyncIdentifier, def.Identifier.ToString());
@@ -145,8 +145,8 @@ public class RenameSymbolsPluginTest
         var implementation = await container.GetSourceByPathAsync("Plana.Composition.RenameSymbols/RenameSymbolsPlugin.cs");
         var reference = await container.GetSourceByPathAsync("Plana/Obfuscator.cs");
 
-        // IPlanaPlugin.RunAsync -> _0x6a7f4ae1
-        const string runAsyncIdentifier = "_0x6a7f4ae1";
+        // IPlanaPlugin.RunAsync -> _0xa79a150d
+        const string runAsyncIdentifier = "_0xa79a150d";
 
         bool IsMethodsHasRunAsyncSignature(MethodDeclarationSyntax w, SemanticModel sm)
         {
@@ -187,8 +187,8 @@ public class RenameSymbolsPluginTest
         });
         Assert.Equal(runAsyncIdentifier, ((MemberAccessExpressionSyntax)referenceDecl.Expression).Name.Identifier.ToString());
 
-        // IPlanaPlugin2.ObfuscateAsync -> _0x514280cd
-        const string obfuscateAsyncIdentifier = "_0x514280cd";
+        // IPlanaPlugin2.ObfuscateAsync -> _0xba881b8e
+        const string obfuscateAsyncIdentifier = "_0xba881b8e";
 
         var inheritAbstractionDecl2 = (await inheritAbstraction.GetSyntaxList<MethodDeclarationSyntax>(IsMethodsHasRunAsyncSignature))[1];
         Assert.Equal(obfuscateAsyncIdentifier, inheritAbstractionDecl2.Identifier.ToString());

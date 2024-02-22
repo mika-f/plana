@@ -3,7 +3,6 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
-
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
@@ -45,6 +44,15 @@ public class CSharpDocument : IDocument
 
         SyntaxTree = ((CSharpSyntaxTree?)await document.GetSyntaxTreeAsync(ct))!;
         SemanticModel = (await document.GetSemanticModelAsync(ct))!;
+    }
+
+    public async Task ApplyChangesWithoutNotificationAsync(SyntaxNode node, CancellationToken ct)
+    {
+        await _context.WriteChangesToDocumentAsync(RawId, node, ct, async document =>
+        {
+            SyntaxTree = ((CSharpSyntaxTree?)await document.GetSyntaxTreeAsync(ct))!;
+            SemanticModel = (await document.GetSemanticModelAsync(ct))!;
+        });
     }
 
     internal static async Task<IDocument> CreateDocumentAsync(PlanaWorkspaceContext context, Document document, CancellationToken ct)

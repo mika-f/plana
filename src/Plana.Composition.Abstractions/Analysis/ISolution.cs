@@ -10,4 +10,6 @@ public interface ISolution
     IReadOnlyCollection<IProject> Projects { get; }
 
     ISourceMap SourceMap { get; }
+
+    Task ApplyChangesAsync(CancellationToken ct);
 }

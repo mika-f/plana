@@ -83,7 +83,9 @@ public class RenameSymbolsPlugin : IPlanaPlugin2
             var oldNode = await document.SyntaxTree.GetRootAsync(context.CancellationToken);
             var newNode = (CSharpSyntaxNode)rewriter.Visit(oldNode);
 
-            await document.ApplyChangesAsync(newNode, context.CancellationToken);
+            await document.ApplyChangesWithoutNotificationAsync(newNode, context.CancellationToken);
         }
+
+        await context.Solution.ApplyChangesAsync(context.CancellationToken);
     }
 }

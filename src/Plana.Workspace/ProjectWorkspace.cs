@@ -53,6 +53,16 @@ public class ProjectWorkspace : IWorkspace
     public async Task<ISolution> ToSolutionAsync(CancellationToken ct)
     {
         var projects = await GetProjectsAsync(ct);
-        return new PlanaSolution([.. projects]);
+        return new PlanaSolution(_context, [.. projects]);
+    }
+
+    public async Task CommitAsync(CancellationToken ct)
+    {
+        // throw new NotImplementedException();
+    }
+
+    public async Task RollbackAsync(CancellationToken ct)
+    {
+        // throw new NotImplementedException();
     }
 }
