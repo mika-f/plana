@@ -127,11 +127,19 @@ internal class CSharpSymbolsRewriter(IDocument document, bool keepNameOnInspecto
             var symbol = si.Symbol;
             if (symbol != null)
             {
-                if (dict.TryGetValue(symbol, out var value1))
-                    return identifier.WithIdentifier(SyntaxFactory.Identifier(value1));
+                if (symbol is IMethodSymbol { IsExtensionMethod: true } m)
+                {
+                    if (dict.TryGetValue(m.ReducedFrom!, out var value1))
+                        return identifier.WithIdentifier(SyntaxFactory.Identifier(value1));
+                }
+                else
+                {
+                    if (dict.TryGetValue(symbol, out var value1))
+                        return identifier.WithIdentifier(SyntaxFactory.Identifier(value1));
 
-                if (dict.TryGetValue(symbol.OriginalDefinition, out var value2))
-                    return identifier.WithIdentifier(SyntaxFactory.Identifier(value2));
+                    if (dict.TryGetValue(symbol.OriginalDefinition, out var value2))
+                        return identifier.WithIdentifier(SyntaxFactory.Identifier(value2));
+                }
             }
         }
 
