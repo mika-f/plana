@@ -135,6 +135,47 @@ public class RenameSymbolsPluginTest
     }
 
     [Fact]
+    public async Task RenameMethods_ExtensionMethods()
+    {
+        var container = new PlanaContainer<RenameSymbolsPlugin>("rename-methods");
+        await container.RunAsync();
+
+        var originalDefinition = await container.GetSourceByPathAsync("Plana.CLI/Extensions/CommandExtensions.cs");
+        var reference = await container.GetSourceByPathAsync("Plana.CLI/Commands/ObfuscateCommand.cs");
+
+        // CommandExtensions.AddOptions -> _0x4e115ed4
+        const string addOptionsIdentifier = "_0x4e115ed4";
+
+        var def = await originalDefinition.GetFirstSyntax<MethodDeclarationSyntax>((w, sm) =>
+        {
+            if (w.HasNotModifier(SyntaxKind.StaticKeyword))
+                return false;
+
+            var param1 = sm.GetDeclaredSymbol(w.ParameterList.Parameters[0]);
+            var param2 = sm.GetDeclaredSymbol(w.ParameterList.Parameters[1]);
+
+            return param1?.Type.ToDisplayString() == "System.CommandLine.Command" && param2?.Type.ToDisplayString() == "System.CommandLine.Option[]";
+        });
+        Assert.Equal(addOptionsIdentifier, def.Identifier.ToString());
+
+        var r = await reference.GetFirstSyntax<InvocationExpressionSyntax>((w, sm) =>
+        {
+            var expression = w.Expression;
+            if (expression is not MemberAccessExpressionSyntax access)
+                return false;
+
+            var receiver = access.Expression;
+            var si1 = sm.GetSymbolInfo(receiver);
+            if (si1.Symbol is not IPropertySymbol p)
+                return false;
+
+            return p.Type.ToDisplayString() == "System.CommandLine.Command";
+        });
+        Assert.Equal($"Command.{addOptionsIdentifier}", r.Expression.ToFullString().Trim());
+    }
+
+
+    [Fact]
     public async Task RenameMethods_InterfaceMethods()
     {
         var container = new PlanaContainer<RenameSymbolsPlugin>("rename-methods");

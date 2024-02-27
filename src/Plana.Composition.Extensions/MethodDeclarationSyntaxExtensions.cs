@@ -15,4 +15,9 @@ public static class MethodDeclarationSyntaxExtensions
     {
         return m.Modifiers.Any(w => w.IsKind(modifier));
     }
+
+    public static bool HasNotModifier(this MethodDeclarationSyntax m, SyntaxKind modifier)
+    {
+        return !m.HasModifier(modifier);
+    }
 }
