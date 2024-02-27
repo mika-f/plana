@@ -72,14 +72,8 @@ internal class CSharpSymbolsRewriter(IDocument document, bool keepNameOnInspecto
         if (newNode is MethodDeclarationSyntax method)
         {
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
-            if (symbol != null)
-            {
-                if (symbol.OverriddenMethod != null)
-                    symbol = symbol.OverriddenMethod;
-
-                if (dict.TryGetValue(symbol, out var value))
-                    return method.WithIdentifier(SyntaxFactory.Identifier(value));
-            }
+            if (symbol != null && dict.TryGetValue(symbol, out var value))
+                return method.WithIdentifier(SyntaxFactory.Identifier(value));
         }
 
         return newNode;
@@ -131,8 +125,22 @@ internal class CSharpSymbolsRewriter(IDocument document, bool keepNameOnInspecto
         {
             var si = document.SemanticModel.GetSymbolInfo(node);
             var symbol = si.Symbol;
-            if (symbol != null && dict.TryGetValue(symbol, out var value))
-                return identifier.WithIdentifier(SyntaxFactory.Identifier(value));
+            if (symbol != null)
+            {
+                if (symbol is IMethodSymbol { IsExtensionMethod: true } m)
+                {
+                    if (dict.TryGetValue(m.ReducedFrom!, out var value1))
+                        return identifier.WithIdentifier(SyntaxFactory.Identifier(value1));
+                }
+                else
+                {
+                    if (dict.TryGetValue(symbol, out var value1))
+                        return identifier.WithIdentifier(SyntaxFactory.Identifier(value1));
+
+                    if (dict.TryGetValue(symbol.OriginalDefinition, out var value2))
+                        return identifier.WithIdentifier(SyntaxFactory.Identifier(value2));
+                }
+            }
         }
 
         return newNode;

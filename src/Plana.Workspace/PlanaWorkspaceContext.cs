@@ -17,6 +17,7 @@ internal class PlanaWorkspaceContext
     private readonly WorkspaceKind _kind;
     private readonly ILogger? _logger;
     private readonly Dictionary<DocumentId, CSharpSyntaxTree> _originals = new();
+    private readonly Dictionary<DocumentId, (CSharpSyntaxNode Node, Func<Document, Task> Callback)> _changes = new();
     private readonly MSBuildWorkspace _workspace;
 
     private Project? _project;
@@ -91,29 +92,70 @@ internal class PlanaWorkspaceContext
         return false;
     }
 
-    public Task<Document> WriteChangesToDocumentAsync(DocumentId id, SyntaxNode root, CancellationToken ct)
+    public async Task<Document> WriteChangesToDocumentAsync(DocumentId id, SyntaxNode root, CancellationToken ct)
     {
+        var source = new TaskCompletionSource<Document>();
+
+        await WriteChangesToDocumentAsync(id, root, ct, document =>
+        {
+            source.SetResult(document);
+            return Task.CompletedTask;
+        });
+
+        await FlushChangesAsync(ct);
+
+        return await source.Task;
+    }
+
+    public Task WriteChangesToDocumentAsync(DocumentId id, SyntaxNode root, CancellationToken ct, Func<Document, Task> callback)
+    {
+        _changes.Add(id, ((CSharpSyntaxNode)root, callback));
+
+        return Task.CompletedTask;
+    }
+
+    public async Task FlushChangesAsync(CancellationToken ct)
+    {
+        if (_changes.Count == 0)
+            return;
+
         switch (_kind)
         {
             case WorkspaceKind.Solution:
             {
-                _solution = _solution!.WithDocumentSyntaxRoot(id, root);
+                foreach (var (id, (root, callback)) in _changes)
+                {
+                    ct.ThrowIfCancellationRequested();
 
-                return Task.FromResult(_solution.GetDocument(id)!);
+                    _solution = _solution!.WithDocumentSyntaxRoot(id, root);
+
+                    await callback.Invoke(_solution.GetDocument(id)!);
+                }
+
+                break;
             }
 
             case WorkspaceKind.Project:
             {
-                var newSolution = _project!.Solution.WithDocumentSyntaxRoot(id, root);
+                foreach (var (id, (root, callback)) in _changes)
+                {
+                    ct.ThrowIfCancellationRequested();
 
-                _project = newSolution.GetProject(_project.Id);
+                    var newSolution = _project!.Solution.WithDocumentSyntaxRoot(id, root);
 
-                return Task.FromResult(_project!.GetDocument(id)!);
+                    _project = newSolution.GetProject(_project.Id)!;
+
+                    await callback.Invoke(_project.GetDocument(id)!);
+                }
+
+                break;
             }
 
             default:
                 throw new ArgumentOutOfRangeException();
         }
+
+        _changes.Clear();
     }
 
     private enum WorkspaceKind

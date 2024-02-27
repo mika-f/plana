@@ -3,6 +3,7 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
 using Plana.Composition.Abstractions.Analysis;
@@ -59,6 +60,22 @@ public class InlineSource(IDocument? document) : ITestableObject<string>
         return ret;
     }
 
+    public async Task<T> GetSyntax<T>(Func<T, SemanticModel, bool> predicate) where T : CSharpSyntaxNode
+    {
+        var ret = (await GetSyntaxOf<T>()).SingleOrDefault(w => predicate(w, document!.SemanticModel));
+        Assert.NotNull(ret);
+
+        return ret;
+    }
+
+    public async Task<List<T>> GetSyntaxList<T>(Func<T, SemanticModel, bool> predicate) where T : CSharpSyntaxNode
+    {
+        var ret = (await GetSyntaxOf<T>()).Where(w => predicate(w, document!.SemanticModel));
+        Assert.NotNull(ret);
+
+        return ret.ToList();
+    }
+
     public async Task<T> GetFirstSyntax<T>() where T : CSharpSyntaxNode
     {
         return await GetFirstSyntax<T>(_ => true);
@@ -68,6 +85,14 @@ public class InlineSource(IDocument? document) : ITestableObject<string>
     public async Task<T> GetFirstSyntax<T>(Func<T, bool> predicate) where T : CSharpSyntaxNode
     {
         var ret = (await GetSyntaxOf<T>()).FirstOrDefault(predicate);
+        Assert.NotNull(ret);
+
+        return ret;
+    }
+
+    public async Task<T> GetFirstSyntax<T>(Func<T, SemanticModel, bool> predicate) where T : CSharpSyntaxNode
+    {
+        var ret = (await GetSyntaxOf<T>()).FirstOrDefault(w => predicate(w, document!.SemanticModel));
         Assert.NotNull(ret);
 
         return ret;

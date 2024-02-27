@@ -123,18 +123,6 @@ internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random
         base.VisitEnumMemberDeclaration(node);
     }
 
-    public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
-    {
-        if (isRenameMethods && !node.HasAnnotationComment())
-        {
-            var isNetworking = node.HasAnnotationComment(NetworkingAnnotation);
-            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
-            if (symbol != null && !Messages.Contains(symbol.Name))
-                SetIdentifier(symbol, isNetworking ? "M" : "_");
-        }
-
-        base.VisitMethodDeclaration(node);
-    }
 
     public override void VisitParameter(ParameterSyntax node)
     {
@@ -149,17 +137,6 @@ internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random
         base.VisitParameter(node);
     }
 
-    public override void VisitPropertyDeclaration(PropertyDeclarationSyntax node)
-    {
-        if (isRenameProperties && !node.HasAnnotationComment())
-        {
-            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
-            if (symbol != null)
-                SetPropertyIdentifier(symbol);
-        }
-
-        base.VisitPropertyDeclaration(node);
-    }
 
     public override void VisitVariableDeclarator(VariableDeclaratorSyntax node)
     {
@@ -187,6 +164,78 @@ internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random
 
         var identifier = $"{prefix}0x{random.GetGlobalUniqueAlphaNumericalString(8)}";
         dict.Add(symbol, identifier);
+    }
+
+    #region methods
+
+    public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
+    {
+        if (isRenameMethods && !node.HasAnnotationComment())
+        {
+            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
+            if (symbol != null)
+                SetMethodIdentifier(symbol);
+        }
+
+        base.VisitMethodDeclaration(node);
+    }
+
+    private string SetMethodIdentifier(IMethodSymbol symbol)
+    {
+        if (dict.TryGetValue(symbol.OriginalDefinition, out var val))
+            return val;
+
+        var original = symbol.OriginalDefinition;
+
+        // check methods declared in source
+        if (original.OverriddenMethod is not null)
+        {
+            var overridden = original.OverriddenMethod;
+            var isExternalDefinition = overridden.Locations.Any(w => w.IsInMetadata);
+            if (isExternalDefinition)
+                return string.Empty;
+        }
+
+        if (original.Locations.Any(w => w.IsInMetadata))
+            return string.Empty;
+
+        var @interface = symbol.GetInterfaceSymbol();
+        if (@interface is IMethodSymbol s)
+        {
+            var infer = dict.GetValueOrDefault(s) ?? dict.GetValueOrDefault(s.OriginalDefinition);
+            if (string.IsNullOrWhiteSpace(infer))
+                infer = SetMethodIdentifier(s);
+
+            dict.Add(symbol, infer);
+
+            return infer;
+        }
+
+        if (original.Equals(symbol, SymbolEqualityComparer.Default))
+        {
+            var identifier = $"_0x{random.GetGlobalUniqueAlphaNumericalString(8)}";
+            dict.Add(original, identifier);
+
+            return identifier;
+        }
+
+        return string.Empty;
+    }
+
+    #endregion
+
+    #region properties
+
+    public override void VisitPropertyDeclaration(PropertyDeclarationSyntax node)
+    {
+        if (isRenameProperties && !node.HasAnnotationComment())
+        {
+            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
+            if (symbol != null)
+                SetPropertyIdentifier(symbol);
+        }
+
+        base.VisitPropertyDeclaration(node);
     }
 
     private string SetPropertyIdentifier(IPropertySymbol symbol)
@@ -217,6 +266,8 @@ internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random
 
         throw new InvalidOperationException();
     }
+
+    #endregion
 
     #region namespace
 

@@ -11,13 +11,13 @@ namespace Plana.Testing;
 
 internal class TestPlanaContext : IPlanaPluginRunContext
 {
-    public ISolution Solution { get; init; }
+    public ISolution Solution { get; init; } = null!;
 
     public RunKind Kind { get; init; }
 
-    public IPlanaRandom Random { get; init; }
+    public IPlanaRandom Random { get; init; } = null!;
 
-    public IPlanaSecureRandom SecureRandom { get; init; }
+    public IPlanaSecureRandom SecureRandom { get; init; } = null!;
 
     public CancellationToken CancellationToken { get; init; }
 }

@@ -14,4 +14,8 @@ public interface IWorkspace
     Task<IReadOnlyCollection<IProject>> GetProjectsAsync(CancellationToken ct);
 
     Task<ISolution> ToSolutionAsync(CancellationToken ct);
+
+    Task CommitAsync(CancellationToken ct);
+
+    Task RollbackAsync(CancellationToken ct);
 }
