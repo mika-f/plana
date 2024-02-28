@@ -104,6 +104,12 @@ public class PlanaRandom : IPlanaSecureRandom
         Assert.False(await source.ContainsAsync("#endregion"));
     }
 
+    [Fact(Skip = "Not Implemented Yet")]
+    public Task KeepIfAndEndIfPreprocessors()
+    {
+        return Task.CompletedTask;
+    }
+
     [Fact]
     public async Task RemovePragmaDisableAndRestorePreprocessors()
     {

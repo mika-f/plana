@@ -3,8 +3,6 @@
 //  Licensed under the MIT License. See LICENSE in the project root for license information.
 // ------------------------------------------------------------------------------------------
 
-using System.Collections.Immutable;
-
 using Microsoft.CodeAnalysis;
 
 namespace Plana.Composition.Extensions;
@@ -12,6 +10,7 @@ namespace Plana.Composition.Extensions;
 // ReSharper disable once InconsistentNaming
 public static class ISymbolExtensions
 {
+#pragma warning disable CS8619
     public static ISymbol? GetInterfaceSymbol(this ISymbol symbol)
     {
         if (symbol.Kind != SymbolKind.Method && symbol.Kind != SymbolKind.Property && symbol.Kind != SymbolKind.Event)
@@ -32,7 +31,9 @@ public static class ISymbolExtensions
 
         return implementations.FirstOrDefault(w => w.Implementation?.Equals(symbol, SymbolEqualityComparer.Default) == true).Interface;
     }
+#pragma warning restore CS8619
 
+    /*
     // Licensed to the .NET Foundation under one or more agreements.
     // The .NET Foundation licenses this file to you under the MIT license.
     // ref: https://sourceroslyn.io/#Microsoft.CodeAnalysis.Workspaces/J/s/src/Workspaces/SharedUtilitiesAndExtensions/Compiler/Core/Extensions/ISymbolExtensions.cs/ISymbolExtensions.cs,88c7a12382fb60b6
@@ -74,4 +75,5 @@ public static class ISymbolExtensions
     {
         return symbol.ExplicitOrImplicitInterfaceImplementations().Except(symbol.ExplicitInterfaceImplementations()).ToImmutableArray();
     }
+    */
 }
