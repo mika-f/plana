@@ -47,6 +47,14 @@ public class InlineSource(IDocument? document) : ITestableObject<string>
         return Task.CompletedTask;
     }
 
+    public Task<bool> ContainsAsync(string str)
+    {
+        if (document == null)
+            Assert.Fail("output and/or input is null");
+
+        return Task.FromResult(document.SyntaxTree.ToNormalizedFullString().Contains(str));
+    }
+
     public async Task<T> GetSyntax<T>() where T : CSharpSyntaxNode
     {
         return await GetSyntax<T>(_ => true);
