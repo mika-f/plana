@@ -51,11 +51,11 @@ public class PlanaContainer<T> where T : IPlanaPlugin, new()
         return Task.FromResult(instance);
     }
 
+#pragma warning disable CS8774
     [MemberNotNull(nameof(Workspace), nameof(Sources), nameof(_root))]
     public async Task RunAsync(string path = "../../../../Plana.sln", int seed = 150)
     {
         var logger = new Logger();
-        var source = new CancellationTokenSource();
 
         Workspace = path.EndsWith(".sln") ? await SolutionWorkspace.CreateWorkspaceAsync(new FileInfo(path), logger, CancellationToken.None) : await ProjectWorkspace.CreateWorkspaceAsync(new FileInfo(path), logger, CancellationToken.None);
 
@@ -67,6 +67,7 @@ public class PlanaContainer<T> where T : IPlanaPlugin, new()
 
         Sources = await obfuscator.RunAsync(RunKind.Obfuscate, random, random, CancellationToken.None);
     }
+#pragma warning restore CS8774
 
     public async Task<InlineSource> GetSourceByPathAsync(string path)
     {

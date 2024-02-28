@@ -29,6 +29,7 @@ public class ShuffleMemberDeclarations : IPlanaPlugin2
         var transformers = new List<CSharpSyntaxRewriter>
         {
             new RemoveRegionAndEndRegionRewriter(),
+            new RemovePragmaRewriter(),
             new CSharpDeclarationRewriter(context.SecureRandom)
         };
 
