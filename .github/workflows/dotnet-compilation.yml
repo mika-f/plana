@@ -1,0 +1,56 @@
+name: Compilation Test with .NET
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
+permissions:
+  pull-requests: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        plugins:
+          - "--shuffle-declarations"
+          - "--rename-symbols --rename-namespaces --rename-classes --rename-properties --rename-fields --rename-methods --rename-variables"
+          - "--disable-console-output"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET tools
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore NuGet dependencies
+        run: |
+          dotnet restore ./src/Plana.sln
+
+      - name: Build
+        run: |
+          dotnet build ./src/Plana.sln --no-restore --configuration=Release /p:WarningLevel=0
+
+      - name: Run
+        run: |
+          mkdir -p ./src/Plana.CLI/bin/Releases/net8.0/plugins
+          cp ./src/Plana.Composition.Extensions/bin/Release/net8.0/Plana.Composition.Extensions.dll ./src/Plana.CLI/bin/Releases/net8.0/plugins
+          cp ./src/Plana.Composition.DisableConsoleOutput/bin/Release/net8.0/Plana.Composition.DisableConsoleOutput.dll ./src/Plana.CLI/bin/Releases/net8.0/plugins
+          cp ./src/Plana.Composition.RenameSymbols/bin/Release/net8.0/Plana.Composition.RenameSymbols.dll ./src/Plana.CLI/bin/Releases/net8.0/plugins
+          cp ./src/Plana.Composition.ShuffleDeclarations/bin/Release/net8.0/Plana.Composition.ShuffleDeclarations.dll ./src/Plana.CLI/bin/Releases/net8.0/plugins
+
+          dotnet ./src/Plana.CLI/bin/Release/net8.0/Plana.CLI.dll obfuscate --log-level verbose --workspace ./src/Plana.sln --plugins ./src/Plana.CLI/bin/Releases/net8.0/plugins --write ${{ matrix.plugins }}
+
+      - name: Re-Build
+        run: |
+          dotnet build ./src/Plana.sln --no-restore --configuration=Release /p:WarningLevel=0
