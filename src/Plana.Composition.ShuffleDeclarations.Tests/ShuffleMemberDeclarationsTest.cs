@@ -89,4 +89,18 @@ public class PlanaRandom : IPlanaSecureRandom
 }
 ".Trim());
     }
+
+    [Fact]
+    public async Task RemoveRegionAndEndregionPreprocessors()
+    {
+        var container = new PlanaContainer<ShuffleMemberDeclarations>();
+        await container.RunAsync("../../../../Plana.Composition.RenameSymbols/Plana.Composition.RenameSymbols.csproj");
+
+        var source = await container.GetSourceByPathAsync("CSharpSymbolsWalker.cs");
+
+        await source.HasDiffs();
+
+        Assert.False(await source.ContainsAsync("#region"));
+        Assert.False(await source.ContainsAsync("#endregion"));
+    }
 }
