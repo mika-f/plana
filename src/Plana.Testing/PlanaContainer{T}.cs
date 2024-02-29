@@ -29,7 +29,15 @@ public class PlanaContainer<T> where T : IPlanaPlugin, new()
         _dict = new Dictionary<string, object>();
 
         foreach (var arg in args)
-            _dict.Add(arg, true);
+            if (arg.Contains("="))
+            {
+                var val = arg.Split('=');
+                _dict.Add(val[0], string.Join("=", val[1..]));
+            }
+            else
+            {
+                _dict.Add(arg, true);
+            }
     }
 
     public PlanaContainer(Dictionary<string, object> dict)
@@ -69,17 +77,17 @@ public class PlanaContainer<T> where T : IPlanaPlugin, new()
     }
 #pragma warning restore CS8774
 
-    public async Task<InlineSource> GetSourceByPathAsync(string path)
+    public Task<InlineSource> GetSourceByPathAsync(string path)
     {
         var actual = Path.GetFullPath(Path.Combine(_root!, path));
         var document = Sources.FirstOrDefault(w => w.Path == actual);
 
         if (document != null)
-            return new InlineSource(document);
-        return new InlineSource(null);
+            return Task.FromResult(new InlineSource(document));
+        return Task.FromResult(new InlineSource(null));
     }
 
-    public async Task<InlineSymbol> GetSymbolByPathAsync(string path)
+    public Task<InlineSymbol> GetSymbolByPathAsync(string path)
     {
         throw new NotImplementedException();
     }

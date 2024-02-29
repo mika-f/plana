@@ -7,13 +7,11 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-using Plana.Composition.Abstractions.Analysis;
-
 namespace Plana.Composition.DisableConsoleOutput;
 
-internal class CSharpSyntaxProcessor(IDocument document, List<ISymbol> invocations) : CSharpSyntaxRewriter
+internal class CSharpSyntaxProcessor(List<CSharpSyntaxNode> invocations) : CSharpSyntaxRewriter
 {
-    private const string LoggerStubMethodIdentifier = "_UnityEngineDebugLogStub";
+    private const string LoggerStubMethodIdentifier = "__LogStubInternal";
 
     public override SyntaxNode? VisitClassDeclaration(ClassDeclarationSyntax node)
     {
@@ -22,7 +20,7 @@ internal class CSharpSyntaxProcessor(IDocument document, List<ISymbol> invocatio
         {
             var m = SyntaxFactory.MethodDeclaration(SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.VoidKeyword)), SyntaxFactory.Identifier(LoggerStubMethodIdentifier));
             var b = SyntaxFactory.Block();
-            return declaration.AddMembers(m.WithBody(b));
+            return declaration.AddMembers(m.WithBody(b).WithModifiers(SyntaxTokenList.Create(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))));
         }
 
         return newNode;
@@ -32,14 +30,11 @@ internal class CSharpSyntaxProcessor(IDocument document, List<ISymbol> invocatio
     {
         var expression = node.Expression;
         if (expression is InvocationExpressionSyntax invocation)
-        {
-            var si = document.SemanticModel.GetSymbolInfo(invocation);
-            if (si.Symbol is IMethodSymbol m && invocations.Contains(m))
+            if (invocations.Any(w => w.IsEquivalentTo(invocation)))
             {
                 var expr = SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(LoggerStubMethodIdentifier));
                 return SyntaxFactory.ExpressionStatement(expr);
             }
-        }
 
         return node;
     }

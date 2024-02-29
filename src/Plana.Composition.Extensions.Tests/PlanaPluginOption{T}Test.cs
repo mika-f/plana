@@ -17,28 +17,28 @@ public class PlanaPluginOptionTestT
     [Fact]
     public void FriendlyNameIsNotSameValueWithNamePassedInConstructor()
     {
-        var instance = new PlanaPluginOption<string>("name", "friendly name", "description", "default");
+        var instance = new PlanaPluginOption<string?>("name", "friendly name", "description", "default");
         Assert.Equal("friendly name", instance.FriendlyName);
     }
 
     [Fact]
     public void FriendlyNameIsSameValueWithNameNotPassedInConstructor()
     {
-        var instance = new PlanaPluginOption<string>("name", "description", "default");
+        var instance = new PlanaPluginOption<string?>("name", "description", "default");
         Assert.Equal(instance.Name, instance.FriendlyName);
     }
 
     [Fact]
     public void HasDescription()
     {
-        var instance = new PlanaPluginOption<string>("name", "description", "default");
+        var instance = new PlanaPluginOption<string?>("name", "description", "default");
         Assert.Equal("description", instance.Description);
     }
 
     [Fact]
     public void HasNonBoolDefaultValue()
     {
-        var instance = new PlanaPluginOption<string>("name", "description", "it's default value!");
+        var instance = new PlanaPluginOption<string?>("name", "description", "it's default value!");
         Assert.Equal("it's default value!", instance.DefaultValue);
     }
 

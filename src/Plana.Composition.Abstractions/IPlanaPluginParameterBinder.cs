@@ -9,5 +9,5 @@ public interface IPlanaPluginParameterBinder
 {
     bool GetValue(IPlanaPluginOption option);
 
-    T GetValue<T>(IPlanaPluginOption<T> option);
+    T? GetValue<T>(IPlanaPluginOption<T> option);
 }
