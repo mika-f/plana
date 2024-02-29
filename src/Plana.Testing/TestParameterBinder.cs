@@ -15,7 +15,7 @@ internal class TestParameterBinder(Dictionary<string, object> dict) : IPlanaPlug
             if (val is bool b)
                 return b;
 
-        return option.DefaultValue;
+        return (bool)option.DefaultValue;
     }
 
     public T GetValue<T>(IPlanaPluginOption<T> option)

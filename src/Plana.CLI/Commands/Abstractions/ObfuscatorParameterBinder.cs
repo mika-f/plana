@@ -21,7 +21,7 @@ internal class ObfuscatorParameterBinder(ParseResult context, Dictionary<IPlanaP
                 return b;
         }
 
-        return option.DefaultValue;
+        return (bool)option.DefaultValue;
     }
 
     public T GetValue<T>(IPlanaPluginOption<T> option)

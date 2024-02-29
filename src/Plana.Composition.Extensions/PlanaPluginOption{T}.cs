@@ -28,4 +28,6 @@ public class PlanaPluginOption<T> : IPlanaPluginOption<T>
     public string Description { get; }
 
     public T DefaultValue { get; }
+
+    public Type ValueType => typeof(T);
 }

@@ -13,7 +13,7 @@ public interface IPlanaPluginOption
 
     string Description { get; }
 
-    bool DefaultValue => false;
+    object DefaultValue => false;
 
     Type ValueType => typeof(bool);
 }
