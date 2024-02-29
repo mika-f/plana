@@ -68,8 +68,8 @@ public class RenameSymbolsPluginTest
         var implementation = await container.GetSourceByPathAsync("Plana/PlanaPluginRunContext.cs");
         var reference = await container.GetSourceByPathAsync("Plana.Composition.DisableConsoleOutput/DisableConsoleOutputPlugin.cs");
 
-        // Solution -> _0xc7b29ba1
-        const string identifier = "_0xc7b29ba1";
+        // Solution -> _0x4265cf21
+        const string identifier = "_0x4265cf21";
 
         var solutionAbstractDecl = await abstraction.GetFirstSyntax<PropertyDeclarationSyntax>();
         Assert.Equal(identifier, solutionAbstractDecl.Identifier.ToString());
