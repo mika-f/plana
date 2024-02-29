@@ -37,17 +37,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plana.Composition.Extension
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B174163C-2F3C-45DE-814A-C2A925E817C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plana.Testing", "Plana.Testing\Plana.Testing.csproj", "{C166502E-B834-413A-B097-933CA727D053}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plana.Testing", "Plana.Testing\Plana.Testing.csproj", "{C166502E-B834-413A-B097-933CA727D053}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plana.Composition.RenameSymbols.Tests", "Plana.Composition.RenameSymbols.Tests\Plana.Composition.RenameSymbols.Tests.csproj", "{86C7BF6E-BAC7-4D69-92B6-E253CAB43631}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plana.Composition.RenameSymbols.Tests", "Plana.Composition.RenameSymbols.Tests\Plana.Composition.RenameSymbols.Tests.csproj", "{86C7BF6E-BAC7-4D69-92B6-E253CAB43631}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plana.Testing.Logging", "Plana.Testing.Logging\Plana.Testing.Logging.csproj", "{FCB1264A-73B3-490D-B1CF-AF405374CBBA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plana.Testing.Logging", "Plana.Testing.Logging\Plana.Testing.Logging.csproj", "{FCB1264A-73B3-490D-B1CF-AF405374CBBA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plana.Workspace.Tests", "Plana.Workspace.Tests\Plana.Workspace.Tests.csproj", "{D3C6F600-6C4E-4B21-894E-126390633E35}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plana.Workspace.Tests", "Plana.Workspace.Tests\Plana.Workspace.Tests.csproj", "{D3C6F600-6C4E-4B21-894E-126390633E35}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plana.Composition.ShuffleDeclarations.Tests", "Plana.Composition.ShuffleDeclarations.Tests\Plana.Composition.ShuffleDeclarations.Tests.csproj", "{D210CD64-A369-4995-B5A6-9A6FBB89CA39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plana.Composition.ShuffleDeclarations.Tests", "Plana.Composition.ShuffleDeclarations.Tests\Plana.Composition.ShuffleDeclarations.Tests.csproj", "{D210CD64-A369-4995-B5A6-9A6FBB89CA39}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plana.Composition.Extensions.Tests", "Plana.Composition.Extensions.Tests\Plana.Composition.Extensions.Tests.csproj", "{0902F5EC-0721-4EEF-BA34-7312BC94422F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plana.Composition.Extensions.Tests", "Plana.Composition.Extensions.Tests\Plana.Composition.Extensions.Tests.csproj", "{0902F5EC-0721-4EEF-BA34-7312BC94422F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plana.Composition.DisableConsoleOutput.Tests", "Plana.Composition.DisableConsoleOutput.Tests\Plana.Composition.DisableConsoleOutput.Tests.csproj", "{7205839B-E0BE-4C34-9CA4-D04207622404}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -131,6 +133,10 @@ Global
 		{0902F5EC-0721-4EEF-BA34-7312BC94422F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0902F5EC-0721-4EEF-BA34-7312BC94422F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0902F5EC-0721-4EEF-BA34-7312BC94422F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7205839B-E0BE-4C34-9CA4-D04207622404}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7205839B-E0BE-4C34-9CA4-D04207622404}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7205839B-E0BE-4C34-9CA4-D04207622404}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7205839B-E0BE-4C34-9CA4-D04207622404}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -151,6 +157,7 @@ Global
 		{D3C6F600-6C4E-4B21-894E-126390633E35} = {B174163C-2F3C-45DE-814A-C2A925E817C9}
 		{D210CD64-A369-4995-B5A6-9A6FBB89CA39} = {B174163C-2F3C-45DE-814A-C2A925E817C9}
 		{0902F5EC-0721-4EEF-BA34-7312BC94422F} = {B174163C-2F3C-45DE-814A-C2A925E817C9}
+		{7205839B-E0BE-4C34-9CA4-D04207622404} = {B174163C-2F3C-45DE-814A-C2A925E817C9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {129FBC52-9058-4F4A-88B3-A23978C16A72}

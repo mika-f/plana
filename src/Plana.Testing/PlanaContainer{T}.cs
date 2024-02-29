@@ -29,7 +29,15 @@ public class PlanaContainer<T> where T : IPlanaPlugin, new()
         _dict = new Dictionary<string, object>();
 
         foreach (var arg in args)
-            _dict.Add(arg, true);
+            if (arg.Contains("="))
+            {
+                var val = arg.Split('=');
+                _dict.Add(val[0], string.Join("=", val[1..]));
+            }
+            else
+            {
+                _dict.Add(arg, true);
+            }
     }
 
     public PlanaContainer(Dictionary<string, object> dict)
