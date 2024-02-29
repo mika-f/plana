@@ -20,7 +20,7 @@ internal static class IPlanaPluginOptionExtensions
 
         if (i == typeof(bool))
         {
-            var d = (bool)option.DefaultValue;
+            var d = (bool)option.DefaultValue!;
             if (d)
                 // if default value is true, add --no-xxx option
                 // .ctor(name, getDefaultValue, description)
@@ -32,7 +32,7 @@ internal static class IPlanaPluginOptionExtensions
         }
 
         if (i == typeof(string))
-            return new Option<string>($"--{option.Name}", () => (string)option.DefaultValue, option.Description);
+            return new Option<string>($"--{option.Name}", () => (string)option.DefaultValue!, option.Description);
 
         // .ctor(name, getDefaultValue, description)
         return Activator.CreateInstance(t, $"--{option.Name}", () => option.DefaultValue, option.Description) as Option;

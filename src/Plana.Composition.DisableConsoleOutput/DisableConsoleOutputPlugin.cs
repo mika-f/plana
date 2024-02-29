@@ -21,7 +21,7 @@ namespace Plana.Composition.DisableConsoleOutput;
 [PlanaPlugin("disable-console-output")]
 public class DisableConsoleOutputPlugin : IPlanaPlugin2
 {
-    private static readonly PlanaPluginOption<string?> DisableSymbols = new("disable-symbols", "Disable Symbols", "symbols for removing from source, T: for type, M: for methods (e.g. T:System.Diagnostics.Debug)", string.Empty);
+    private static readonly PlanaPluginOption<string> DisableSymbols = new("disable-symbols", "Disable Symbols", "symbols for removing from source, T: for type, M: for methods (e.g. T:System.Diagnostics.Debug)", string.Empty);
 
     internal readonly List<RoughSymbol> Symbols = new();
 
@@ -31,7 +31,7 @@ public class DisableConsoleOutputPlugin : IPlanaPlugin2
 
     public void BindParameters(IPlanaPluginParameterBinder binder)
     {
-        var symbols = binder.GetValue(DisableSymbols);
+        var symbols = binder.GetValue(DisableSymbols)!;
         foreach (var s in symbols.Split(","))
         {
             if (s.StartsWith("T:"))
