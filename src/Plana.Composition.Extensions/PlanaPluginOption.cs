@@ -32,7 +32,9 @@ public class PlanaPluginOption : IPlanaPluginOption
 
     public string Description { get; }
 
-    public bool DefaultValue { get; }
+    public object? DefaultValue { get; }
+
+    public Type ValueType => typeof(bool);
 
     public static void ValidateName(string name)
     {

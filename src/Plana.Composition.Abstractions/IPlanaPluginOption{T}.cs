@@ -5,9 +5,4 @@
 
 namespace Plana.Composition.Abstractions;
 
-public interface IPlanaPluginOption<out T> : IPlanaPluginOption
-{
-    new T DefaultValue { get; }
-
-    new Type ValueType => typeof(T);
-}
+public interface IPlanaPluginOption<out T> : IPlanaPluginOption { }

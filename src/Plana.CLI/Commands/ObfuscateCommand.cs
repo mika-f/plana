@@ -115,7 +115,9 @@ public class ObfuscateCommand : ISubCommand
         }
         catch (Exception e)
         {
-            logger.LogDebug($"an error occurred: {e.Message}");
+            logger.LogDebug($"an error occurred: {e.Message} {e.StackTrace}");
+
+            throw;
         }
     }
 

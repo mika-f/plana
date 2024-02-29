@@ -9,9 +9,9 @@ namespace Plana.Composition.Extensions;
 
 public class PlanaPluginOption<T> : IPlanaPluginOption<T>
 {
-    public PlanaPluginOption(string name, string description, T defaultValue) : this(name, name, description, defaultValue) { }
+    public PlanaPluginOption(string name, string description, T? defaultValue) : this(name, name, description, defaultValue) { }
 
-    public PlanaPluginOption(string name, string friendlyName, string description, T defaultValue)
+    public PlanaPluginOption(string name, string friendlyName, string description, T? defaultValue)
     {
         PlanaPluginOption.ValidateName(name);
 
@@ -27,7 +27,7 @@ public class PlanaPluginOption<T> : IPlanaPluginOption<T>
 
     public string Description { get; }
 
-    public T DefaultValue { get; }
+    public object? DefaultValue { get; }
 
     public Type ValueType => typeof(T);
 }

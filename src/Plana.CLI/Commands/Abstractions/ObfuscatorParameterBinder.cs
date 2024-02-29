@@ -21,22 +21,22 @@ internal class ObfuscatorParameterBinder(ParseResult context, Dictionary<IPlanaP
                 return b;
         }
 
-        return (bool)option.DefaultValue;
+        return (bool)option.DefaultValue!;
     }
 
-    public T GetValue<T>(IPlanaPluginOption<T> option)
+    public T? GetValue<T>(IPlanaPluginOption<T> option)
     {
         if (dict.TryGetValue(option, out var val))
         {
             var isImplicit = context.FindResultFor(val)?.IsImplicit ?? true;
             if (isImplicit)
-                return option.DefaultValue;
+                return (T?)option.DefaultValue;
 
             var ret = context.GetValueForOption(val);
             if (ret is T t)
                 return t;
         }
 
-        return option.DefaultValue;
+        return (T?)option.DefaultValue;
     }
 }
