@@ -84,4 +84,24 @@ public class DisableConsoleOutputPluginTest
         Assert.False(await source.ContainsAsync("Console.WriteLine"));
         Assert.True(await source.ContainsAsync("private void __LogStubInternal()"));
     }
+
+    [Fact]
+    public async Task RemoveUnknownType_NoSourceDiffs()
+    {
+        var container = new PlanaContainer<DisableConsoleOutputPlugin>("disable-console-output", "disable-symbols=M:System.Diagnostics.Console");
+        await container.RunAsync();
+
+        var source = await container.GetSourceByPathAsync("Plana.Logging/Logger.cs");
+        await source.NoDiffs();
+    }
+
+    [Fact]
+    public async Task RemoveUnknownMethod_NoSourceDiffs()
+    {
+        var container = new PlanaContainer<DisableConsoleOutputPlugin>("disable-console-output", "disable-symbols=M:System.Console.WriteLine22");
+        await container.RunAsync();
+
+        var source = await container.GetSourceByPathAsync("Plana.Logging/Logger.cs");
+        await source.NoDiffs();
+    }
 }
