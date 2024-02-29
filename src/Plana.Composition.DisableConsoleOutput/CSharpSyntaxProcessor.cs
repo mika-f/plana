@@ -7,11 +7,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-using Plana.Composition.Abstractions.Analysis;
-
 namespace Plana.Composition.DisableConsoleOutput;
 
-internal class CSharpSyntaxProcessor(IDocument document, List<CSharpSyntaxNode> invocations) : CSharpSyntaxRewriter
+internal class CSharpSyntaxProcessor(List<CSharpSyntaxNode> invocations) : CSharpSyntaxRewriter
 {
     private const string LoggerStubMethodIdentifier = "__LogStubInternal";
 

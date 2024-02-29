@@ -71,7 +71,7 @@ public class DisableConsoleOutputPlugin : IPlanaPlugin2
 
             if (invocations.Count != 0)
             {
-                var rewriter = new CSharpSyntaxProcessor(document, invocations);
+                var rewriter = new CSharpSyntaxProcessor(invocations);
                 var newNode = (CSharpSyntaxNode)rewriter.Visit(oldNode);
 
                 await document.ApplyChangesAsync(newNode, context.CancellationToken);
