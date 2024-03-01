@@ -193,11 +193,19 @@ internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random
             var overridden = original.OverriddenMethod;
             var isExternalDefinition = overridden.Locations.Any(w => w.IsInMetadata);
             if (isExternalDefinition)
-                return string.Empty;
+            {
+                // keep
+                dict.Add(symbol, overridden.Name);
+                return overridden.Name;
+            }
         }
 
         if (original.Locations.Any(w => w.IsInMetadata))
-            return string.Empty;
+        {
+            // keep
+            dict.Add(symbol, symbol.Name);
+            return symbol.Name;
+        }
 
         var @interface = symbol.GetInterfaceSymbol();
         if (@interface is IMethodSymbol s)
