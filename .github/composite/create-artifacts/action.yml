@@ -13,7 +13,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Create artifacts
+    - name: Collect artifacts
       shell: bash
       run: |
         # copy artifacts
@@ -26,8 +26,22 @@ runs:
         rm *.pdb
         rm -rf BuildHost*/ cs/ de/ es/ fr/ it/ ja/ ko/ pl/ pt-BR/ ru/ tr/ zh*/
 
-        cd ../
+    - name: Get working platform
+      id: platform
+      shell: bash
+      run: |
+        PLATFORM=$(echo ${{ inputs.platform }} | sed 's/-.*//')
+        echo "platform=$PLATFORM" >> $GITHUB_OUTPUT
 
-        # create artifacts as zip
-        tar -acvf ${{ inputs.assembly }}-$(echo ${{ inputs.platform }} | sed 's/-.*//')-${{ inputs.version }}.zip ./${{ inputs.assembly}}/
-        rm -rf ./${{ inputs.assembly }}/
+    - name: Archive artifact (Linux, macOS)
+      shell: bash
+      run: |
+        cd ./dist
+        which pwsh && Compress-Archive -Path ./${{ inputs.assembly}}/ -DestinationPath ${{ inputs.assembly }}-${{ steps.platform.outputs.platform }}-${{ inputs.version }}.zip || true
+        which zip && zip -r ${{ inputs.assembly }}-${{ steps.platform.outputs.platform }}-${{ inputs.version }}.zip ./${{ inputs.assembly}}/ || true
+        find ./ -type f -name '*.zip'
+
+    - name: Collect artifacts
+      shell: bash
+      run: |
+        rm -rf ./dist/${{ inputs.assembly }}/
