@@ -1,4 +1,4 @@
-name: Format with ReSharper
+name: Inspection with ReSharper
 
 on:
   push:
@@ -30,9 +30,13 @@ jobs:
       - name: Run ReSharper Inspection
         run: |
           export PATH="$PATH:/root/.dotnet/tools"
-          jb cleanupcode -a src/Plana.sln
+          jb inspectcode -o=resharper.xml -a src/Plana.sln
 
-      - name: Set Results
+      - name: Set Matcher
         run: |
-          git add -A
-          git status && false
+          echo "::add-matcher::.github/resharper.json"
+
+      - name: Annotate Results
+        run: |
+          cat resharper.xml
+          if grep -Eq '<Issue [^>]+>' resharper.xml; then exit 1; fi;
