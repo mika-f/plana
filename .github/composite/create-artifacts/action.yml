@@ -1,0 +1,33 @@
+name: "Create .NET artifacts"
+description: ""
+inputs:
+  assembly:
+    required: true
+    description: ""
+  version:
+    required: true
+    description: ""
+  platform:
+    required: true
+    description: ""
+runs:
+  using: composite
+  steps:
+    - name: Create artifacts
+      shell: bash
+      run: |
+        # copy artifacts
+        mkdir -p ./dist/${{ inputs.assembly }}/
+        cp -r ./src/${{ inputs.assembly }}/bin/Release/net8.0/* ./dist/${{ inputs.assembly }}/
+
+        cd ./dist/${{ inputs.assembly }}
+
+        # cleanup debug and localization files
+        rm *.pdb
+        rm -rf BuildHost*/ cs/ de/ es/ fr/ it/ ja/ ko/ pl/ pt-BR/ ru/ tr/ zh*/
+
+        cd ../
+
+        # create artifacts as zip
+        tar -acvf ${{ inputs.assembly }}-$(echo ${{ inputs.platform }} | sed 's/-.*//')-${{ inputs.version }}.zip ./${{ inputs.assembly}}/
+        rm -rf ./${{ inputs.assembly }}/

@@ -1,0 +1,117 @@
+name: Build with .NET
+
+on:
+  push:
+    tags:
+      - "*"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  pre-build:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Set version
+        id: version
+        run: |
+          VERSION=$(echo ${{ github.ref }} | sed -e 's/refs\/tags\///' | sed -e 's/refs\/heads\///' | sed -e 's/\//-/')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    needs:
+      - pre-build
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET tools
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore NuGet dependencies
+        run: |
+          dotnet restore ./src/Plana.sln
+
+      - name: Build
+        run: |
+          dotnet build ./src/Plana.sln --no-restore --configuration=Release
+
+      - name: Create artifact (Plana.CLI)
+        uses: ./.github/composite/create-artifacts
+        with:
+          assembly: Plana.CLI
+          version: ${{ needs.pre-build.outputs.version }}
+          platform: ${{ matrix.os }}
+
+      - name: Create artifact (Plana.Composition.DisableConsoleOutput)
+        uses: ./.github/composite/create-artifacts
+        with:
+          assembly: Plana.Composition.DisableConsoleOutput
+          version: ${{ needs.pre-build.outputs.version }}
+          platform: ${{ matrix.os }}
+
+      - name: Create artifact (Plana.Composition.Extensions)
+        uses: ./.github/composite/create-artifacts
+        with:
+          assembly: Plana.Composition.Extensions
+          version: ${{ needs.pre-build.outputs.version }}
+          platform: ${{ matrix.os }}
+
+      - name: Create artifact (Plana.Composition.RenameSymbols)
+        uses: ./.github/composite/create-artifacts
+        with:
+          assembly: Plana.Composition.RenameSymbols
+          version: ${{ needs.pre-build.outputs.version }}
+          platform: ${{ matrix.os }}
+
+      - name: Create artifact (Plana.Composition.ShuffleDeclarations)
+        uses: ./.github/composite/create-artifacts
+        with:
+          assembly: Plana.Composition.ShuffleDeclarations
+          version: ${{ needs.pre-build.outputs.version }}
+          platform: ${{ matrix.os }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifacts-${{ matrix.os }}
+          path: ./dist
+
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs:
+      - pre-build
+      - build
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: ./dist
+
+      - name: List artifacts
+        id: items
+        run: |
+          ITEMS=$(find ./dist -type f -name "*.zip" | sed 's/ /\n/g')
+          echo "items=$ITEMS" >> $GITHUB_OUTPUT
+          echo -e "$ITEMS"
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          prerelease: ${{ contains(needs.pre-build.outputs.version, 'alpha') || contains(needs.pre-build.outputs.version, 'beta') || contains(needs.pre-build.outputs.version, 'rc') }}
+          generate_release_notes: true
+          files: $ITEMS
