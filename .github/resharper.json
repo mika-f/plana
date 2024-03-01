@@ -1,0 +1,16 @@
+{
+  "problemMatcher": [
+    {
+      "owner": "resharper_xml_output",
+      "pattern": [
+        {
+          "regexp": "^\\s+<Issue TypeId=\"[^\"]+\" File=\"([^\"]+)\" Offset=\"(\\d+)-\\d+\" (Line=\"(\\d+)\" )?Message=\"([^\"]+)\"",
+          "file": 1,
+          "column": 2,
+          "line": 4,
+          "message": 5
+        }
+      ]
+    }
+  ]
+}

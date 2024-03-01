@@ -1,0 +1,42 @@
+name: Unit Test with .NET
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET tools
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Install ReSharper Command Line Tool
+        run: |
+          dotnet tool install -g JetBrains.ReSharper.GlobalTools
+
+      - name: Run ReSharper Inspection
+        run: |
+          export PATH="$PATH:/root/.dotnet/tools"
+          jb inspectcode -o=resharper.xml -a src/Plana.sln
+
+      - name: Set Matcher
+        run: |
+          echo "::add-matcher::.github/resharper.json"
+
+      - name: Annotate Results
+        run: |
+          cat resharper.xml
+          if grep -Eq '<Issue [^>]+>' resharper.xml; then exit 1; fi;
