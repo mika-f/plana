@@ -104,8 +104,7 @@ jobs:
       - name: List artifacts
         id: items
         run: |
-          ITEMS=$(find ./dist -type f -name "*.zip" | sed 's/ /\n/g')
-          echo "items=$ITEMS" >> $GITHUB_OUTPUT
+          ITEMS=$(find ./dist -type f -name "*.zip")
           echo -e "$ITEMS"
 
       - name: Publish release
@@ -114,4 +113,5 @@ jobs:
         with:
           prerelease: ${{ contains(needs.pre-build.outputs.version, 'alpha') || contains(needs.pre-build.outputs.version, 'beta') || contains(needs.pre-build.outputs.version, 'rc') }}
           generate_release_notes: true
-          files: $ITEMS
+          files: |
+            ./dist/*/*.zip
