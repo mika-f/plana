@@ -66,6 +66,20 @@ internal class CSharpSymbolsRewriter(IDocument document, bool keepNameOnInspecto
         return newNode;
     }
 
+    public override SyntaxNode? VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
+    {
+        var newNode = base.VisitConstructorDeclaration(node);
+        if (newNode is ConstructorDeclarationSyntax constructor)
+        {
+            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
+            // constructor name must be equals to containing type name
+            if (symbol != null && dict.TryGetValue(symbol.ContainingType, out var value))
+                return constructor.WithIdentifier(SyntaxFactory.Identifier(value));
+        }
+
+        return newNode;
+    }
+
     public override SyntaxNode? VisitMethodDeclaration(MethodDeclarationSyntax node)
     {
         var newNode = base.VisitMethodDeclaration(node);
