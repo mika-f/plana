@@ -56,8 +56,8 @@ public class PlanaRandom : IPlanaSecureRandom
         return GetString(""abcedf0123456789"".ToCharArray(), length);
     }
 
-    private readonly Random _random;
     private readonly List<string> _items = [];
+    private readonly Random _random;
     public void Shuffle<T>(Span<T> array)
     {
         _random.Shuffle(array);
@@ -86,8 +86,7 @@ public class PlanaRandom : IPlanaSecureRandom
     {
         _random = new Random();
     }
-}
-".Trim());
+}".Trim());
     }
 
     [Fact]
