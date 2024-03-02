@@ -7,12 +7,17 @@
     },
     "Plana.CLI - Obfuscate": {
       "commandName": "Project",
-      "commandLineArgs": "obfuscate --workspace ./Plana.sln --output \"../dist\" --log-level verbose --plugins ./Plana.CLI/bin/Debug/net8.0/plugins --rename-symbols --rename-namespaces --rename-properties --rename-fields --rename-methods --rename-variables",
+      "commandLineArgs": "obfuscate --workspace ./Plana.sln --output \"../dist\" --log-level verbose --plugins ./Plana.CLI/bin/Debug/net8.0/plugins --rename-symbols --rename-namespaces --rename-classes --rename-properties --rename-fields --rename-methods --rename-variables",
       "workingDirectory": "../"
     },
     "Plana.CLI - Obfuscate (--rename-namespaces)": {
       "commandName": "Project",
       "commandLineArgs": "obfuscate --workspace ./Plana.sln --output \"../dist\" --log-level verbose --plugins ./Plana.CLI/bin/Debug/net8.0/plugins --rename-symbols --rename-namespaces",
+      "workingDirectory": "../"
+    },
+    "Plana.CLI - Obfuscate (--rename-classes)": {
+      "commandName": "Project",
+      "commandLineArgs": "obfuscate --workspace ./Plana.sln --output \"../dist\" --log-level verbose --plugins ./Plana.CLI/bin/Debug/net8.0/plugins --rename-symbols --rename-classes",
       "workingDirectory": "../"
     },
     "Plana.CLI - Obfuscate (--rename-properties)": {
