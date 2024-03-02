@@ -37,7 +37,7 @@ runs:
       shell: bash
       run: |
         cd ./dist
-        which pwsh && Compress-Archive -Path ./${{ inputs.assembly}}/ -DestinationPath ${{ inputs.assembly }}-${{ steps.platform.outputs.platform }}-${{ inputs.version }}.zip || true
+        which pwsh && pwsh -Command Compress-Archive -Path ./${{ inputs.assembly}}/ -DestinationPath ${{ inputs.assembly }}-${{ steps.platform.outputs.platform }}-${{ inputs.version }}.zip || true
         which zip && zip -r ${{ inputs.assembly }}-${{ steps.platform.outputs.platform }}-${{ inputs.version }}.zip ./${{ inputs.assembly}}/ || true
         find ./ -type f -name '*.zip'
 
