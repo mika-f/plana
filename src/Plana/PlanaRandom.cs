@@ -9,8 +9,8 @@ namespace Plana;
 
 public class PlanaRandom : IPlanaSecureRandom
 {
-    private readonly Random _random;
     private readonly List<string> _items = [];
+    private readonly Random _random;
 
     public PlanaRandom(int seed)
     {
