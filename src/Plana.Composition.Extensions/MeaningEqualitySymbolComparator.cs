@@ -41,20 +41,20 @@ public class MeaningEqualitySymbolComparator : IEqualityComparer<ISymbol>
         if (x == null || y == null)
             return false;
 
+        if (SymbolEqualityComparer.Default.Equals(x, y))
+            return true;
+
         if (x.GetType() == y.GetType())
             switch (x)
             {
                 case INamespaceSymbol:
-                    return x.ToDisplayString(SymbolDisplayFormat) == y.ToDisplayString(SymbolDisplayFormat);
-
                 case IPropertySymbol:
-                    return x.ToDisplayString(SymbolDisplayFormat) == y.ToDisplayString(SymbolDisplayFormat);
-
                 case IMethodSymbol:
+                case IFieldSymbol:
                     return x.ToDisplayString(SymbolDisplayFormat) == y.ToDisplayString(SymbolDisplayFormat);
             }
 
-        return SymbolEqualityComparer.Default.Equals(x, y);
+        return false;
     }
 
     public int GetHashCode(ISymbol obj)
@@ -62,12 +62,9 @@ public class MeaningEqualitySymbolComparator : IEqualityComparer<ISymbol>
         switch (obj)
         {
             case INamespaceSymbol:
-                return obj.ToDisplayString(SymbolDisplayFormat).GetHashCode();
-
             case IPropertySymbol:
-                return obj.ToDisplayString(SymbolDisplayFormat).GetHashCode();
-
             case IMethodSymbol:
+            case IFieldSymbol:
                 return obj.ToDisplayString(SymbolDisplayFormat).GetHashCode();
         }
 
