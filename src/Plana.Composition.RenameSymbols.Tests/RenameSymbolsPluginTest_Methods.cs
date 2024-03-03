@@ -71,7 +71,7 @@ public partial class RenameSymbolsPluginTest
 
             var x = w.ParameterList.Parameters[0].Type;
             var y = w.ParameterList.Parameters[1].Type;
-            if (x == null)
+            if (x == null || y == null)
                 return false;
 
             var xSymbol = sm.GetSymbolInfo(x).Symbol;
