@@ -17,37 +17,6 @@ namespace Plana.Composition.RenameSymbols.Tests;
 public partial class RenameSymbolsPluginTest
 {
     [Fact]
-    public async Task RenameMethods_OriginalDefinitionMethods()
-    {
-        var container = new PlanaContainer<RenameSymbolsPlugin>("rename-methods");
-        await container.RunAsync();
-
-        var originalDefinition = await container.GetSourceByPathAsync("Plana.Workspace/SolutionWorkspace.cs");
-        var reference = await container.GetSourceByPathAsync("Plana.CLI/Commands/ObfuscateCommand.cs");
-
-        // SolutionWorkspace.CreateWorkspaceAsync -> _0xc686c7a5
-        const string createWorkspaceAsyncIdentifier = "_0xc686c7a5";
-
-        var def = await originalDefinition.GetFirstSyntax<MethodDeclarationSyntax>(w => w.HasModifier(SyntaxKind.StaticKeyword));
-        Assert.Equal(createWorkspaceAsyncIdentifier, def.Identifier.ToString());
-
-        var r = await reference.GetFirstSyntax<InvocationExpressionSyntax>((w, sm) =>
-        {
-            var expression = w.Expression;
-            if (expression is not MemberAccessExpressionSyntax access)
-                return false;
-
-            var receiver = access.Expression;
-            var si1 = sm.GetSymbolInfo(receiver);
-            if (si1.Symbol is not ITypeSymbol t)
-                return false;
-
-            return t.Equals(typeof(SolutionWorkspace).ToSymbol(sm), SymbolEqualityComparer.Default);
-        });
-        Assert.Equal($"SolutionWorkspace.{createWorkspaceAsyncIdentifier}", r.Expression.ToFullString());
-    }
-
-    [Fact]
     public async Task RenameMethods_ExtensionMethods()
     {
         var container = new PlanaContainer<RenameSymbolsPlugin>("rename-methods");
@@ -85,6 +54,56 @@ public partial class RenameSymbolsPluginTest
             return p.Type.ToDisplayString() == "System.CommandLine.Command";
         });
         Assert.Equal($"Command.{addOptionsIdentifier}", r.Expression.ToFullString().Trim());
+    }
+
+    [Fact]
+    public async Task RenameMethods_ExternalInterfaceMethods()
+    {
+        var container = new PlanaContainer<RenameSymbolsPlugin>("rename-methods");
+        await container.RunAsync();
+
+        var reference = await container.GetSourceByPathAsync("Plana.Composition.Extensions/MeaningEqualitySymbolComparator.cs");
+
+        bool IsMethodsIsEqualsSignature(MethodDeclarationSyntax w, SemanticModel sm)
+        {
+            if (w.ParameterList.Parameters.Count != 2)
+                return false;
+
+            var x = w.ParameterList.Parameters[0].Type;
+            var y = w.ParameterList.Parameters[1].Type;
+            if (x == null || y == null)
+                return false;
+
+            var xSymbol = sm.GetSymbolInfo(x).Symbol;
+            var ySymbol = sm.GetSymbolInfo(y).Symbol;
+            if (xSymbol is not INamedTypeSymbol || ySymbol is not INamedTypeSymbol)
+                return false;
+
+            return xSymbol.Equals(typeof(ISymbol).ToSymbol(sm), SymbolEqualityComparer.Default) && ySymbol.Equals(typeof(ISymbol).ToSymbol(sm), SymbolEqualityComparer.Default);
+        }
+
+        bool IsMethodsIsGetHashCodeSignature(MethodDeclarationSyntax w, SemanticModel sm)
+        {
+            if (w.ParameterList.Parameters.Count != 1)
+                return false;
+
+            var identifier = w.ParameterList.Parameters[0].Type;
+            if (identifier == null)
+                return false;
+
+            var si = sm.GetSymbolInfo(identifier);
+            if (si.Symbol is not INamedTypeSymbol param)
+                return false;
+
+            return param.Equals(typeof(ISymbol).ToSymbol(sm), SymbolEqualityComparer.Default);
+        }
+
+
+        var equals = await reference.GetFirstSyntax<MethodDeclarationSyntax>(IsMethodsIsEqualsSignature);
+        Assert.Equal(nameof(MeaningEqualitySymbolComparator.Equals), equals.Identifier.ToString());
+
+        var getHashCode = await reference.GetFirstSyntax<MethodDeclarationSyntax>(IsMethodsIsGetHashCodeSignature);
+        Assert.Equal(nameof(MeaningEqualitySymbolComparator.GetHashCode), getHashCode.Identifier.ToString());
     }
 
 
@@ -152,52 +171,33 @@ public partial class RenameSymbolsPluginTest
     }
 
     [Fact]
-    public async Task RenameMethods_ExternalInterfaceMethods()
+    public async Task RenameMethods_OriginalDefinitionMethods()
     {
         var container = new PlanaContainer<RenameSymbolsPlugin>("rename-methods");
         await container.RunAsync();
 
-        var reference = await container.GetSourceByPathAsync("Plana.Composition.Extensions/MeaningEqualitySymbolComparator.cs");
+        var originalDefinition = await container.GetSourceByPathAsync("Plana.Workspace/SolutionWorkspace.cs");
+        var reference = await container.GetSourceByPathAsync("Plana.CLI/Commands/ObfuscateCommand.cs");
 
-        bool IsMethodsIsEqualsSignature(MethodDeclarationSyntax w, SemanticModel sm)
+        // SolutionWorkspace.CreateWorkspaceAsync -> _0xc686c7a5
+        const string createWorkspaceAsyncIdentifier = "_0xc686c7a5";
+
+        var def = await originalDefinition.GetFirstSyntax<MethodDeclarationSyntax>(w => w.HasModifier(SyntaxKind.StaticKeyword));
+        Assert.Equal(createWorkspaceAsyncIdentifier, def.Identifier.ToString());
+
+        var r = await reference.GetFirstSyntax<InvocationExpressionSyntax>((w, sm) =>
         {
-            if (w.ParameterList.Parameters.Count != 2)
+            var expression = w.Expression;
+            if (expression is not MemberAccessExpressionSyntax access)
                 return false;
 
-            var x = w.ParameterList.Parameters[0].Type;
-            var y = w.ParameterList.Parameters[1].Type;
-            if (x == null)
+            var receiver = access.Expression;
+            var si1 = sm.GetSymbolInfo(receiver);
+            if (si1.Symbol is not ITypeSymbol t)
                 return false;
 
-            var xSymbol = sm.GetSymbolInfo(x).Symbol;
-            var ySymbol = sm.GetSymbolInfo(y).Symbol;
-            if (xSymbol is not INamedTypeSymbol || ySymbol is not INamedTypeSymbol)
-                return false;
-
-            return xSymbol.Equals(typeof(ISymbol).ToSymbol(sm), SymbolEqualityComparer.Default) && ySymbol.Equals(typeof(ISymbol).ToSymbol(sm), SymbolEqualityComparer.Default);
-        }
-
-        bool IsMethodsIsGetHashCodeSignature(MethodDeclarationSyntax w, SemanticModel sm)
-        {
-            if (w.ParameterList.Parameters.Count != 1)
-                return false;
-
-            var identifier = w.ParameterList.Parameters[0].Type;
-            if (identifier == null)
-                return false;
-
-            var si = sm.GetSymbolInfo(identifier);
-            if (si.Symbol is not INamedTypeSymbol param)
-                return false;
-
-            return param.Equals(typeof(ISymbol).ToSymbol(sm), SymbolEqualityComparer.Default);
-        }
-
-
-        var equals = await reference.GetFirstSyntax<MethodDeclarationSyntax>(IsMethodsIsEqualsSignature);
-        Assert.Equal(nameof(MeaningEqualitySymbolComparator.Equals), equals.Identifier.ToString());
-
-        var getHashCode = await reference.GetFirstSyntax<MethodDeclarationSyntax>(IsMethodsIsGetHashCodeSignature);
-        Assert.Equal(nameof(MeaningEqualitySymbolComparator.GetHashCode), getHashCode.Identifier.ToString());
+            return t.Equals(typeof(SolutionWorkspace).ToSymbol(sm), SymbolEqualityComparer.Default);
+        });
+        Assert.Equal($"SolutionWorkspace.{createWorkspaceAsyncIdentifier}", r.Expression.ToFullString());
     }
 }

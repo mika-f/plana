@@ -87,6 +87,15 @@ public class PlanaContainer<T> where T : IPlanaPlugin, new()
         return Task.FromResult(new InlineSource(null));
     }
 
+    public async Task<InlineSource> GetSourceByTypeAsync(Type t)
+    {
+        var assembly = t.Assembly.GetName().Name!;
+        var @namespace = t.Namespace!.Replace(assembly, "").Split(".");
+        var name = $"{t.Name}.cs";
+
+        return await GetSourceByPathAsync(Path.Combine([assembly, ..@namespace, name]));
+    }
+
     public Task<InlineSymbol> GetSymbolByPathAsync(string path)
     {
         throw new NotImplementedException();
