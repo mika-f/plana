@@ -95,9 +95,4 @@ public class PlanaContainer<T> where T : IPlanaPlugin, new()
 
         return await GetSourceByPathAsync(Path.Combine([assembly, ..@namespace, name]));
     }
-
-    public Task<InlineSymbol> GetSymbolByPathAsync(string path)
-    {
-        throw new NotImplementedException();
-    }
 }
