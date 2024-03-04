@@ -13,6 +13,21 @@ namespace Plana.Composition.RenameSymbols.Tests;
 public partial class RenameSymbolsPluginTest
 {
     [Fact]
+    public async Task RenameVariables_ForEachStatement()
+    {
+        var container = new PlanaContainer<RenameSymbolsPlugin>("rename-variables");
+        await container.RunAsync();
+
+        var implementation = await container.GetSourceByTypeAsync(typeof(Obfuscator));
+
+        // instance -> _0xf9d1ac9a
+        const string identifier = "_0xf9d1ac9a";
+
+        var @foreach = await implementation.GetFirstSyntax<ForEachStatementSyntax>();
+        Assert.Equal(identifier, @foreach.Identifier.ToFullString());
+    }
+
+    [Fact]
     public async Task RenameVariables_PrimaryConstructor()
     {
         // for test purpose
@@ -23,8 +38,8 @@ public partial class RenameSymbolsPluginTest
 
         var implementation = await container.GetSourceByTypeAsync(typeof(AnnotationComment));
 
-        // AnnotationComment.Annotation -> _0x8a888f91
-        const string identifier = "_0x8a888f91";
+        // AnnotationComment.Annotation -> _0xedb2531d
+        const string identifier = "_0xedb2531d";
 
         var declaration = await implementation.GetFirstSyntax<RecordDeclarationSyntax>();
         var constructor = declaration.ParameterList!.Parameters[0];

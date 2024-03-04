@@ -132,6 +132,19 @@ internal class CSharpSymbolsRewriter(IDocument document, bool keepNameOnInspecto
         return newNode;
     }
 
+    public override SyntaxNode? VisitForEachStatement(ForEachStatementSyntax node)
+    {
+        var newNode = base.VisitForEachStatement(node);
+        if (newNode is ForEachStatementSyntax statement)
+        {
+            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
+            if (symbol != null && dict.TryGetValue(symbol, out var value))
+                return statement.WithIdentifier(SyntaxFactory.Identifier(value));
+        }
+
+        return newNode;
+    }
+
     public override SyntaxNode? VisitIdentifierName(IdentifierNameSyntax node)
     {
         var newNode = base.VisitIdentifierName(node);

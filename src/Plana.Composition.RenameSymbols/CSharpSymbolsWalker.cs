@@ -171,6 +171,18 @@ internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random
         base.VisitVariableDeclarator(node);
     }
 
+    public override void VisitForEachStatement(ForEachStatementSyntax node)
+    {
+        if (isRenameVariables && !node.HasAnnotationComment())
+        {
+            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
+            if (symbol != null)
+                SetIdentifier(symbol);
+        }
+
+        base.VisitForEachStatement(node);
+    }
+
     private string SetIdentifier(ISymbol symbol, string prefix = "_")
     {
         if (dict.TryGetValue(symbol, out var val))
