@@ -131,7 +131,21 @@ internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random
         {
             var symbol = document.SemanticModel.GetDeclaredSymbol(node);
             if (symbol != null)
-                SetIdentifier(symbol);
+            {
+                var identifier = SetIdentifier(symbol);
+
+                // if IParameterSymbol is inside TypeDeclarationSyntax.ParameterList, it acts as IPropertySymbol or IFieldSymbol
+                var unknown = node.Parent?.Parent;
+                if (unknown is TypeDeclarationSyntax decl)
+                {
+                    var t = document.SemanticModel.GetDeclaredSymbol(decl);
+                    var symbols = document.SemanticModel.LookupSymbols(decl.ParameterList!.FullSpan.End);
+                    var act = symbols.FirstOrDefault(w => w.ContainingType?.Equals(t, SymbolEqualityComparer.Default) == true && w.Name == symbol.Name);
+
+                    if (act != null)
+                        dict.TryAdd(act, identifier);
+                }
+            }
         }
 
         base.VisitParameter(node);
@@ -157,13 +171,15 @@ internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random
         base.VisitVariableDeclarator(node);
     }
 
-    private void SetIdentifier(ISymbol symbol, string prefix = "_")
+    private string SetIdentifier(ISymbol symbol, string prefix = "_")
     {
-        if (dict.ContainsKey(symbol))
-            return;
+        if (dict.TryGetValue(symbol, out var val))
+            return val;
 
         var identifier = $"{prefix}0x{random.GetGlobalUniqueAlphaNumericalString(8)}";
         dict.Add(symbol, identifier);
+
+        return identifier;
     }
 
     #region methods

@@ -35,6 +35,11 @@
       "commandLineArgs": "obfuscate --workspace ./Plana.sln --output \"../dist\" --log-level verbose --plugins ./Plana.CLI/bin/Debug/net8.0/plugins --rename-symbols --rename-methods",
       "workingDirectory": "../"
     },
+    "Plana.CLI - Obfuscate (--rename-variables)": {
+      "commandName": "Project",
+      "commandLineArgs": "obfuscate --workspace ./Plana.sln --output \"../dist\" --log-level verbose --plugins ./Plana.CLI/bin/Debug/net8.0/plugins --rename-symbols --rename-variables",
+      "workingDirectory": "../"
+    },
     "Plana.CLI - Obfuscate (System.Diagnostics.Debug)": {
       "commandName": "Project",
       "commandLineArgs": "obfuscate --workspace ./Plana.sln --output \"../dist\" --log-level verbose --plugins ./Plana.CLI/bin/Debug/net8.0/plugins --disable-console-output --disable-symbols=T:System.Diagnostics.Debug",
