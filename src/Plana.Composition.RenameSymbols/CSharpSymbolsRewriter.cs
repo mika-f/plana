@@ -174,6 +174,9 @@ internal class CSharpSymbolsRewriter(IDocument document, bool keepNameOnInspecto
     public override SyntaxNode? VisitIdentifierName(IdentifierNameSyntax node)
     {
         var newNode = base.VisitIdentifierName(node);
+        if (node.IsVar)
+            return newNode;
+
         if (newNode is IdentifierNameSyntax identifier)
         {
             var si = document.SemanticModel.GetSymbolInfo(node);
