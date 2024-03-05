@@ -48,6 +48,7 @@ public class MeaningEqualitySymbolComparator : IEqualityComparer<ISymbol>
             switch (x)
             {
                 case INamespaceSymbol:
+                case INamedTypeSymbol:
                 case IPropertySymbol:
                 case IMethodSymbol:
                 case IFieldSymbol:
@@ -62,6 +63,7 @@ public class MeaningEqualitySymbolComparator : IEqualityComparer<ISymbol>
         switch (obj)
         {
             case INamespaceSymbol:
+            case INamedTypeSymbol:
             case IPropertySymbol:
             case IMethodSymbol:
             case IFieldSymbol:
