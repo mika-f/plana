@@ -285,6 +285,15 @@ internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random
             return identifier;
         }
 
+        // not match signature
+        if (!MeaningEqualitySymbolComparator.Default.Equals(symbol, original))
+        {
+            var identifier = SetMethodIdentifier(original);
+            dict.Add(symbol, identifier);
+
+            return identifier;
+        }
+
         return string.Empty;
     }
 

@@ -23,8 +23,8 @@ public partial class RenameSymbolsPluginTest
 
         var reference = await container.GetSourceByPathAsync("Plana.Composition.Extensions/PlanaPluginOption.cs");
 
-        // PlanaPluginOption -> _0xb35682f5
-        const string identifier = "_0xb35682f5";
+        // PlanaPluginOption -> _0xcb375677
+        const string identifier = "_0xcb375677";
 
         var @class = await reference.GetFirstSyntax<ClassDeclarationSyntax>();
         Assert.Equal(identifier, @class.Identifier.ToFullString());
@@ -41,8 +41,8 @@ public partial class RenameSymbolsPluginTest
 
         var reference = await container.GetSourceByPathAsync("Plana.Composition.RenameSymbols.Tests/RenameSymbolsPluginTest_Classes.cs");
 
-        // PlanaContainer -> _0xd42cf48f
-        const string identifier1 = "_0xd42cf48f";
+        // PlanaContainer -> _0x403629f8
+        const string identifier1 = "_0x403629f8";
 
         var implementation = await container.GetSourceByPathAsync("Plana.Testing/PlanaContainer{T}.cs");
         var a = await implementation.GetFirstSyntax<ClassDeclarationSyntax>();
