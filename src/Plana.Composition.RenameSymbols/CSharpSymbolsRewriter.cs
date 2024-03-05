@@ -159,6 +159,13 @@ internal class CSharpSymbolsRewriter(IDocument document, bool keepNameOnInspecto
                 if (dict.TryGetValue(s, out var value))
                     return generic.WithIdentifier(SyntaxFactory.Identifier(value));
             }
+
+            if (symbol is IMethodSymbol m)
+            {
+                var s = m.ConstructedFrom;
+                if (dict.TryGetValue(s, out var value))
+                    return generic.WithIdentifier(SyntaxFactory.Identifier(value));
+            }
         }
 
         return newNode;

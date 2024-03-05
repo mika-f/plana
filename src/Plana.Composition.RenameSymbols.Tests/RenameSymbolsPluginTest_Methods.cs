@@ -179,14 +179,69 @@ public partial class RenameSymbolsPluginTest
         var @interface = await container.GetSourceByPathAsync("Plana.Testing/ITestableObject.cs");
         var implementation = await container.GetSourceByTypeAsync(typeof(InlineSource));
 
-        // ITestableObject<T>.ToMatchInlineSnapshot(T) -> _0x433be85c
-        const string identifier = "_0x433be85c";
+        // ITestableObject<T>.ToMatchInlineSnapshot(T) -> _0x204ecb6f
+        const string identifier = "_0x204ecb6f";
 
         var decl = await @interface.GetFirstSyntax<MethodDeclarationSyntax>();
         Assert.Equal(identifier, decl.Identifier.ToString());
 
         var impl = await implementation.GetFirstSyntax<MethodDeclarationSyntax>();
         Assert.Equal(identifier, impl.Identifier.ToString());
+    }
+
+    [Fact]
+    public async Task RenameMethods_GenericsMethods()
+    {
+        var container = new PlanaContainer<RenameSymbolsPlugin>("rename-methods");
+        await container.RunAsync();
+
+        var implementation = await container.GetSourceByTypeAsync(typeof(InlineSource));
+
+        // InlineSource.GetSyntaxOf<T> -> _0x2b70476f
+        const string identifier = "_0x2b70476f";
+
+        var def = await implementation.GetFirstSyntax<MethodDeclarationSyntax>((w, sm) =>
+        {
+            if (w.ParameterList.Parameters.Count != 0)
+                return false;
+
+            if (w.ConstraintClauses.None())
+                return false;
+
+            var ret = w.ReturnType;
+            var symbol = sm.GetSymbolInfo(ret).Symbol;
+            if (symbol is not INamedTypeSymbol t)
+                return false;
+
+            if (t.TypeArguments.Length != 1)
+                return false;
+
+            if (t.TypeArguments[0] is not INamedTypeSymbol list)
+                return false;
+
+            return true;
+        });
+
+        Assert.Equal(identifier, def.Identifier.ToString());
+
+        var reference = await implementation.GetFirstSyntax<InvocationExpressionSyntax>((w, sm) =>
+        {
+            if (w.Parent is not AwaitExpressionSyntax awaiter)
+                return false;
+
+            if (awaiter.Parent is ReturnStatementSyntax)
+                return false;
+
+            if (awaiter.Parent?.Parent is not MemberAccessExpressionSyntax inv)
+                return false;
+
+            if (w.Expression is MemberAccessExpressionSyntax)
+                return false;
+
+            return inv.Name.ToString() == "FirstOrDefault";
+        });
+
+        Assert.Equal($"{identifier}<T>", reference.Expression.ToString());
     }
 
     [Fact]
