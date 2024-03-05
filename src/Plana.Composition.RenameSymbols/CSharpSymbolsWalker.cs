@@ -87,29 +87,17 @@ internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random
     private static AnnotationComment NetworkingAnnotation => new("networking");
 
 
-    public override void VisitClassDeclaration(ClassDeclarationSyntax node)
+    private string SetIdentifier(ISymbol symbol, string prefix = "_", string suffix = "")
     {
-        if (isRenameClasses && !node.HasAnnotationComment())
-        {
-            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
-            if (symbol != null)
-                SetIdentifier(symbol);
-        }
+        if (dict.TryGetValue(symbol, out var val))
+            return val;
 
-        base.VisitClassDeclaration(node);
+        var identifier = $"{prefix}0x{random.GetGlobalUniqueAlphaNumericalString(8)}{suffix}";
+        dict.Add(symbol, identifier);
+
+        return identifier;
     }
 
-    public override void VisitEnumDeclaration(EnumDeclarationSyntax node)
-    {
-        if (isRenameClasses && !node.HasAnnotationComment())
-        {
-            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
-            if (symbol != null)
-                SetIdentifier(symbol);
-        }
-
-        base.VisitEnumDeclaration(node);
-    }
 
     public override void VisitEnumMemberDeclaration(EnumMemberDeclarationSyntax node)
     {
@@ -183,16 +171,58 @@ internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random
         base.VisitForEachStatement(node);
     }
 
-    private string SetIdentifier(ISymbol symbol, string prefix = "_")
+    #region classes
+
+    public override void VisitClassDeclaration(ClassDeclarationSyntax node)
     {
-        if (dict.TryGetValue(symbol, out var val))
-            return val;
+        if (isRenameClasses && !node.HasAnnotationComment())
+        {
+            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
+            if (symbol != null)
+            {
+                bool IsAttribute(INamedTypeSymbol t)
+                {
+                    if (t.BaseType == null)
+                        return false;
 
-        var identifier = $"{prefix}0x{random.GetGlobalUniqueAlphaNumericalString(8)}";
-        dict.Add(symbol, identifier);
+                    if (t.BaseType.Equals(typeof(Attribute).ToSymbol(document.SemanticModel), SymbolEqualityComparer.Default))
+                        return true;
 
-        return identifier;
+                    return false;
+                }
+
+                if (IsAttribute(symbol))
+                {
+                    var identifier = SetIdentifier(symbol, suffix: "Attribute");
+                    var constructorName = identifier.Substring(0, identifier.Length - "Attribute".Length);
+
+                    var constructors = symbol.Constructors;
+                    foreach (var constructor in constructors)
+                        dict.TryAdd(constructor, constructorName);
+                }
+                else
+                {
+                    SetIdentifier(symbol);
+                }
+            }
+        }
+
+        base.VisitClassDeclaration(node);
     }
+
+    public override void VisitEnumDeclaration(EnumDeclarationSyntax node)
+    {
+        if (isRenameClasses && !node.HasAnnotationComment())
+        {
+            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
+            if (symbol != null)
+                SetIdentifier(symbol);
+        }
+
+        base.VisitEnumDeclaration(node);
+    }
+
+    #endregion
 
     #region methods
 
