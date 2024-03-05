@@ -20,8 +20,8 @@ public partial class RenameSymbolsPluginTest
 
         var implementation = await container.GetSourceByTypeAsync(typeof(Obfuscator));
 
-        // instance -> _0xd15c5a98
-        const string identifier = "_0xd15c5a98";
+        // instance -> _0x224d2a4d
+        const string identifier = "_0x224d2a4d";
 
         var @foreach = await implementation.GetFirstSyntax<ForEachStatementSyntax>();
         Assert.Equal(identifier, @foreach.Identifier.ToFullString());
@@ -38,8 +38,8 @@ public partial class RenameSymbolsPluginTest
 
         var implementation = await container.GetSourceByTypeAsync(typeof(AnnotationComment));
 
-        // AnnotationComment.Annotation -> _0xcfba6656
-        const string identifier = "_0xcfba6656";
+        // AnnotationComment.Annotation -> _0xf54c6d69
+        const string identifier = "_0xf54c6d69";
 
         var declaration = await implementation.GetFirstSyntax<RecordDeclarationSyntax>();
         var constructor = declaration.ParameterList!.Parameters[0];

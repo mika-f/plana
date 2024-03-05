@@ -106,7 +106,6 @@ public partial class RenameSymbolsPluginTest
         Assert.Equal(nameof(MeaningEqualitySymbolComparator.GetHashCode), getHashCode.Identifier.ToString());
     }
 
-
     [Fact]
     public async Task RenameMethods_InterfaceMethods()
     {
@@ -168,6 +167,26 @@ public partial class RenameSymbolsPluginTest
 
         var implementationDecl = await implementation.GetFirstSyntax<MethodDeclarationSyntax>(IsMethodsHasRunAsyncSignature);
         Assert.Equal(obfuscateAsyncIdentifier, implementationDecl.Identifier.ToString());
+    }
+
+    [Fact]
+    public async Task RenameMethods_GenericsInterfaceMethods()
+    {
+        var container = new PlanaContainer<RenameSymbolsPlugin>("rename-methods");
+        await container.RunAsync();
+
+
+        var @interface = await container.GetSourceByPathAsync("Plana.Testing/ITestableObject.cs");
+        var implementation = await container.GetSourceByTypeAsync(typeof(InlineSource));
+
+        // ITestableObject<T>.ToMatchInlineSnapshot(T) -> _0x433be85c
+        const string identifier = "_0x433be85c";
+
+        var decl = await @interface.GetFirstSyntax<MethodDeclarationSyntax>();
+        Assert.Equal(identifier, decl.Identifier.ToString());
+
+        var impl = await implementation.GetFirstSyntax<MethodDeclarationSyntax>();
+        Assert.Equal(identifier, impl.Identifier.ToString());
     }
 
     [Fact]
