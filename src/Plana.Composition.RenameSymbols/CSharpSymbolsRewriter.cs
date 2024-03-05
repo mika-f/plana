@@ -145,6 +145,25 @@ internal class CSharpSymbolsRewriter(IDocument document, bool keepNameOnInspecto
         return newNode;
     }
 
+    public override SyntaxNode? VisitGenericName(GenericNameSyntax node)
+    {
+        var newNode = base.VisitGenericName(node);
+        if (newNode is GenericNameSyntax generic)
+        {
+            var si = document.SemanticModel.GetSymbolInfo(node);
+            var symbol = si.Symbol;
+
+            if (symbol is INamedTypeSymbol t)
+            {
+                var s = t.ConstructedFrom;
+                if (dict.TryGetValue(s, out var value))
+                    return generic.WithIdentifier(SyntaxFactory.Identifier(value));
+            }
+        }
+
+        return newNode;
+    }
+
     public override SyntaxNode? VisitIdentifierName(IdentifierNameSyntax node)
     {
         var newNode = base.VisitIdentifierName(node);

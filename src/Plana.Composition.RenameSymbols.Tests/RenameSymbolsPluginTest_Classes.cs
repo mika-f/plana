@@ -34,6 +34,39 @@ public partial class RenameSymbolsPluginTest
     }
 
     [Fact]
+    public async Task RenameClasses_HasTypeParameters()
+    {
+        var container = new PlanaContainer<RenameSymbolsPlugin>("rename-classes");
+        await container.RunAsync();
+
+        var reference = await container.GetSourceByPathAsync("Plana.Composition.RenameSymbols.Tests/RenameSymbolsPluginTest_Classes.cs");
+
+        // PlanaContainer -> _0xd42cf48f
+        const string identifier1 = "_0xd42cf48f";
+
+        var implementation = await container.GetSourceByPathAsync("Plana.Testing/PlanaContainer{T}.cs");
+        var a = await implementation.GetFirstSyntax<ClassDeclarationSyntax>();
+
+        Assert.Equal(identifier1, a.Identifier.ToString());
+
+        // RenameSymbolsPlugin -> _0x409e98f6
+        const string identifier2 = "_0x409e98f6";
+
+        var parameter = await container.GetSourceByTypeAsync(typeof(RenameSymbolsPlugin));
+        var b = await parameter.GetFirstSyntax<ClassDeclarationSyntax>();
+
+        Assert.Equal(identifier2, b.Identifier.ToString());
+
+        var invocation = await reference.GetFirstSyntax<ObjectCreationExpressionSyntax>(w => w.Type.IsKind(SyntaxKind.GenericName));
+        var generics = invocation.Type as GenericNameSyntax;
+
+        Assert.NotNull(generics);
+        Assert.Equal(identifier1, generics.Identifier.ToString());
+        Assert.Equal(identifier2, generics.TypeArgumentList.Arguments[0].ToString());
+    }
+
+
+    [Fact]
     public async Task RenameClasses_Attribute()
     {
         var container = new PlanaContainer<RenameSymbolsPlugin>("rename-classes");
