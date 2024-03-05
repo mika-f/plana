@@ -192,9 +192,18 @@ internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random
                 }
 
                 if (IsAttribute(symbol))
-                    SetIdentifier(symbol, suffix: "Attribute");
+                {
+                    var identifier = SetIdentifier(symbol, suffix: "Attribute");
+                    var constructorName = identifier.Substring(0, identifier.Length - "Attribute".Length);
+
+                    var constructors = symbol.Constructors;
+                    foreach (var constructor in constructors)
+                        dict.TryAdd(constructor, constructorName);
+                }
                 else
+                {
                     SetIdentifier(symbol);
+                }
             }
         }
 
