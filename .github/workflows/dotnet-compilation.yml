@@ -22,7 +22,7 @@ jobs:
         plugins:
           - "--shuffle-declarations"
           - "--rename-symbols --rename-namespaces --rename-classes --rename-properties --rename-fields --rename-methods --rename-variables"
-          - "--disable-console-output"
+          - "--disable-console-output --disable-symbols=T:Plana.Logger,T:Plana.Logger.Abstractions"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -37,12 +37,10 @@ jobs:
         run: |
           dotnet restore ./src/Plana.sln
 
-      - name: Build
+      - name: Phase.1 -- Build Original Source
         run: |
           dotnet build ./src/Plana.sln --no-restore --configuration=Release /p:WarningLevel=0
 
-      - name: Run
-        run: |
           mkdir -p ./src/Plana.CLI/bin/Releases/net8.0/plugins
           cp ./src/Plana.Composition.Extensions/bin/Release/net8.0/Plana.Composition.Extensions.dll ./src/Plana.CLI/bin/Releases/net8.0/plugins
           cp ./src/Plana.Composition.DisableConsoleOutput/bin/Release/net8.0/Plana.Composition.DisableConsoleOutput.dll ./src/Plana.CLI/bin/Releases/net8.0/plugins
@@ -51,6 +49,23 @@ jobs:
 
           dotnet ./src/Plana.CLI/bin/Release/net8.0/Plana.CLI.dll obfuscate --log-level verbose --workspace ./src/Plana.sln --plugins ./src/Plana.CLI/bin/Releases/net8.0/plugins --write ${{ matrix.plugins }}
 
-      - name: Re-Build
+      - name: Phase.2 -- Re-Build Obfuscated Source
         run: |
-          dotnet build ./src/Plana.sln --no-restore --configuration=Release /p:WarningLevel=0
+          ! git diff-index --quiet HEAD
+
+          mkdir -p ./src/Plana.CLI/bin/Releases/net8.0/plugins
+          cp ./src/Plana.Composition.Extensions/bin/Release/net8.0/Plana.Composition.Extensions.dll ./src/Plana.CLI/bin/Releases/net8.0/plugins
+          cp ./src/Plana.Composition.DisableConsoleOutput/bin/Release/net8.0/Plana.Composition.DisableConsoleOutput.dll ./src/Plana.CLI/bin/Releases/net8.0/plugins
+          cp ./src/Plana.Composition.RenameSymbols/bin/Release/net8.0/Plana.Composition.RenameSymbols.dll ./src/Plana.CLI/bin/Releases/net8.0/plugins
+          cp ./src/Plana.Composition.ShuffleDeclarations/bin/Release/net8.0/Plana.Composition.ShuffleDeclarations.dll ./src/Plana.CLI/bin/Releases/net8.0/plugins
+
+          git add -A
+          git stash save
+
+          dotnet ./src/Plana.CLI/bin/Release/net8.0/Plana.CLI.dll obfuscate --log-level verbose --workspace ./src/Plana.sln --plugins ./src/Plana.CLI/bin/Releases/net8.0/plugins --write ${{ matrix.plugins }}
+
+      - name: Phase.3 -- Re-Test with obfuscated source
+        run: |
+          ! git diff-index --quiet HEAD
+
+          git --no-pager diff --ignore-all-space --ignore-blank-lines
