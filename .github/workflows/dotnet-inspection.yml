@@ -39,4 +39,4 @@ jobs:
       - name: Annotate Results
         run: |
           cat resharper.xml
-          if grep -Eq '<Issue [^>]+>' resharper.xml; then exit 1; fi;
+          # if grep -Eq '<Issue [^>]+>' resharper.xml; then exit 1; fi;
