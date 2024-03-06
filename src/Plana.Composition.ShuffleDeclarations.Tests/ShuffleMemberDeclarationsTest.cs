@@ -20,6 +20,40 @@ public class ShuffleMemberDeclarationsTest
         Assert.Empty(instance.Options);
     }
 
+    [Fact(Skip = "Not Implemented Yet")]
+    public Task KeepIfAndEndIfPreprocessors()
+    {
+        return Task.CompletedTask;
+    }
+
+    [Fact]
+    public async Task RemovePragmaDisableAndRestorePreprocessors()
+    {
+        var container = new PlanaContainer<ShuffleMemberDeclarations>();
+        await container.RunAsync("../../../../Plana.Testing/Plana.Testing.csproj");
+
+        var source = await container.GetSourceByPathAsync("PlanaContainer{T}.cs");
+
+        await source.HasDiffs();
+
+        Assert.False(await source.ContainsAsync("#pragma warning disable"));
+        Assert.False(await source.ContainsAsync("#pragma warning restore"));
+    }
+
+    [Fact]
+    public async Task RemoveRegionAndEndregionPreprocessors()
+    {
+        var container = new PlanaContainer<ShuffleMemberDeclarations>();
+        await container.RunAsync("../../../../Plana.Composition.RenameSymbols/Plana.Composition.RenameSymbols.csproj");
+
+        var source = await container.GetSourceByPathAsync("CSharpSymbolsWalker.cs");
+
+        await source.HasDiffs();
+
+        Assert.False(await source.ContainsAsync("#region"));
+        Assert.False(await source.ContainsAsync("#endregion"));
+    }
+
     [Fact]
     public async Task ShuffleWithRandom()
     {
@@ -87,39 +121,5 @@ public class PlanaRandom : IPlanaSecureRandom
         _random = new Random();
     }
 }".Trim());
-    }
-
-    [Fact]
-    public async Task RemoveRegionAndEndregionPreprocessors()
-    {
-        var container = new PlanaContainer<ShuffleMemberDeclarations>();
-        await container.RunAsync("../../../../Plana.Composition.RenameSymbols/Plana.Composition.RenameSymbols.csproj");
-
-        var source = await container.GetSourceByPathAsync("CSharpSymbolsWalker.cs");
-
-        await source.HasDiffs();
-
-        Assert.False(await source.ContainsAsync("#region"));
-        Assert.False(await source.ContainsAsync("#endregion"));
-    }
-
-    [Fact(Skip = "Not Implemented Yet")]
-    public Task KeepIfAndEndIfPreprocessors()
-    {
-        return Task.CompletedTask;
-    }
-
-    [Fact]
-    public async Task RemovePragmaDisableAndRestorePreprocessors()
-    {
-        var container = new PlanaContainer<ShuffleMemberDeclarations>();
-        await container.RunAsync("../../../../Plana.Testing/Plana.Testing.csproj");
-
-        var source = await container.GetSourceByPathAsync("PlanaContainer{T}.cs");
-
-        await source.HasDiffs();
-
-        Assert.False(await source.ContainsAsync("#pragma warning disable"));
-        Assert.False(await source.ContainsAsync("#pragma warning restore"));
     }
 }

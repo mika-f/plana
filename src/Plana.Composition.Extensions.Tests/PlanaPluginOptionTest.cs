@@ -10,10 +10,24 @@ namespace Plana.Composition.Extensions.Tests;
 public class PlanaPluginOptionTest
 {
     [Fact]
-    public void NameDoesNotStartsWithHyphen()
+    public void FriendlyNameIsNotSameValueWithNamePassedInConstructor()
     {
-        Assert.Throws<InvalidFormatException>(() => PlanaPluginOption.ValidateName("-name"));
-        Assert.Throws<InvalidFormatException>(() => PlanaPluginOption.ValidateName("--name"));
+        var instance = new PlanaPluginOption("name", "friendly name", "description", false);
+        Assert.Equal("friendly name", instance.FriendlyName);
+    }
+
+    [Fact]
+    public void FriendlyNameIsSameValueWithNameNotPassedInConstructor()
+    {
+        var instance = new PlanaPluginOption("name", "description", false);
+        Assert.Equal(instance.Name, instance.FriendlyName);
+    }
+
+    [Fact]
+    public void HasDescription()
+    {
+        var instance = new PlanaPluginOption("name", "description", false);
+        Assert.Equal("description", instance.Description);
     }
 
     [Fact]
@@ -39,23 +53,9 @@ public class PlanaPluginOptionTest
     }
 
     [Fact]
-    public void FriendlyNameIsSameValueWithNameNotPassedInConstructor()
+    public void NameDoesNotStartsWithHyphen()
     {
-        var instance = new PlanaPluginOption("name", "description", false);
-        Assert.Equal(instance.Name, instance.FriendlyName);
-    }
-
-    [Fact]
-    public void FriendlyNameIsNotSameValueWithNamePassedInConstructor()
-    {
-        var instance = new PlanaPluginOption("name", "friendly name", "description", false);
-        Assert.Equal("friendly name", instance.FriendlyName);
-    }
-
-    [Fact]
-    public void HasDescription()
-    {
-        var instance = new PlanaPluginOption("name", "description", false);
-        Assert.Equal("description", instance.Description);
+        Assert.Throws<InvalidFormatException>(() => PlanaPluginOption.ValidateName("-name"));
+        Assert.Throws<InvalidFormatException>(() => PlanaPluginOption.ValidateName("--name"));
     }
 }

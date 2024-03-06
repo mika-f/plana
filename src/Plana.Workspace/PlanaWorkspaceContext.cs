@@ -14,10 +14,10 @@ namespace Plana.Workspace;
 
 internal class PlanaWorkspaceContext
 {
+    private readonly Dictionary<DocumentId, (CSharpSyntaxNode Node, Func<Document, Task> Callback)> _changes = new();
     private readonly WorkspaceKind _kind;
     private readonly ILogger? _logger;
     private readonly Dictionary<DocumentId, CSharpSyntaxTree> _originals = new();
-    private readonly Dictionary<DocumentId, (CSharpSyntaxNode Node, Func<Document, Task> Callback)> _changes = new();
     private readonly MSBuildWorkspace _workspace;
 
     private Project? _project;
