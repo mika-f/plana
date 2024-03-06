@@ -59,8 +59,8 @@ public partial class RenameSymbolsPluginTest
         var reference = await container.GetSourceByPathAsync("Plana.Composition.RenameSymbols.Tests/RenameSymbolsPluginTest_Classes.cs");
         var extends = await container.GetSourceByPathAsync("Plana.Testing/PlanaContainer.cs");
 
-        // PlanaContainer<T> -> _0x94430d93
-        const string identifier = "_0x94430d93";
+        // PlanaContainer<T> -> _0xdb120989
+        const string identifier = "_0xdb120989";
 
         var a = await implementation.GetFirstSyntax<ClassDeclarationSyntax>();
         Assert.Equal(identifier, a.Identifier.ToString());
@@ -80,8 +80,8 @@ public partial class RenameSymbolsPluginTest
 
         var reference = await container.GetSourceByPathAsync("Plana.Composition.Extensions/PlanaPluginOption.cs");
 
-        // PlanaPluginOption -> _0xc3603373
-        const string identifier = "_0xc3603373";
+        // PlanaPluginOption -> _0xb93c4da5
+        const string identifier = "_0xb93c4da5";
 
         var @class = await reference.GetFirstSyntax<ClassDeclarationSyntax>();
         Assert.Equal(identifier, @class.Identifier.ToFullString());
@@ -98,8 +98,8 @@ public partial class RenameSymbolsPluginTest
 
         var reference = await container.GetSourceByPathAsync("Plana.Composition.RenameSymbols.Tests/RenameSymbolsPluginTest_Classes.cs");
 
-        // PlanaContainer -> _0x403629f8
-        const string identifier1 = "_0x94430d93";
+        // PlanaContainer -> _0xdb120989
+        const string identifier1 = "_0xdb120989";
 
         var implementation = await container.GetSourceByPathAsync("Plana.Testing/PlanaContainer{T}.cs");
         var a = await implementation.GetFirstSyntax<ClassDeclarationSyntax>();
@@ -143,5 +143,35 @@ public partial class RenameSymbolsPluginTest
 
         var c = await reference.GetFirstSyntax<ClassDeclarationSyntax>();
         Assert.Equal(identifier, c.ParameterList?.Parameters[1].Type?.ToString());
+    }
+
+    [Fact]
+    public async Task RenameClasses_Record()
+    {
+        var container = new PlanaContainer<RenameSymbolsPlugin>("rename-classes");
+        await container.RunAsync();
+
+        var declaration = await container.GetSourceByTypeAsync(typeof(AnnotationComment));
+        var reference = await container.GetSourceByTypeAsync(typeof(CSharpSyntaxNodeExtensions));
+
+        // AnnotationComment -> _0xd9d2dd2a
+        const string identifier = "_0xd9d2dd2a";
+
+        var a = await declaration.GetFirstSyntax<RecordDeclarationSyntax>();
+        Assert.Equal(identifier, a.Identifier.ToString());
+
+
+        var b = await reference.GetFirstSyntax<MemberAccessExpressionSyntax>(w =>
+        {
+            if (w.Parent is not ArgumentSyntax arg)
+                return false;
+
+            if (arg.Parent is not ArgumentListSyntax args)
+                return false;
+
+            return args.Arguments.Count == 1;
+        });
+
+        Assert.Equal(identifier, b.Expression.ToString());
     }
 }
