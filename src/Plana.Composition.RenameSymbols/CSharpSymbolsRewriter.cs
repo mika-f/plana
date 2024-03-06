@@ -27,6 +27,32 @@ internal class CSharpSymbolsRewriter(IDocument document, bool keepNameOnInspecto
         return newNode;
     }
 
+    public override SyntaxNode? VisitInterfaceDeclaration(InterfaceDeclarationSyntax node)
+    {
+        var newNode = base.VisitInterfaceDeclaration(node);
+        if (newNode is InterfaceDeclarationSyntax @interface)
+        {
+            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
+            if (symbol != null && dict.TryGetValue(symbol, out var value))
+                return @interface.WithIdentifier(SyntaxFactory.Identifier(value));
+        }
+
+        return newNode;
+    }
+
+    public override SyntaxNode? VisitRecordDeclaration(RecordDeclarationSyntax node)
+    {
+        var newNode = base.VisitRecordDeclaration(node);
+        if (newNode is RecordDeclarationSyntax @interface)
+        {
+            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
+            if (symbol != null && dict.TryGetValue(symbol, out var value))
+                return @interface.WithIdentifier(SyntaxFactory.Identifier(value));
+        }
+
+        return newNode;
+    }
+
     public override SyntaxNode? VisitEnumDeclaration(EnumDeclarationSyntax node)
     {
         var newNode = base.VisitEnumDeclaration(node);

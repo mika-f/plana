@@ -86,7 +86,6 @@ internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random
 
     private static AnnotationComment NetworkingAnnotation => new("networking");
 
-
     private string SetIdentifier(ISymbol symbol, string prefix = "_", string suffix = "")
     {
         if (dict.TryGetValue(symbol, out var val))
@@ -97,7 +96,6 @@ internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random
 
         return identifier;
     }
-
 
     public override void VisitEnumMemberDeclaration(EnumMemberDeclarationSyntax node)
     {
@@ -110,7 +108,6 @@ internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random
 
         base.VisitEnumMemberDeclaration(node);
     }
-
 
     public override void VisitParameter(ParameterSyntax node)
     {
@@ -138,7 +135,6 @@ internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random
 
         base.VisitParameter(node);
     }
-
 
     public override void VisitVariableDeclarator(VariableDeclaratorSyntax node)
     {
@@ -208,6 +204,30 @@ internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random
         }
 
         base.VisitClassDeclaration(node);
+    }
+
+    public override void VisitInterfaceDeclaration(InterfaceDeclarationSyntax node)
+    {
+        if (isRenameClasses && !node.HasAnnotationComment())
+        {
+            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
+            if (symbol != null)
+                SetIdentifier(symbol);
+        }
+
+        base.VisitInterfaceDeclaration(node);
+    }
+
+    public override void VisitRecordDeclaration(RecordDeclarationSyntax node)
+    {
+        if (isRenameClasses && !node.HasAnnotationComment())
+        {
+            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
+            if (symbol != null)
+                SetIdentifier(symbol);
+        }
+
+        base.VisitRecordDeclaration(node);
     }
 
     public override void VisitEnumDeclaration(EnumDeclarationSyntax node)
