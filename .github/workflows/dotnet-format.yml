@@ -35,4 +35,4 @@ jobs:
       - name: Set Results
         run: |
           git add -A
-          git status && false
+          git diff-index --quiet HEAD

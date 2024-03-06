@@ -14,10 +14,8 @@ namespace Plana.Workspace;
 
 public class ProjectWorkspace : IWorkspace
 {
-    private readonly ILogger? _logger;
     private readonly PlanaWorkspaceContext _context;
-
-    public string Path => _context.FullName;
+    private readonly ILogger? _logger;
 
     private ProjectWorkspace(PlanaWorkspaceContext context, ILogger? logger)
     {
@@ -25,25 +23,7 @@ public class ProjectWorkspace : IWorkspace
         _logger = logger;
     }
 
-    public static async Task<ProjectWorkspace> CreateWorkspaceAsync(FileInfo csproj, ILogger? logger, CancellationToken ct)
-    {
-        logger?.LogDebug("loading workspace as Visual Studio C# Project with MSBuild......");
-
-        try
-        {
-            MSBuildLocator.RegisterDefaults();
-        }
-        catch (InvalidOperationException)
-        {
-            // ignored
-        }
-
-        var workspace = MSBuildWorkspace.Create();
-        var project = await workspace.OpenProjectAsync(csproj.FullName, null, ct);
-        var context = new PlanaWorkspaceContext(workspace, project, logger);
-
-        return new ProjectWorkspace(context, logger);
-    }
+    public string Path => _context.FullName;
 
     public async Task<IReadOnlyCollection<IProject>> GetProjectsAsync(CancellationToken ct)
     {
@@ -64,5 +44,25 @@ public class ProjectWorkspace : IWorkspace
     public async Task RollbackAsync(CancellationToken ct)
     {
         // throw new NotImplementedException();
+    }
+
+    public static async Task<ProjectWorkspace> CreateWorkspaceAsync(FileInfo csproj, ILogger? logger, CancellationToken ct)
+    {
+        logger?.LogDebug("loading workspace as Visual Studio C# Project with MSBuild......");
+
+        try
+        {
+            MSBuildLocator.RegisterDefaults();
+        }
+        catch (InvalidOperationException)
+        {
+            // ignored
+        }
+
+        var workspace = MSBuildWorkspace.Create();
+        var project = await workspace.OpenProjectAsync(csproj.FullName, null, ct);
+        var context = new PlanaWorkspaceContext(workspace, project, logger);
+
+        return new ProjectWorkspace(context, logger);
     }
 }

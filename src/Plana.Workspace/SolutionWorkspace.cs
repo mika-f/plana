@@ -14,8 +14,8 @@ namespace Plana.Workspace;
 
 public class SolutionWorkspace : IWorkspace
 {
-    private readonly ILogger? _logger;
     private readonly PlanaWorkspaceContext _context;
+    private readonly ILogger? _logger;
 
     private SolutionWorkspace(PlanaWorkspaceContext context, ILogger? logger)
     {
@@ -29,6 +29,22 @@ public class SolutionWorkspace : IWorkspace
     public async Task<IReadOnlyCollection<IProject>> GetProjectsAsync(CancellationToken ct)
     {
         return await _context.GetProjectsAsync(ct);
+    }
+
+    public async Task<ISolution> ToSolutionAsync(CancellationToken ct)
+    {
+        var projects = await GetProjectsAsync(ct);
+        return new PlanaSolution(_context, [.. projects]);
+    }
+
+    public async Task CommitAsync(CancellationToken ct)
+    {
+        // throw new NotImplementedException();
+    }
+
+    public async Task RollbackAsync(CancellationToken ct)
+    {
+        // throw new NotImplementedException();
     }
 
     public static async Task<SolutionWorkspace> CreateWorkspaceAsync(FileInfo sln, ILogger? logger, CancellationToken ct)
@@ -49,21 +65,5 @@ public class SolutionWorkspace : IWorkspace
         var context = new PlanaWorkspaceContext(workspace, solution, logger);
 
         return new SolutionWorkspace(context, logger);
-    }
-
-    public async Task<ISolution> ToSolutionAsync(CancellationToken ct)
-    {
-        var projects = await GetProjectsAsync(ct);
-        return new PlanaSolution(_context, [.. projects]);
-    }
-
-    public async Task CommitAsync(CancellationToken ct)
-    {
-        // throw new NotImplementedException();
-    }
-
-    public async Task RollbackAsync(CancellationToken ct)
-    {
-        // throw new NotImplementedException();
     }
 }

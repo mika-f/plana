@@ -107,69 +107,6 @@ public partial class RenameSymbolsPluginTest
     }
 
     [Fact]
-    public async Task RenameMethods_InterfaceMethods()
-    {
-        var container = new PlanaContainer<RenameSymbolsPlugin>("rename-methods");
-        await container.RunAsync();
-
-        var rootAbstraction = await container.GetSourceByPathAsync("Plana.Composition.Abstractions/IPlanaPlugin.cs");
-        var inheritAbstraction = await container.GetSourceByPathAsync("Plana.Composition.Extensions/IPlanaPlugin2.cs");
-        var implementation = await container.GetSourceByPathAsync("Plana.Composition.RenameSymbols/RenameSymbolsPlugin.cs");
-        var reference = await container.GetSourceByPathAsync("Plana/Obfuscator.cs");
-
-        // IPlanaPlugin.RunAsync -> _0xa79a150d
-        const string runAsyncIdentifier = "_0xa79a150d";
-
-        bool IsMethodsHasRunAsyncSignature(MethodDeclarationSyntax w, SemanticModel sm)
-        {
-            var identifier = w.ParameterList.Parameters[0].Type;
-            if (identifier == null)
-                return false;
-
-            var si = sm.GetSymbolInfo(identifier);
-            if (si.Symbol is not INamedTypeSymbol param)
-                return false;
-
-            return param.Equals(typeof(IPlanaPluginRunContext).ToSymbol(sm), SymbolEqualityComparer.Default);
-        }
-
-        var rootAbstractionDecl = await rootAbstraction.GetFirstSyntax<MethodDeclarationSyntax>(IsMethodsHasRunAsyncSignature);
-        Assert.Equal(runAsyncIdentifier, rootAbstractionDecl.Identifier.ToString());
-
-        var inheritAbstractionDecl = await inheritAbstraction.GetFirstSyntax<MethodDeclarationSyntax>(IsMethodsHasRunAsyncSignature);
-        Assert.Equal(runAsyncIdentifier, inheritAbstractionDecl.Identifier.ToString());
-
-        var referenceDecl = await reference.GetFirstSyntax<InvocationExpressionSyntax>((w, sm) =>
-        {
-            var expression = w.Expression;
-            if (expression is not MemberAccessExpressionSyntax access)
-                return false;
-
-            var receiver = access.Expression;
-            var si1 = sm.GetSymbolInfo(receiver);
-            if (si1.Symbol is not ILocalSymbol local1)
-                return false;
-
-            var param = w.ArgumentList.Arguments[0];
-            var si2 = sm.GetSymbolInfo(param.Expression);
-            if (si2.Symbol is not ILocalSymbol local2)
-                return false;
-
-            return local1.Type.Equals(typeof(IPlanaPlugin).ToSymbol(sm), SymbolEqualityComparer.Default) && local2.Type.Interfaces[0].Equals(typeof(IPlanaPluginRunContext).ToSymbol(sm), SymbolEqualityComparer.Default);
-        });
-        Assert.Equal(runAsyncIdentifier, ((MemberAccessExpressionSyntax)referenceDecl.Expression).Name.Identifier.ToString());
-
-        // IPlanaPlugin2.ObfuscateAsync -> _0xba881b8e
-        const string obfuscateAsyncIdentifier = "_0xba881b8e";
-
-        var inheritAbstractionDecl2 = (await inheritAbstraction.GetSyntaxList<MethodDeclarationSyntax>(IsMethodsHasRunAsyncSignature))[1];
-        Assert.Equal(obfuscateAsyncIdentifier, inheritAbstractionDecl2.Identifier.ToString());
-
-        var implementationDecl = await implementation.GetFirstSyntax<MethodDeclarationSyntax>(IsMethodsHasRunAsyncSignature);
-        Assert.Equal(obfuscateAsyncIdentifier, implementationDecl.Identifier.ToString());
-    }
-
-    [Fact]
     public async Task RenameMethods_GenericsInterfaceMethods()
     {
         var container = new PlanaContainer<RenameSymbolsPlugin>("rename-methods");
@@ -242,6 +179,69 @@ public partial class RenameSymbolsPluginTest
         });
 
         Assert.Equal($"{identifier}<T>", reference.Expression.ToString());
+    }
+
+    [Fact]
+    public async Task RenameMethods_InterfaceMethods()
+    {
+        var container = new PlanaContainer<RenameSymbolsPlugin>("rename-methods");
+        await container.RunAsync();
+
+        var rootAbstraction = await container.GetSourceByPathAsync("Plana.Composition.Abstractions/IPlanaPlugin.cs");
+        var inheritAbstraction = await container.GetSourceByPathAsync("Plana.Composition.Extensions/IPlanaPlugin2.cs");
+        var implementation = await container.GetSourceByPathAsync("Plana.Composition.RenameSymbols/RenameSymbolsPlugin.cs");
+        var reference = await container.GetSourceByPathAsync("Plana/Obfuscator.cs");
+
+        // IPlanaPlugin.RunAsync -> _0xa79a150d
+        const string runAsyncIdentifier = "_0xa79a150d";
+
+        bool IsMethodsHasRunAsyncSignature(MethodDeclarationSyntax w, SemanticModel sm)
+        {
+            var identifier = w.ParameterList.Parameters[0].Type;
+            if (identifier == null)
+                return false;
+
+            var si = sm.GetSymbolInfo(identifier);
+            if (si.Symbol is not INamedTypeSymbol param)
+                return false;
+
+            return param.Equals(typeof(IPlanaPluginRunContext).ToSymbol(sm), SymbolEqualityComparer.Default);
+        }
+
+        var rootAbstractionDecl = await rootAbstraction.GetFirstSyntax<MethodDeclarationSyntax>(IsMethodsHasRunAsyncSignature);
+        Assert.Equal(runAsyncIdentifier, rootAbstractionDecl.Identifier.ToString());
+
+        var inheritAbstractionDecl = await inheritAbstraction.GetFirstSyntax<MethodDeclarationSyntax>(IsMethodsHasRunAsyncSignature);
+        Assert.Equal(runAsyncIdentifier, inheritAbstractionDecl.Identifier.ToString());
+
+        var referenceDecl = await reference.GetFirstSyntax<InvocationExpressionSyntax>((w, sm) =>
+        {
+            var expression = w.Expression;
+            if (expression is not MemberAccessExpressionSyntax access)
+                return false;
+
+            var receiver = access.Expression;
+            var si1 = sm.GetSymbolInfo(receiver);
+            if (si1.Symbol is not ILocalSymbol local1)
+                return false;
+
+            var param = w.ArgumentList.Arguments[0];
+            var si2 = sm.GetSymbolInfo(param.Expression);
+            if (si2.Symbol is not ILocalSymbol local2)
+                return false;
+
+            return local1.Type.Equals(typeof(IPlanaPlugin).ToSymbol(sm), SymbolEqualityComparer.Default) && local2.Type.Interfaces[0].Equals(typeof(IPlanaPluginRunContext).ToSymbol(sm), SymbolEqualityComparer.Default);
+        });
+        Assert.Equal(runAsyncIdentifier, ((MemberAccessExpressionSyntax)referenceDecl.Expression).Name.Identifier.ToString());
+
+        // IPlanaPlugin2.ObfuscateAsync -> _0xba881b8e
+        const string obfuscateAsyncIdentifier = "_0xba881b8e";
+
+        var inheritAbstractionDecl2 = (await inheritAbstraction.GetSyntaxList<MethodDeclarationSyntax>(IsMethodsHasRunAsyncSignature))[1];
+        Assert.Equal(obfuscateAsyncIdentifier, inheritAbstractionDecl2.Identifier.ToString());
+
+        var implementationDecl = await implementation.GetFirstSyntax<MethodDeclarationSyntax>(IsMethodsHasRunAsyncSignature);
+        Assert.Equal(obfuscateAsyncIdentifier, implementationDecl.Identifier.ToString());
     }
 
     [Fact]
