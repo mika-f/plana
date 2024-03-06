@@ -53,6 +53,8 @@ jobs:
         run: |
           ! git diff-index --quiet HEAD
 
+          dotnet build ./src/Plana.sln --no-restore --configuration=Release /p:WarningLevel=0
+
           mkdir -p ./src/Plana.CLI/bin/Releases/net8.0/plugins
           cp ./src/Plana.Composition.Extensions/bin/Release/net8.0/Plana.Composition.Extensions.dll ./src/Plana.CLI/bin/Releases/net8.0/plugins
           cp ./src/Plana.Composition.DisableConsoleOutput/bin/Release/net8.0/Plana.Composition.DisableConsoleOutput.dll ./src/Plana.CLI/bin/Releases/net8.0/plugins
@@ -62,10 +64,10 @@ jobs:
           git add -A
           git stash save
 
-          dotnet ./src/Plana.CLI/bin/Release/net8.0/Plana.CLI.dll obfuscate --log-level verbose --workspace ./src/Plana.sln --plugins ./src/Plana.CLI/bin/Releases/net8.0/plugins --write ${{ matrix.plugins }}
-
       - name: Phase.3 -- Re-Test with obfuscated source
         run: |
+          dotnet ./src/Plana.CLI/bin/Release/net8.0/Plana.CLI.dll obfuscate --log-level verbose --workspace ./src/Plana.sln --plugins ./src/Plana.CLI/bin/Releases/net8.0/plugins --write ${{ matrix.plugins }}
+
           ! git diff-index --quiet HEAD
 
           git --no-pager diff --ignore-all-space --ignore-blank-lines
