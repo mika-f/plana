@@ -22,7 +22,7 @@ jobs:
         plugins:
           - "--shuffle-declarations"
           - "--rename-symbols --rename-namespaces --rename-classes --rename-properties --rename-fields --rename-methods --rename-variables"
-          - "--disable-console-output --disable-symbols=T:Plana.Logger,T:Plana.Logger.Abstractions"
+          - "--disable-console-output --disable-symbols=T:System.Console,T:System.Diagnostics.Debug"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -66,7 +66,9 @@ jobs:
 
       - name: Phase.3 -- Re-Test with obfuscated source
         run: |
-          dotnet ./src/Plana.CLI/bin/Release/net8.0/Plana.CLI.dll obfuscate --log-level verbose --workspace ./src/Plana.sln --plugins ./src/Plana.CLI/bin/Releases/net8.0/plugins --write ${{ matrix.plugins }}
+          # --log-level=verbose cannot be used because the target class has been obfuscated and renamed.
+          # It will be possible to control it by adding the PublicAPI attribute.
+          dotnet ./src/Plana.CLI/bin/Release/net8.0/Plana.CLI.dll obfuscate --workspace ./src/Plana.sln --plugins ./src/Plana.CLI/bin/Releases/net8.0/plugins --write ${{ matrix.plugins }}
 
           ! git diff-index --quiet HEAD
 
