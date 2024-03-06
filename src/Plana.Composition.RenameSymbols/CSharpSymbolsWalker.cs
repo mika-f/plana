@@ -210,6 +210,18 @@ internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random
         base.VisitClassDeclaration(node);
     }
 
+    public override void VisitInterfaceDeclaration(InterfaceDeclarationSyntax node)
+    {
+        if (isRenameClasses && !node.HasAnnotationComment())
+        {
+            var symbol = document.SemanticModel.GetDeclaredSymbol(node);
+            if (symbol != null)
+                SetIdentifier(symbol);
+        }
+
+        base.VisitInterfaceDeclaration(node);
+    }
+
     public override void VisitEnumDeclaration(EnumDeclarationSyntax node)
     {
         if (isRenameClasses && !node.HasAnnotationComment())
