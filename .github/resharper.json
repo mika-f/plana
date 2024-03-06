@@ -2,6 +2,7 @@
   "problemMatcher": [
     {
       "owner": "resharper_xml_output",
+      "severity": "warning",
       "pattern": [
         {
           "regexp": "^\\s+<Issue TypeId=\"[^\"]+\" File=\"([^\"]+)\" Offset=\"(\\d+)-\\d+\" (Line=\"(\\d+)\" )?Message=\"([^\"]+)\"",
