@@ -15,7 +15,7 @@ namespace NatsunekoLaboratory.Plana.Models.Abstractions
 {
     internal class CommandBase
     {
-        private const string Guid = "300a45c7c5134854a88ad90d52d3a119";
+        private const string Guid = "185d3059c6896f043bb50e0eb319fa67";
         private static readonly string Path;
 
         static CommandBase()
