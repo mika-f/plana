@@ -96,7 +96,7 @@ namespace NatsunekoLaboratory.Plana.Models
                 var friendlyName = property.Value.FriendlyName;
                 var description = property.Value.Description;
 
-                if ($"enable {arg} plugin" == description)
+                if (description == "SEPARATOR")
                     cur = arg;
 
                 if (string.IsNullOrWhiteSpace(cur))
