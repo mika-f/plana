@@ -51,14 +51,8 @@ public class SolutionWorkspace : IWorkspace
     {
         logger?.LogDebug("loading workspace as Visual Studio Solution with MSBuild......");
 
-        try
-        {
+        if (!MSBuildLocator.IsRegistered)
             MSBuildLocator.RegisterDefaults();
-        }
-        catch (InvalidOperationException)
-        {
-            //ignored
-        }
 
         var workspace = MSBuildWorkspace.Create();
         var solution = await workspace.OpenSolutionAsync(sln.FullName, null, ct);

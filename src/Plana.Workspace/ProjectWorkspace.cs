@@ -50,14 +50,8 @@ public class ProjectWorkspace : IWorkspace
     {
         logger?.LogDebug("loading workspace as Visual Studio C# Project with MSBuild......");
 
-        try
-        {
+        if (!MSBuildLocator.IsRegistered)
             MSBuildLocator.RegisterDefaults();
-        }
-        catch (InvalidOperationException)
-        {
-            // ignored
-        }
 
         var workspace = MSBuildWorkspace.Create();
         var project = await workspace.OpenProjectAsync(csproj.FullName, null, ct);
