@@ -22,11 +22,10 @@ public class RenameSymbolsPlugin : IPlanaPlugin2
     private static readonly PlanaPluginOption Namespace = new("rename-namespaces", "Rename Namespaces", "rename namespaces, not supports file-scoped namespaces", false);
     private static readonly PlanaPluginOption ClassName = new("rename-classes", "Rename Classes", "rename classes", false);
     private static readonly PlanaPluginOption Properties = new("rename-properties", "Rename Properties", "rename properties", false);
-    private static readonly PlanaPluginOption Fields = new("rename-fields", "rename fields", false);
-    private static readonly PlanaPluginOption Methods = new("rename-methods", "rename methods", false);
-    private static readonly PlanaPluginOption WithSendCustomEvent = new("with-send-custom-event", "rename all methods", false);
-    private static readonly PlanaPluginOption Variables = new("rename-variables", "rename local variables", false);
-    private static readonly PlanaPluginOption KeepNameOnInspector = new("enum-attributes", "add UnityEngine.InspectorName to enum members, without already specified", false);
+    private static readonly PlanaPluginOption Fields = new("rename-fields", "Rename Fields", "rename fields", false);
+    private static readonly PlanaPluginOption Methods = new("rename-methods", "Rename Methods", "rename methods", false);
+    private static readonly PlanaPluginOption Variables = new("rename-variables", "Rename Variables", "rename local variables", false);
+    private static readonly PlanaPluginOption KeepNameOnInspector = new("enum-attributes", "Keep Inspector Name of Enums", "add UnityEngine.InspectorName to enum members, without already specified", false);
 
     private readonly Dictionary<ISymbol, string> _dict = new(MeaningEqualitySymbolComparator.Default);
 
@@ -37,9 +36,8 @@ public class RenameSymbolsPlugin : IPlanaPlugin2
     internal bool IsEnablePropertiesRenaming;
     internal bool IsEnableVariablesRenaming;
     internal bool KeepOriginalNameInInspector;
-    internal bool KeepOriginalNameWithSendCustomEvent;
 
-    public IReadOnlyCollection<IPlanaPluginOption> Options => new List<IPlanaPluginOption> { Namespace, ClassName, Properties, Fields, Methods, WithSendCustomEvent, Variables, KeepNameOnInspector }.AsReadOnly();
+    public IReadOnlyCollection<IPlanaPluginOption> Options => new List<IPlanaPluginOption> { Namespace, ClassName, Properties, Fields, Methods, Variables, KeepNameOnInspector }.AsReadOnly();
 
     public string Name => "Rename Symbols";
 
@@ -50,7 +48,6 @@ public class RenameSymbolsPlugin : IPlanaPlugin2
         IsEnablePropertiesRenaming = binder.GetValue(Properties);
         IsEnableFieldsRenaming = binder.GetValue(Fields);
         IsEnableMethodsRenaming = binder.GetValue(Methods);
-        KeepOriginalNameWithSendCustomEvent = binder.GetValue(WithSendCustomEvent);
         IsEnableVariablesRenaming = binder.GetValue(Variables);
         KeepOriginalNameInInspector = binder.GetValue(KeepNameOnInspector);
     }
@@ -67,7 +64,6 @@ public class RenameSymbolsPlugin : IPlanaPlugin2
                 IsEnablePropertiesRenaming,
                 IsEnableFieldsRenaming,
                 IsEnableMethodsRenaming,
-                KeepOriginalNameWithSendCustomEvent,
                 IsEnableVariablesRenaming,
                 _dict
             );
