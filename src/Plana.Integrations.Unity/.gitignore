@@ -78,8 +78,8 @@ crashlytics-build.properties
 /UIElementsSchema/
 
 # externals
-/[Aa]ssets/NatsunekoLaboratory/Plana/Plugins/*
-!/[Aa]ssets/NatsunekoLaboratory/Plana/Plugins/*.meta
+/[Aa]ssets/NatsunekoLaboratory/Plana/Plugins/**/*.*
+!/[Aa]ssets/NatsunekoLaboratory/Plana/Plugins/**/*.meta
 /[Aa]ssets/NatsunekoLaboratory/UStyled.meta
 /[Aa]ssets/NatsunekoLaboratory/UStyled/*
 /[Aa]ssets/ObfuscateTest.meta
