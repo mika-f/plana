@@ -318,10 +318,10 @@ namespace NatsunekoLaboratory.Plana
             return GetCSharpProjectWorkspace(filename);
         }
 
-        private FileInfo GetCSharpProjectWorkspace(string name)
+        private FileInfo GetCSharpProjectWorkspace(string project)
         {
             var path = Application.dataPath;
-            return new FileInfo(Path.GetFullPath(Path.Combine(path, "..", $"{name}.csproj")));
+            return new FileInfo(Path.GetFullPath(Path.Combine(path, "..", $"{project}.csproj")));
         }
 
         private void UpdateObfuscateButton()

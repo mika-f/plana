@@ -17,7 +17,7 @@ public partial class RenameSymbolsPluginTest
 
         Assert.NotNull(instance);
         Assert.Equal("Rename Symbols", instance.Name);
-        Assert.Equal(8, instance.Options.Count);
+        Assert.Equal(7, instance.Options.Count);
 
         Assert.False(instance.IsEnableClassNameRenaming);
         Assert.False(instance.IsEnableFieldsRenaming);
@@ -26,6 +26,5 @@ public partial class RenameSymbolsPluginTest
         Assert.False(instance.IsEnablePropertiesRenaming);
         Assert.False(instance.IsEnableVariablesRenaming);
         Assert.False(instance.KeepOriginalNameInInspector);
-        Assert.False(instance.KeepOriginalNameWithSendCustomEvent);
     }
 }

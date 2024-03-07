@@ -23,8 +23,8 @@ public partial class RenameSymbolsPluginTest
         var implementation = await container.GetSourceByPathAsync("Plana.Composition.RenameSymbols/RenameSymbolsPlugin.cs");
         var reference = await container.GetSourceByPathAsync("Plana.Composition.RenameSymbols.Tests/RenameSymbolsPluginTest.cs");
 
-        // IsEnableClassNameRenaming -> _0x4b78aef3
-        const string identifier = "_0x4b78aef3";
+        // IsEnableClassNameRenaming -> _0x935f5b12
+        const string identifier = "_0x935f5b12";
 
         var declaration = await implementation.GetFirstSyntax<FieldDeclarationSyntax>(w => w.HasModifier(SyntaxKind.InternalKeyword));
         Assert.Equal(identifier, declaration.Declaration.Variables[0].Identifier.ToString());
@@ -56,8 +56,8 @@ public partial class RenameSymbolsPluginTest
 
         var implementation = await container.GetSourceByTypeAsync(typeof(MeaningEqualitySymbolComparator));
 
-        // SymbolDisplayFormat -> _0xd5e5660c
-        const string identifier = "_0xd5e5660c";
+        // SymbolDisplayFormat -> _0xcb375677
+        const string identifier = "_0xcb375677";
 
         var declaration = await implementation.GetFirstSyntax<FieldDeclarationSyntax>(w => w.HasModifiers(SyntaxKind.PrivateKeyword, SyntaxKind.StaticKeyword, SyntaxKind.ReadOnlyKeyword));
         Assert.Equal(identifier, declaration.Declaration.Variables[0].Identifier.ToString());

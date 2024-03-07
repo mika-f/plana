@@ -133,7 +133,7 @@ public class ObfuscateCommand : ISubCommand
         foreach (var (plugin, attr) in container.Items)
         {
             var enabler = new Option<bool>($"--{attr.Id}", () => false, $"enable {plugin.Name} plugin");
-            allPluginOptions.Add(new PlanaPluginOption(attr.Id, $"enable {plugin.Name} plugin", false));
+            allPluginOptions.Add(new PlanaPluginOption(attr.Id, plugin.Name, $"enable {plugin.Name} plugin", false));
 
             try
             {
@@ -170,7 +170,10 @@ public class ObfuscateCommand : ISubCommand
         if (context.ParseResult.GetValueForOption(GlobalCommandLineOptions.RetrieveArgs))
         {
             foreach (var o in allPluginOptions)
-                Console.WriteLine($"Id={o.Name}, Name={o.FriendlyName}, Type={o.ValueType.FullName}, Required={false}, Description={o.Description}");
+                if (o.Description == $"enable {o.FriendlyName} plugin")
+                    Console.WriteLine($"Id={o.Name}, Name={o.FriendlyName}, Type={o.ValueType.FullName}, Required={false}, Description=SEPARATOR");
+                else
+                    Console.WriteLine($"Id={o.Name}, Name={o.FriendlyName}, Type={o.ValueType.FullName}, Required={false}, Description={o.Description}");
 
             throw new ControlledGlobalExitException();
         }

@@ -13,7 +13,7 @@ using Plana.Composition.Extensions;
 
 namespace Plana.Composition.RenameSymbols;
 
-internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random, bool isRenameNamespaces, bool isRenameClasses, bool isRenameProperties, bool isRenameFields, bool isRenameMethods, bool isRenameMethodsWithEvents, bool isRenameVariables, Dictionary<ISymbol, string> dict)
+internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random, bool isRenameNamespaces, bool isRenameClasses, bool isRenameProperties, bool isRenameFields, bool isRenameMethods, bool isRenameVariables, Dictionary<ISymbol, string> dict)
     : CSharpSyntaxWalker
 {
     private static readonly List<string> Messages =
