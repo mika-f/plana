@@ -142,7 +142,7 @@ public partial class RenameSymbolsPluginTest
         Assert.Equal(identifier, b.BaseList?.Types[0].Type.ToString());
 
         var c = await reference.GetFirstSyntax<ClassDeclarationSyntax>();
-        Assert.Equal(identifier, c.ParameterList?.Parameters[1].Type?.ToString());
+        Assert.Equal(identifier, c.ParameterList?.Parameters[2].Type?.ToString());
     }
 
     [Fact]

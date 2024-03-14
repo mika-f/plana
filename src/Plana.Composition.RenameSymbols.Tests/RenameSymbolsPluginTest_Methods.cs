@@ -25,8 +25,8 @@ public partial class RenameSymbolsPluginTest
         var originalDefinition = await container.GetSourceByPathAsync("Plana.CLI/Extensions/CommandExtensions.cs");
         var reference = await container.GetSourceByPathAsync("Plana.CLI/Commands/ObfuscateCommand.cs");
 
-        // CommandExtensions.AddOptions -> _0x4e115ed4
-        const string addOptionsIdentifier = "_0x4e115ed4";
+        // CommandExtensions.AddOptions -> _0xb35682f5
+        const string addOptionsIdentifier = "_0xb35682f5";
 
         var def = await originalDefinition.GetFirstSyntax<MethodDeclarationSyntax>((w, sm) =>
         {
@@ -116,8 +116,8 @@ public partial class RenameSymbolsPluginTest
         var @interface = await container.GetSourceByPathAsync("Plana.Testing/ITestableObject.cs");
         var implementation = await container.GetSourceByTypeAsync(typeof(InlineSource));
 
-        // ITestableObject<T>.ToMatchInlineSnapshot(T) -> _0x204ecb6f
-        const string identifier = "_0x204ecb6f";
+        // ITestableObject<T>.ToMatchInlineSnapshot(T) -> _0x84fd82f3
+        const string identifier = "_0x84fd82f3";
 
         var decl = await @interface.GetFirstSyntax<MethodDeclarationSyntax>();
         Assert.Equal(identifier, decl.Identifier.ToString());
@@ -134,8 +134,8 @@ public partial class RenameSymbolsPluginTest
 
         var implementation = await container.GetSourceByTypeAsync(typeof(InlineSource));
 
-        // InlineSource.GetSyntaxOf<T> -> _0x2b70476f
-        const string identifier = "_0x2b70476f";
+        // InlineSource.GetSyntaxOf<T> -> _0xd52be804
+        const string identifier = "_0xd52be804";
 
         var def = await implementation.GetFirstSyntax<MethodDeclarationSyntax>((w, sm) =>
         {
@@ -234,8 +234,8 @@ public partial class RenameSymbolsPluginTest
         });
         Assert.Equal(runAsyncIdentifier, ((MemberAccessExpressionSyntax)referenceDecl.Expression).Name.Identifier.ToString());
 
-        // IPlanaPlugin2.ObfuscateAsync -> _0xba881b8e
-        const string obfuscateAsyncIdentifier = "_0xba881b8e";
+        // IPlanaPlugin2.ObfuscateAsync -> _0xc7b29ba1
+        const string obfuscateAsyncIdentifier = "_0xc7b29ba1";
 
         var inheritAbstractionDecl2 = (await inheritAbstraction.GetSyntaxList<MethodDeclarationSyntax>(IsMethodsHasRunAsyncSignature))[1];
         Assert.Equal(obfuscateAsyncIdentifier, inheritAbstractionDecl2.Identifier.ToString());
@@ -253,8 +253,8 @@ public partial class RenameSymbolsPluginTest
         var originalDefinition = await container.GetSourceByPathAsync("Plana.Workspace/SolutionWorkspace.cs");
         var reference = await container.GetSourceByPathAsync("Plana.CLI/Commands/ObfuscateCommand.cs");
 
-        // SolutionWorkspace.CreateWorkspaceAsync -> _0xc686c7a5
-        const string createWorkspaceAsyncIdentifier = "_0xc686c7a5";
+        // SolutionWorkspace.CreateWorkspaceAsync -> _0xc09f4e99
+        const string createWorkspaceAsyncIdentifier = "_0xc09f4e99";
 
         var def = await originalDefinition.GetFirstSyntax<MethodDeclarationSyntax>(w => w.HasModifier(SyntaxKind.StaticKeyword));
         Assert.Equal(createWorkspaceAsyncIdentifier, def.Identifier.ToString());

@@ -57,6 +57,7 @@ public class RenameSymbolsPlugin : IPlanaPlugin2
         foreach (var document in context.Solution.Projects.SelectMany(w => w.Documents))
         {
             var walker = new CSharpSymbolsWalker(
+                context.Solution,
                 document,
                 context.SecureRandom,
                 IsEnableNamespaceRenaming,
