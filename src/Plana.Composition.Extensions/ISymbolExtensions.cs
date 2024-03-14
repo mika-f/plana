@@ -5,6 +5,8 @@
 
 using Microsoft.CodeAnalysis;
 
+using Plana.Composition.Abstractions.Analysis;
+
 namespace Plana.Composition.Extensions;
 
 // ReSharper disable once InconsistentNaming
@@ -32,6 +34,21 @@ public static class ISymbolExtensions
         return implementations.FirstOrDefault(w => w.Implementation?.Equals(symbol, SymbolEqualityComparer.Default) == true).Interface;
     }
 #pragma warning restore CS8619
+
+#pragma warning disable CS8622 // Nullability of reference types in type of parameter doesn't match the target delegate (possibly because of nullability attributes).
+    public static bool IsInWorkspace(this ISymbol symbol, ISolution solution)
+    {
+        var sources = symbol.OriginalDefinition.Locations.Select(w => w.SourceTree?.FilePath).Where(w => w != null).Select(Path.GetFullPath);
+        var targets = solution.Projects.SelectMany(w => w.Documents).Select(w => Path.GetFullPath(w.Path));
+
+        return sources.All(w => targets.Contains(w));
+    }
+#pragma warning restore CS8622 // Nullability of reference types in type of parameter doesn't match the target delegate (possibly because of nullability attributes).
+
+    public static bool IsNotInWorkspace(this ISymbol symbol, ISolution solution)
+    {
+        return !IsInWorkspace(symbol, solution);
+    }
 
     /*
     // Licensed to the .NET Foundation under one or more agreements.
