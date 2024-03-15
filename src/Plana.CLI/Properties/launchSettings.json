@@ -5,12 +5,12 @@
       "commandLineArgs": "obfuscate --workspace ./Plana.sln --output \"../dist\" --log-level verbose --plugins ./Plana.CLI/bin/Debug/net8.0/plugins --rename-symbols --retrieve-args",
       "workingDirectory": "../"
     },
-    "Plana.CLI - Obfuscate": {
+    "Plana.CLI - Obfuscate (Solution)": {
       "commandName": "Project",
       "commandLineArgs": "obfuscate --workspace ./Plana.sln --output \"../dist\" --log-level verbose --plugins ./Plana.CLI/bin/Debug/net8.0/plugins --rename-symbols --rename-namespaces --rename-classes --rename-properties --rename-fields --rename-methods --rename-variables",
       "workingDirectory": "../"
     },
-    "Plana.CLI - Obfuscate (Single Project)": {
+    "Plana.CLI - Obfuscate (Project)": {
       "commandName": "Project",
       "commandLineArgs": "obfuscate --workspace ./Plana.CLI/Plana.CLI.csproj --output \"../dist\" --log-level verbose --plugins ./Plana.CLI/bin/Debug/net8.0/plugins --rename-symbols --rename-namespaces --rename-classes --rename-properties --rename-fields --rename-methods --rename-variables",
       "workingDirectory": "../"

@@ -75,7 +75,7 @@ public class RenameSymbolsPlugin : IPlanaPlugin2
 
         foreach (var document in context.Solution.Projects.SelectMany(w => w.Documents))
         {
-            var rewriter = new CSharpSymbolsRewriter(document, KeepOriginalNameInInspector, _dict);
+            var rewriter = new CSharpSymbolsRewriter(context.Solution, document, KeepOriginalNameInInspector, _dict);
 
             var oldNode = await document.SyntaxTree.GetRootAsync(context.CancellationToken);
             var newNode = (CSharpSyntaxNode)rewriter.Visit(oldNode);

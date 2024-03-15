@@ -12,7 +12,7 @@ namespace Plana.Composition.RenameSymbols.Tests;
 public partial class RenameSymbolsPluginTest
 {
     [Fact]
-    public async Task RenameNamespaces()
+    public async Task RenameNamespacesInSolutionWorkspace()
     {
         var container = new PlanaContainer<RenameSymbolsPlugin>("rename-namespaces");
         await container.RunAsync();
@@ -30,5 +30,25 @@ public partial class RenameSymbolsPluginTest
 
         var usingToAbstractions = await root.GetSyntax<UsingDirectiveSyntax>();
         Assert.Equal("_0xb73384b5._0x23636295._0x895054f0", usingToAbstractions.Name!.ToFullString());
+    }
+
+    [Fact]
+    public async Task RenameNamespacesInProjectWorkspace()
+    {
+        var container = new PlanaContainer<RenameSymbolsPlugin>("rename-namespaces");
+        await container.RunAsync("../../../../Plana.CLI/Plana.CLI.csproj");
+
+        var source = await container.GetSourceByPathAsync("Commands/ObfuscateCommand.cs");
+
+        // Plana.CLI.Commands
+        var @namespace = await source.GetFirstSyntax<FileScopedNamespaceDeclarationSyntax>();
+        Assert.Equal("_0xb73384b5._0x23636295._0x0a849839", @namespace.Name.ToFullString());
+
+        // Plana -> Plana
+
+
+        // Plana.Composition.Abstractions -> Plana.Composition.Abstractions
+
+        // Plana.CLI.Bindings ->
     }
 }

@@ -279,14 +279,14 @@ internal class CSharpSymbolsWalker(ISolution solution, IDocument document, IPlan
             if (isExternalDefinition)
                 return KeepOriginalName(symbol, overridden.Name);
 
-            if (overridden.IsNotInWorkspace(solution))
+            if (overridden.IsAnyDeclarationIsNotInWorkspace(solution))
                 return KeepOriginalName(symbol, overridden.Name);
         }
 
         if (original.Locations.Any(w => w.IsInMetadata))
             return KeepOriginalName(symbol);
 
-        if (original.IsNotInWorkspace(solution))
+        if (original.IsAnyDeclarationIsNotInWorkspace(solution))
             return KeepOriginalName(symbol);
 
         var @interface = symbol.GetInterfaceSymbol();
@@ -344,7 +344,7 @@ internal class CSharpSymbolsWalker(ISolution solution, IDocument document, IPlan
 
         var original = symbol.OriginalDefinition;
 
-        if (original.IsNotInWorkspace(solution))
+        if (original.IsAnyDeclarationIsNotInWorkspace(solution))
             return KeepOriginalName(original);
 
         var @interface = symbol.GetInterfaceSymbol();
@@ -403,7 +403,7 @@ internal class CSharpSymbolsWalker(ISolution solution, IDocument document, IPlan
         if (dict.ContainsKey(symbol))
             return;
 
-        if (symbol.IsNotInWorkspace(solution))
+        if (symbol.IsAnyDeclarationIsNotInWorkspace(solution))
             return;
 
         if (symbol.ContainingNamespace.IsGlobalNamespace)
