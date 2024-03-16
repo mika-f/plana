@@ -52,6 +52,7 @@ public class MeaningEqualitySymbolComparator : IEqualityComparer<ISymbol>
                 case IPropertySymbol:
                 case IMethodSymbol:
                 case IFieldSymbol:
+                case IParameterSymbol:
                     return x.ToDisplayString(SymbolDisplayFormat) == y.ToDisplayString(SymbolDisplayFormat);
             }
 
@@ -68,6 +69,19 @@ public class MeaningEqualitySymbolComparator : IEqualityComparer<ISymbol>
             case IMethodSymbol:
             case IFieldSymbol:
                 return obj.ToDisplayString(SymbolDisplayFormat).GetHashCode();
+
+            case IParameterSymbol parameter:
+            {
+                if (parameter.ContainingSymbol is IMethodSymbol m)
+                {
+                    var a = (m.IsExtensionMethod ? m.ReducedFrom ?? m.OriginalDefinition : m).ToDisplayString(SymbolDisplayFormat);
+                    var b = obj.ToDisplayString(SymbolDisplayFormat);
+
+                    return HashCode.Combine(a, b);
+                }
+
+                break;
+            }
         }
 
         return SymbolEqualityComparer.Default.GetHashCode(obj);

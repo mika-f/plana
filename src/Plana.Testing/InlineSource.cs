@@ -27,6 +27,11 @@ public class InlineSource(IDocument? document) : ITestableObject<string>
         return Task.CompletedTask;
     }
 
+    public override string ToString()
+    {
+        return document?.SyntaxTree.ToNormalizedFullString() ?? "";
+    }
+
     public Task HasDiffs()
     {
         if (document == null)
@@ -84,11 +89,15 @@ public class InlineSource(IDocument? document) : ITestableObject<string>
         return ret.ToList();
     }
 
+    public async Task<List<T>> GetSyntaxList<T>() where T : CSharpSyntaxNode
+    {
+        return await GetSyntaxList<T>((_, _) => true);
+    }
+
     public async Task<T> GetFirstSyntax<T>() where T : CSharpSyntaxNode
     {
         return await GetFirstSyntax<T>(_ => true);
     }
-
 
     public async Task<T> GetFirstSyntax<T>(Func<T, bool> predicate) where T : CSharpSyntaxNode
     {
@@ -101,6 +110,27 @@ public class InlineSource(IDocument? document) : ITestableObject<string>
     public async Task<T> GetFirstSyntax<T>(Func<T, SemanticModel, bool> predicate) where T : CSharpSyntaxNode
     {
         var ret = (await GetSyntaxOf<T>()).FirstOrDefault(w => predicate(w, document!.SemanticModel));
+        Assert.NotNull(ret);
+
+        return ret;
+    }
+
+    public async Task<T> GetLastSyntax<T>() where T : CSharpSyntaxNode
+    {
+        return await GetLastSyntax<T>(_ => true);
+    }
+
+    public async Task<T> GetLastSyntax<T>(Func<T, bool> predicate) where T : CSharpSyntaxNode
+    {
+        var ret = (await GetSyntaxOf<T>()).LastOrDefault(predicate);
+        Assert.NotNull(ret);
+
+        return ret;
+    }
+
+    public async Task<T> GetLastSyntax<T>(Func<T, SemanticModel, bool> predicate) where T : CSharpSyntaxNode
+    {
+        var ret = (await GetSyntaxOf<T>()).LastOrDefault(w => predicate(w, document!.SemanticModel));
         Assert.NotNull(ret);
 
         return ret;

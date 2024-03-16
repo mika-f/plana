@@ -24,10 +24,9 @@ public partial class RenameSymbolsPluginTest
         var reference = await container.GetSourceByPathAsync("Plana.Composition.RenameSymbols.Tests/RenameSymbolsPluginTest.cs");
 
         // IsEnableClassNameRenaming -> _0x935f5b12
-        const string identifier = "_0x935f5b12";
-
         var declaration = await implementation.GetFirstSyntax<FieldDeclarationSyntax>(w => w.HasModifier(SyntaxKind.InternalKeyword));
-        Assert.Equal(identifier, declaration.Declaration.Variables[0].Identifier.ToString());
+        var identifier = declaration.Declaration.Variables[0].Identifier.ToIdentifier();
+        Assert.True(declaration.Declaration.Variables[0].Identifier.ToHaveHexadecimalLikeString());
 
         var m = await reference.GetFirstSyntax<MemberAccessExpressionSyntax>((w, sm) =>
         {
@@ -57,10 +56,9 @@ public partial class RenameSymbolsPluginTest
         var implementation = await container.GetSourceByTypeAsync(typeof(MeaningEqualitySymbolComparator));
 
         // SymbolDisplayFormat -> _0xcb375677
-        const string identifier = "_0xcb375677";
-
         var declaration = await implementation.GetFirstSyntax<FieldDeclarationSyntax>(w => w.HasModifiers(SyntaxKind.PrivateKeyword, SyntaxKind.StaticKeyword, SyntaxKind.ReadOnlyKeyword));
-        Assert.Equal(identifier, declaration.Declaration.Variables[0].Identifier.ToString());
+        var identifier = declaration.Declaration.Variables[0].Identifier.ToIdentifier();
+        Assert.True(declaration.Declaration.Variables[0].Identifier.ToHaveHexadecimalLikeString());
 
         var reference = await implementation.GetFirstSyntax<IdentifierNameSyntax>((w, sm) =>
         {

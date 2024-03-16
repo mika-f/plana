@@ -12,8 +12,78 @@ using Plana.Composition.Extensions;
 
 namespace Plana.Composition.RenameSymbols;
 
-internal class CSharpSymbolsRewriter(IDocument document, bool keepNameOnInspector, IReadOnlyDictionary<ISymbol, string> dict) : CSharpSyntaxRewriter
+internal class CSharpSymbolsRewriter(ISolution solution, IDocument document, bool keepNameOnInspector, IReadOnlyDictionary<ISymbol, string> dict) : CSharpSyntaxRewriter
 {
+    private readonly List<INamedTypeSymbol> _symbols = [];
+
+    public override SyntaxNode? VisitCompilationUnit(CompilationUnitSyntax node)
+    {
+        var newNode = base.VisitCompilationUnit(node);
+        if (newNode is CompilationUnitSyntax compilation)
+        {
+            var originalUsings = node.Usings;
+            var currentUsings = compilation.Usings;
+            var usings = new List<UsingDirectiveSyntax>();
+
+            foreach (var us in originalUsings.Select((w, i) => (Syntax: w, Index: i)))
+            {
+                var si = document.SemanticModel.GetSymbolInfo(us.Syntax.Name!);
+                var ns = si.Symbol;
+
+                if (ns != null)
+                {
+                    // if any parts does not rewrite, keep original name
+                    if (currentUsings[us.Index].Name!.ToFullString().Split(".").Any(w => ns.ToDisplayString().Contains(w)))
+                    {
+                        usings.Add(us.Syntax);
+                        continue;
+                    }
+
+                    // if any declaration in external source, keep both original and rewrite
+                    if (ns.IsAnyDeclarationIsNotInWorkspace(solution))
+                    {
+                        usings.Add(us.Syntax);
+                        usings.Add(currentUsings[us.Index]);
+                        continue;
+                    }
+
+                    usings.Add(currentUsings[us.Index]);
+                }
+            }
+
+            var namespaces = node.DescendantNodes().OfType<BaseNamespaceDeclarationSyntax>().ToList();
+            foreach (var decl in namespaces)
+            {
+                var si = document.SemanticModel.GetSymbolInfo(decl.Name);
+                var ns = si.Symbol as INamespaceSymbol;
+
+                if (ns == null)
+                    continue;
+
+
+                while (true)
+                {
+                    if (ns == null || ns.IsGlobalNamespace)
+                        break;
+
+                    if (ns.IsAnyDeclarationIsNotInWorkspace(solution))
+                    {
+                        // nothing to do
+                    }
+
+                    if (_symbols.Any(w => w.ContainingNamespace.ToDisplayString().Contains(ns.ToDisplayString())))
+                        usings.Add(SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(ns.ToDisplayString())));
+
+                    ns = ns.ContainingNamespace;
+                }
+            }
+
+            return compilation.WithUsings(SyntaxFactory.List(usings));
+        }
+
+        return newNode;
+    }
+
     public override SyntaxNode? VisitClassDeclaration(ClassDeclarationSyntax node)
     {
         var newNode = base.VisitClassDeclaration(node);
@@ -145,6 +215,45 @@ internal class CSharpSymbolsRewriter(IDocument document, bool keepNameOnInspecto
         return newNode;
     }
 
+    public override SyntaxNode? VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
+    {
+        var newNode = base.VisitMemberAccessExpression(node);
+        if (newNode is MemberAccessExpressionSyntax accessor)
+        {
+            var si = document.SemanticModel.GetSymbolInfo(node.Expression);
+            var symbol = si.Symbol;
+
+            if (symbol != null)
+                if (symbol is INamespaceSymbol ns)
+                {
+                    // if receiver is namespace, convert to fully qualified namespace
+                    if (dict.ContainsKey(ns))
+                    {
+                        var parts = new List<string>();
+                        var s = ns;
+
+                        while (true)
+                        {
+                            if (s.IsGlobalNamespace)
+                                break;
+
+                            parts.Add(dict[s]);
+                            s = s.ContainingNamespace;
+                        }
+
+                        parts.Reverse();
+
+                        var identifier = string.Join(".", parts);
+                        return accessor.WithExpression(SyntaxFactory.IdentifierName(identifier));
+                    }
+
+                    return accessor.WithExpression(SyntaxFactory.IdentifierName(ns.ToDisplayString()));
+                }
+        }
+
+        return newNode;
+    }
+
     public override SyntaxNode? VisitVariableDeclarator(VariableDeclaratorSyntax node)
     {
         var newNode = base.VisitVariableDeclarator(node);
@@ -184,6 +293,8 @@ internal class CSharpSymbolsRewriter(IDocument document, bool keepNameOnInspecto
                 var s = t.ConstructedFrom;
                 if (dict.TryGetValue(s, out var value))
                     return generic.WithIdentifier(SyntaxFactory.Identifier(value));
+
+                _symbols.Add(t);
             }
 
             if (symbol is IMethodSymbol m)
@@ -211,8 +322,12 @@ internal class CSharpSymbolsRewriter(IDocument document, bool keepNameOnInspecto
             {
                 if (symbol is IMethodSymbol { IsExtensionMethod: true } m)
                 {
-                    if (dict.TryGetValue(m.ReducedFrom!, out var value1))
-                        return identifier.WithIdentifier(SyntaxFactory.Identifier(value1));
+                    if (m.ReducedFrom != null)
+                        if (dict.TryGetValue(m.ReducedFrom, out var value1))
+                            return identifier.WithIdentifier(SyntaxFactory.Identifier(value1));
+
+                    if (dict.TryGetValue(m.OriginalDefinition, out var value2))
+                        return identifier.WithIdentifier(SyntaxFactory.Identifier(value2));
                 }
                 else
                 {
@@ -221,6 +336,9 @@ internal class CSharpSymbolsRewriter(IDocument document, bool keepNameOnInspecto
 
                     if (dict.TryGetValue(symbol.OriginalDefinition, out var value2))
                         return identifier.WithIdentifier(SyntaxFactory.Identifier(value2));
+
+                    if (symbol is INamedTypeSymbol t)
+                        _symbols.Add(t);
                 }
             }
         }

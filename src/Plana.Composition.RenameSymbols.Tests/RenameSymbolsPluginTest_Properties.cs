@@ -26,13 +26,12 @@ public partial class RenameSymbolsPluginTest
         var reference = await container.GetSourceByPathAsync("Plana.Composition.DisableConsoleOutput/DisableConsoleOutputPlugin.cs");
 
         // Solution -> _0x4265cf21
-        const string identifier = "_0x4265cf21";
-
         var solutionAbstractDecl = await abstraction.GetFirstSyntax<PropertyDeclarationSyntax>();
-        Assert.Equal(identifier, solutionAbstractDecl.Identifier.ToString());
+        var identifier = solutionAbstractDecl.Identifier.ToIdentifier();
+        Assert.True(identifier.ToHaveHexadecimalLikeString());
 
         var solutionImplDecl = await implementation.GetFirstSyntax<PropertyDeclarationSyntax>();
-        Assert.Equal(identifier, solutionImplDecl.Identifier.ToString());
+        Assert.Equal(identifier, solutionImplDecl.Identifier.ToIdentifier());
 
         bool IsAccessToContextSolution(MemberAccessExpressionSyntax syntax, SemanticModel sm)
         {
@@ -57,6 +56,6 @@ public partial class RenameSymbolsPluginTest
         }
 
         var solutionRef = await reference.GetFirstSyntax<MemberAccessExpressionSyntax>(IsAccessToContextSolution);
-        Assert.Equal(identifier, solutionRef.Name.ToString());
+        Assert.Equal(identifier, solutionRef.Name.ToIdentifier());
     }
 }

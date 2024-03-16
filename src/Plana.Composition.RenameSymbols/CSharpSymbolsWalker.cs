@@ -13,7 +13,7 @@ using Plana.Composition.Extensions;
 
 namespace Plana.Composition.RenameSymbols;
 
-internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random, bool isRenameNamespaces, bool isRenameClasses, bool isRenameProperties, bool isRenameFields, bool isRenameMethods, bool isRenameVariables, Dictionary<ISymbol, string> dict)
+internal class CSharpSymbolsWalker(ISolution solution, IDocument document, IPlanaSecureRandom random, bool isRenameNamespaces, bool isRenameClasses, bool isRenameProperties, bool isRenameFields, bool isRenameMethods, bool isRenameVariables, Dictionary<ISymbol, string> dict)
     : CSharpSyntaxWalker
 {
     private static readonly List<string> Messages =
@@ -167,6 +167,12 @@ internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random
         base.VisitForEachStatement(node);
     }
 
+    private string KeepOriginalName(ISymbol symbol, string? name = null)
+    {
+        dict.Add(symbol, name ?? symbol.Name);
+        return name ?? symbol.Name;
+    }
+
     #region classes
 
     public override void VisitClassDeclaration(ClassDeclarationSyntax node)
@@ -271,19 +277,17 @@ internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random
             var overridden = original.OverriddenMethod;
             var isExternalDefinition = overridden.Locations.Any(w => w.IsInMetadata);
             if (isExternalDefinition)
-            {
-                // keep
-                dict.Add(symbol, overridden.Name);
-                return overridden.Name;
-            }
+                return KeepOriginalName(symbol, overridden.Name);
+
+            if (overridden.IsAnyDeclarationIsNotInWorkspace(solution))
+                return KeepOriginalName(symbol, overridden.Name);
         }
 
         if (original.Locations.Any(w => w.IsInMetadata))
-        {
-            // keep
-            dict.Add(symbol, symbol.Name);
-            return symbol.Name;
-        }
+            return KeepOriginalName(symbol);
+
+        if (original.IsAnyDeclarationIsNotInWorkspace(solution))
+            return KeepOriginalName(symbol);
 
         var @interface = symbol.GetInterfaceSymbol();
         if (@interface is IMethodSymbol s)
@@ -339,6 +343,10 @@ internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random
             return val;
 
         var original = symbol.OriginalDefinition;
+
+        if (original.IsAnyDeclarationIsNotInWorkspace(solution))
+            return KeepOriginalName(original);
+
         var @interface = symbol.GetInterfaceSymbol();
         if (@interface is IPropertySymbol s)
         {
@@ -393,6 +401,9 @@ internal class CSharpSymbolsWalker(IDocument document, IPlanaSecureRandom random
     private void SetNamespaceIdentifier(INamespaceSymbol symbol)
     {
         if (dict.ContainsKey(symbol))
+            return;
+
+        if (symbol.IsAnyDeclarationIsNotInWorkspace(solution))
             return;
 
         if (symbol.ContainingNamespace.IsGlobalNamespace)

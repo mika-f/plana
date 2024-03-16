@@ -35,8 +35,9 @@ public class Obfuscator(IWorkspace workspace, List<IPlanaPlugin> instances, ILog
                     await instance.RunAsync(context);
                     await workspace.CommitAsync(context.CancellationToken);
                 }
-                catch
+                catch (Exception i)
                 {
+                    logger?.LogDebug(i.Message);
                     await workspace.RollbackAsync(ct);
                 }
 

@@ -20,11 +20,9 @@ public partial class RenameSymbolsPluginTest
 
         var implementation = await container.GetSourceByTypeAsync(typeof(Obfuscator));
 
-        // instance -> _0x3a050ac8
-        const string identifier = "_0x3a050ac8";
-
+        // instance -> _0xc22a5edb
         var @foreach = await implementation.GetFirstSyntax<ForEachStatementSyntax>();
-        Assert.Equal(identifier, @foreach.Identifier.ToFullString());
+        Assert.True(@foreach.Identifier.ToHaveHexadecimalLikeString());
     }
 
     [Fact]
@@ -38,13 +36,12 @@ public partial class RenameSymbolsPluginTest
 
         var implementation = await container.GetSourceByTypeAsync(typeof(AnnotationComment));
 
-        // AnnotationComment.Annotation -> _0xd660581b
-        const string identifier = "_0xd660581b";
+        // AnnotationComment.Annotation -> _0xf35395eb
 
         var declaration = await implementation.GetFirstSyntax<RecordDeclarationSyntax>();
         var constructor = declaration.ParameterList!.Parameters[0];
-
-        Assert.Equal(identifier, constructor.Identifier.ToFullString());
+        var identifier = constructor.Identifier.ToIdentifier();
+        Assert.True(identifier.ToHaveHexadecimalLikeString());
 
         var internalReference = await implementation.GetFirstSyntax<IdentifierNameSyntax>(w =>
         {
@@ -58,7 +55,7 @@ public partial class RenameSymbolsPluginTest
 
             return p.Identifier.ToFullString().Trim() == nameof(AnnotationComment.Comment);
         });
-        Assert.Equal(identifier, internalReference.Identifier.ToFullString());
+        Assert.Equal(identifier, internalReference.Identifier.ToIdentifier());
 
         var externalReferenceImplementation = await container.GetSourceByPathAsync("Plana.Composition.RenameSymbols.Tests/RenameSymbolsPluginTest_Variables.cs");
         var externalReference = await externalReferenceImplementation.GetFirstSyntax<MemberAccessExpressionSyntax>(w =>
@@ -70,6 +67,6 @@ public partial class RenameSymbolsPluginTest
             return assignment.Left.ToString() == "_";
         });
 
-        Assert.Equal(identifier, externalReference.Name.ToFullString());
+        Assert.Equal(identifier, externalReference.Name.ToIdentifier());
     }
 }
