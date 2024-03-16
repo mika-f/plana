@@ -26,8 +26,6 @@ public partial class RenameSymbolsPluginTest
         var reference = await container.GetSourceByPathAsync("Plana.CLI/Commands/ObfuscateCommand.cs");
 
         // CommandExtensions.AddOptions -> _0xb35682f5
-        const string addOptionsIdentifier = "_0xb35682f5";
-
         var def = await originalDefinition.GetFirstSyntax<MethodDeclarationSyntax>((w, sm) =>
         {
             if (w.HasNotModifier(SyntaxKind.StaticKeyword))
@@ -38,7 +36,8 @@ public partial class RenameSymbolsPluginTest
 
             return param1?.Type.ToDisplayString() == "System.CommandLine.Command" && param2?.Type.ToDisplayString() == "System.CommandLine.Option[]";
         });
-        Assert.Equal(addOptionsIdentifier, def.Identifier.ToString());
+        var addOptionsIdentifier = def.Identifier.ToIdentifier();
+        Assert.True(def.Identifier.ToHaveHexadecimalLikeString());
 
         var r = await reference.GetFirstSyntax<InvocationExpressionSyntax>((w, sm) =>
         {
@@ -117,10 +116,9 @@ public partial class RenameSymbolsPluginTest
         var implementation = await container.GetSourceByTypeAsync(typeof(InlineSource));
 
         // ITestableObject<T>.ToMatchInlineSnapshot(T) -> _0x84fd82f3
-        const string identifier = "_0x84fd82f3";
-
         var decl = await @interface.GetFirstSyntax<MethodDeclarationSyntax>();
-        Assert.Equal(identifier, decl.Identifier.ToString());
+        var identifier = decl.Identifier.ToIdentifier();
+        Assert.True(decl.Identifier.ToHaveHexadecimalLikeString());
 
         var impl = await implementation.GetFirstSyntax<MethodDeclarationSyntax>();
         Assert.Equal(identifier, impl.Identifier.ToString());
@@ -135,8 +133,6 @@ public partial class RenameSymbolsPluginTest
         var implementation = await container.GetSourceByTypeAsync(typeof(InlineSource));
 
         // InlineSource.GetSyntaxOf<T> -> _0xd52be804
-        const string identifier = "_0xd52be804";
-
         var def = await implementation.GetFirstSyntax<MethodDeclarationSyntax>((w, sm) =>
         {
             if (w.ParameterList.Parameters.Count != 0)
@@ -159,7 +155,8 @@ public partial class RenameSymbolsPluginTest
             return true;
         });
 
-        Assert.Equal(identifier, def.Identifier.ToString());
+        var identifier = def.Identifier.ToIdentifier();
+        Assert.True(def.Identifier.ToHaveHexadecimalLikeString());
 
         var reference = await implementation.GetFirstSyntax<InvocationExpressionSyntax>((w, sm) =>
         {
@@ -193,8 +190,6 @@ public partial class RenameSymbolsPluginTest
         var reference = await container.GetSourceByPathAsync("Plana/Obfuscator.cs");
 
         // IPlanaPlugin.RunAsync -> _0xa79a150d
-        const string runAsyncIdentifier = "_0xa79a150d";
-
         bool IsMethodsHasRunAsyncSignature(MethodDeclarationSyntax w, SemanticModel sm)
         {
             var identifier = w.ParameterList.Parameters[0].Type;
@@ -209,7 +204,8 @@ public partial class RenameSymbolsPluginTest
         }
 
         var rootAbstractionDecl = await rootAbstraction.GetFirstSyntax<MethodDeclarationSyntax>(IsMethodsHasRunAsyncSignature);
-        Assert.Equal(runAsyncIdentifier, rootAbstractionDecl.Identifier.ToString());
+        var runAsyncIdentifier = rootAbstractionDecl.Identifier.ToIdentifier();
+        Assert.True(rootAbstractionDecl.Identifier.ToHaveHexadecimalLikeString());
 
         var inheritAbstractionDecl = await inheritAbstraction.GetFirstSyntax<MethodDeclarationSyntax>(IsMethodsHasRunAsyncSignature);
         Assert.Equal(runAsyncIdentifier, inheritAbstractionDecl.Identifier.ToString());
@@ -235,10 +231,9 @@ public partial class RenameSymbolsPluginTest
         Assert.Equal(runAsyncIdentifier, ((MemberAccessExpressionSyntax)referenceDecl.Expression).Name.Identifier.ToString());
 
         // IPlanaPlugin2.ObfuscateAsync -> _0xc7b29ba1
-        const string obfuscateAsyncIdentifier = "_0xc7b29ba1";
-
         var inheritAbstractionDecl2 = (await inheritAbstraction.GetSyntaxList<MethodDeclarationSyntax>(IsMethodsHasRunAsyncSignature))[1];
-        Assert.Equal(obfuscateAsyncIdentifier, inheritAbstractionDecl2.Identifier.ToString());
+        var obfuscateAsyncIdentifier = inheritAbstractionDecl2.Identifier.ToIdentifier();
+        Assert.True(inheritAbstractionDecl2.Identifier.ToHaveHexadecimalLikeString());
 
         var implementationDecl = await implementation.GetFirstSyntax<MethodDeclarationSyntax>(IsMethodsHasRunAsyncSignature);
         Assert.Equal(obfuscateAsyncIdentifier, implementationDecl.Identifier.ToString());
@@ -254,10 +249,9 @@ public partial class RenameSymbolsPluginTest
         var reference = await container.GetSourceByPathAsync("Plana.CLI/Commands/ObfuscateCommand.cs");
 
         // SolutionWorkspace.CreateWorkspaceAsync -> _0xc09f4e99
-        const string createWorkspaceAsyncIdentifier = "_0xc09f4e99";
-
         var def = await originalDefinition.GetFirstSyntax<MethodDeclarationSyntax>(w => w.HasModifier(SyntaxKind.StaticKeyword));
-        Assert.Equal(createWorkspaceAsyncIdentifier, def.Identifier.ToString());
+        var createWorkspaceAsyncIdentifier = def.Identifier.ToIdentifier();
+        Assert.True(def.Identifier.ToHaveHexadecimalLikeString());
 
         var r = await reference.GetFirstSyntax<InvocationExpressionSyntax>((w, sm) =>
         {

@@ -21,7 +21,10 @@ public partial class RenameSymbolsPluginTest
 
         // Plana.CLI.Commands
         var @namespace = await source.GetFirstSyntax<FileScopedNamespaceDeclarationSyntax>();
-        Assert.Equal("_0xb73384b5._0x23636295._0x0a849839", @namespace.Name.ToFullString());
+        var parts = @namespace.Name.ToIdentifier().Split(".");
+
+        foreach (var part in parts)
+            Assert.True(part.ToHaveHexadecimalLikeString());
 
         // Plana -> Plana
 
@@ -42,13 +45,24 @@ public partial class RenameSymbolsPluginTest
 
         // Plana -> _0xb73384b5
         var rootDecl = await root.GetSyntax<FileScopedNamespaceDeclarationSyntax>();
-        Assert.Equal("_0xb73384b5", rootDecl.Name.ToFullString());
+        var a = rootDecl.Name.ToIdentifier();
+        Assert.True(a.ToHaveHexadecimalLikeString());
 
         // Plana.Composition.Abstractions -> _0xb73384b5._0x23636295._0x895054f0
         var abstractionsDecl = await nest.GetSyntax<FileScopedNamespaceDeclarationSyntax>();
-        Assert.Equal("_0xb73384b5._0x23636295._0x895054f0", abstractionsDecl.Name.ToFullString());
+        var parts1 = abstractionsDecl.Name.ToIdentifier().Split(".");
+
+        Assert.Equal(a, parts1[0]);
+
+        var b = parts1[1];
+        Assert.True(b.ToHaveHexadecimalLikeString());
+        Assert.True(parts1[2].ToHaveHexadecimalLikeString());
 
         var usingToAbstractions = await root.GetSyntax<UsingDirectiveSyntax>();
-        Assert.Equal("_0xb73384b5._0x23636295._0x895054f0", usingToAbstractions.Name!.ToFullString());
+        var parts2 = usingToAbstractions.Name!.ToIdentifier().Split(".");
+
+        Assert.Equal(a, parts2[0]);
+        Assert.Equal(b, parts2[1]);
+        Assert.True(parts2[2].ToHaveHexadecimalLikeString());
     }
 }

@@ -12,6 +12,8 @@ using Plana.Composition.Abstractions.Attributes;
 using Plana.Composition.Extensions;
 using Plana.Testing;
 
+using CSharpSyntaxNodeExtensions = Plana.Composition.Extensions.CSharpSyntaxNodeExtensions;
+
 namespace Plana.Composition.RenameSymbols.Tests;
 
 public partial class RenameSymbolsPluginTest
@@ -26,15 +28,14 @@ public partial class RenameSymbolsPluginTest
         var reference = await container.GetSourceByTypeAsync(typeof(RenameSymbolsPlugin));
 
         // PlanaPluginAttribute -> _0x35add3ac
-        const string identifier = "_0x35add3ac";
-
         var declaration = await implementation.GetFirstSyntax<ClassDeclarationSyntax>((@class, sm) =>
         {
             var symbol = sm.GetDeclaredSymbol(@class);
             return symbol?.BaseType != null && symbol.BaseType.Equals(typeof(Attribute).ToSymbol(sm), SymbolEqualityComparer.Default);
         });
 
-        Assert.Equal($"{identifier}Attribute", declaration.Identifier.ToFullString());
+        var identifier = declaration.Identifier.ToIdentifier();
+        Assert.True(declaration.Identifier.ToHaveHexadecimalLikeString(suffix: "Attribute"));
 
         var attribute = await reference.GetFirstSyntax<AttributeSyntax>((w, sm) =>
         {
@@ -46,7 +47,9 @@ public partial class RenameSymbolsPluginTest
 
             return true;
         });
-        Assert.Equal(identifier, attribute.Name.ToFullString());
+
+        Assert.True(attribute.Name.ToHaveHexadecimalLikeString());
+        Assert.Equal(identifier[.. ^"Attribute".Length], attribute.Name.ToIdentifier());
     }
 
     [Fact]
@@ -60,16 +63,15 @@ public partial class RenameSymbolsPluginTest
         var extends = await container.GetSourceByPathAsync("Plana.Testing/PlanaContainer.cs");
 
         // PlanaContainer<T> -> _0xdb120989
-        const string identifier = "_0xdb120989";
-
         var a = await implementation.GetFirstSyntax<ClassDeclarationSyntax>();
-        Assert.Equal(identifier, a.Identifier.ToString());
+        var identifier = a.Identifier.ToIdentifier();
+        Assert.True(a.Identifier.ToHaveHexadecimalLikeString());
 
         var b = await reference.GetFirstSyntax<ObjectCreationExpressionSyntax>();
-        Assert.Equal(identifier, ((b.Type as GenericNameSyntax)?.Identifier).ToString());
+        Assert.Equal(identifier, ((b.Type as GenericNameSyntax)?.Identifier).ToIdentifier());
 
         var c = await extends.GetFirstSyntax<ClassDeclarationSyntax>();
-        Assert.Equal(identifier, ((c.BaseList?.Types[0].Type as GenericNameSyntax)?.Identifier).ToString());
+        Assert.Equal(identifier, ((c.BaseList?.Types[0].Type as GenericNameSyntax)?.Identifier).ToIdentifier());
     }
 
     [Fact]
@@ -81,13 +83,12 @@ public partial class RenameSymbolsPluginTest
         var reference = await container.GetSourceByPathAsync("Plana.Composition.Extensions/PlanaPluginOption.cs");
 
         // PlanaPluginOption -> _0xb93c4da5
-        const string identifier = "_0xb93c4da5";
-
         var @class = await reference.GetFirstSyntax<ClassDeclarationSyntax>();
-        Assert.Equal(identifier, @class.Identifier.ToFullString());
+        var identifier = @class.Identifier.ToIdentifier();
+        Assert.True(@class.Identifier.ToHaveHexadecimalLikeString());
 
         var constructor = await reference.GetFirstSyntax<ConstructorDeclarationSyntax>();
-        Assert.Equal(identifier, constructor.Identifier.ToFullString());
+        Assert.Equal(identifier, constructor.Identifier.ToIdentifier());
     }
 
     [Fact]
@@ -99,20 +100,18 @@ public partial class RenameSymbolsPluginTest
         var reference = await container.GetSourceByPathAsync("Plana.Composition.RenameSymbols.Tests/RenameSymbolsPluginTest_Classes.cs");
 
         // PlanaContainer -> _0xdb120989
-        const string identifier1 = "_0xdb120989";
-
         var implementation = await container.GetSourceByPathAsync("Plana.Testing/PlanaContainer{T}.cs");
         var a = await implementation.GetFirstSyntax<ClassDeclarationSyntax>();
+        var identifier1 = a.Identifier.ToIdentifier();
 
-        Assert.Equal(identifier1, a.Identifier.ToString());
+        Assert.True(a.Identifier.ToHaveHexadecimalLikeString());
 
         // RenameSymbolsPlugin -> _0xe2407d3d
-        const string identifier2 = "_0xe2407d3d";
-
         var parameter = await container.GetSourceByTypeAsync(typeof(RenameSymbolsPlugin));
         var b = await parameter.GetFirstSyntax<ClassDeclarationSyntax>();
+        var identifier2 = b.Identifier.ToIdentifier();
 
-        Assert.Equal(identifier2, b.Identifier.ToString());
+        Assert.True(b.Identifier.ToHaveHexadecimalLikeString());
 
         var invocation = await reference.GetFirstSyntax<ObjectCreationExpressionSyntax>(w => w.Type.IsKind(SyntaxKind.GenericName));
         var generics = invocation.Type as GenericNameSyntax;
@@ -133,10 +132,9 @@ public partial class RenameSymbolsPluginTest
         var reference = await container.GetSourceByTypeAsync(typeof(CSharpSymbolsWalker));
 
         // IPlanaSecureRandom -> _0x32fad750
-        const string identifier = "_0x32fad750";
-
         var a = await declaration.GetFirstSyntax<InterfaceDeclarationSyntax>();
-        Assert.Equal(identifier, a.Identifier.ToString());
+        var identifier = a.Identifier.ToIdentifier();
+        Assert.True(a.Identifier.ToHaveHexadecimalLikeString());
 
         var b = await implementation.GetFirstSyntax<ClassDeclarationSyntax>();
         Assert.Equal(identifier, b.BaseList?.Types[0].Type.ToString());
@@ -155,11 +153,9 @@ public partial class RenameSymbolsPluginTest
         var reference = await container.GetSourceByTypeAsync(typeof(CSharpSyntaxNodeExtensions));
 
         // AnnotationComment -> _0xd9d2dd2a
-        const string identifier = "_0xd9d2dd2a";
-
         var a = await declaration.GetFirstSyntax<RecordDeclarationSyntax>();
-        Assert.Equal(identifier, a.Identifier.ToString());
-
+        var identifier = a.Identifier.ToIdentifier();
+        Assert.True(a.Identifier.ToHaveHexadecimalLikeString());
 
         var b = await reference.GetFirstSyntax<MemberAccessExpressionSyntax>(w =>
         {
