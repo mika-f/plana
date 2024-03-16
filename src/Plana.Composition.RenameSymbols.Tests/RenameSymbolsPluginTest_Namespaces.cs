@@ -26,12 +26,16 @@ public partial class RenameSymbolsPluginTest
         foreach (var part in parts)
             Assert.True(part.ToHaveHexadecimalLikeString());
 
-        // Plana -> Plana
+        var usings = (await source.GetSyntaxList<UsingDirectiveSyntax>()).Select(w => w.ToNormalizedTrimmedFullString()).ToList();
 
+        // Plana -> Plana
+        Assert.Contains("using Plana;", usings);
 
         // Plana.Composition.Abstractions -> Plana.Composition.Abstractions
+        Assert.Contains("using Plana.Composition.Abstractions;", usings);
 
-        // Plana.CLI.Bindings ->
+        // Plana.CLI.xxx -> parts[0].parts[1].unknown
+        Assert.True(usings.Where(w => w.StartsWith($"{parts[0]}.{parts[1]}")).All(w => w.Split(".")[2].ToHaveHexadecimalLikeString()));
     }
 
     [Fact]
@@ -58,7 +62,7 @@ public partial class RenameSymbolsPluginTest
         Assert.True(b.ToHaveHexadecimalLikeString());
         Assert.True(parts1[2].ToHaveHexadecimalLikeString());
 
-        var usingToAbstractions = await root.GetSyntax<UsingDirectiveSyntax>();
+        var usingToAbstractions = await root.GetFirstSyntax<UsingDirectiveSyntax>();
         var parts2 = usingToAbstractions.Name!.ToIdentifier().Split(".");
 
         Assert.Equal(a, parts2[0]);

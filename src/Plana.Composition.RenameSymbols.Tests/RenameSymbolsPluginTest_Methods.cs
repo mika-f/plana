@@ -133,7 +133,7 @@ public partial class RenameSymbolsPluginTest
         var implementation = await container.GetSourceByTypeAsync(typeof(InlineSource));
 
         // InlineSource.GetSyntaxOf<T> -> _0xd52be804
-        var def = await implementation.GetFirstSyntax<MethodDeclarationSyntax>((w, sm) =>
+        var def = await implementation.GetLastSyntax<MethodDeclarationSyntax>((w, sm) =>
         {
             if (w.ParameterList.Parameters.Count != 0)
                 return false;
