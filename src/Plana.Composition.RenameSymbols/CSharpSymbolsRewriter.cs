@@ -215,6 +215,45 @@ internal class CSharpSymbolsRewriter(ISolution solution, IDocument document, boo
         return newNode;
     }
 
+    public override SyntaxNode? VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
+    {
+        var newNode = base.VisitMemberAccessExpression(node);
+        if (newNode is MemberAccessExpressionSyntax accessor)
+        {
+            var si = document.SemanticModel.GetSymbolInfo(node.Expression);
+            var symbol = si.Symbol;
+
+            if (symbol != null)
+                if (symbol is INamespaceSymbol ns)
+                {
+                    // if receiver is namespace, convert to fully qualified namespace
+                    if (dict.ContainsKey(ns))
+                    {
+                        var parts = new List<string>();
+                        var s = ns;
+
+                        while (true)
+                        {
+                            if (s.IsGlobalNamespace)
+                                break;
+
+                            parts.Add(dict[s]);
+                            s = s.ContainingNamespace;
+                        }
+
+                        parts.Reverse();
+
+                        var identifier = string.Join(".", parts);
+                        return accessor.WithExpression(SyntaxFactory.IdentifierName(identifier));
+                    }
+
+                    return accessor.WithExpression(SyntaxFactory.IdentifierName(ns.ToDisplayString()));
+                }
+        }
+
+        return newNode;
+    }
+
     public override SyntaxNode? VisitVariableDeclarator(VariableDeclaratorSyntax node)
     {
         var newNode = base.VisitVariableDeclarator(node);
